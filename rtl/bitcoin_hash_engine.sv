@@ -18,12 +18,13 @@ module bitcoin_hash_engine #(
     output reg  [31:0]  result_nonce_o,
     output reg  [255:0] result_hash_o
 );
-    localparam [1:0] ST_IDLE  = 2'd0;
-    localparam [1:0] ST_PASS1 = 2'd1;
-    localparam [1:0] ST_PASS2 = 2'd2;
-    localparam [1:0] ST_CHECK = 2'd3;
+    localparam [2:0] ST_IDLE    = 3'd0;
+    localparam [2:0] ST_PASS1   = 3'd1;
+    localparam [2:0] ST_PASS2   = 3'd2;
+    localparam [2:0] ST_COMPARE = 3'd3;
+    localparam [2:0] ST_CHECK   = 3'd4;
 
-    reg [1:0]   state_q;
+    reg [2:0]   state_q;
     reg         core_start_q;
     reg [511:0] core_block_q;
     reg [255:0] core_h_q;
@@ -37,6 +38,10 @@ module bitcoin_hash_engine #(
     reg [255:0] target_q;
     reg [31:0]  nonce_q;
     reg [31:0]  remaining_q;
+    reg [255:0] digest_q;
+    reg [2:0]   cmp_idx_q;
+    reg         cmp_lt_q;
+    reg         cmp_gt_q;
 
     assign busy_o = (state_q != ST_IDLE) || core_busy;
 
@@ -104,6 +109,10 @@ module bitcoin_hash_engine #(
             target_q <= 256'h0;
             nonce_q <= 32'h0;
             remaining_q <= 32'h0;
+            digest_q <= 256'h0;
+            cmp_idx_q <= 3'd0;
+            cmp_lt_q <= 1'b0;
+            cmp_gt_q <= 1'b0;
             done_o <= 1'b0;
             result_valid_o <= 1'b0;
             result_nonce_o <= 32'h0;
@@ -125,6 +134,10 @@ module bitcoin_hash_engine #(
                             target_q <= target_i;
                             nonce_q <= nonce_start_i;
                             remaining_q <= nonce_count_i;
+                            digest_q <= 256'h0;
+                            cmp_idx_q <= 3'd0;
+                            cmp_lt_q <= 1'b0;
+                            cmp_gt_q <= 1'b0;
                             core_block_q <= make_first_pass_block(header_tail_i, nonce_start_i);
                             core_h_q <= midstate_i;
                             core_start_q <= 1'b1;
@@ -146,12 +159,37 @@ module bitcoin_hash_engine #(
 
                     ST_PASS2: begin
                         if (core_done) begin
-                            result_hash_o <= core_digest;
-                            if (core_digest <= target_q) begin
+                            digest_q <= core_digest;
+                            cmp_idx_q <= 3'd0;
+                            cmp_lt_q <= 1'b0;
+                            cmp_gt_q <= 1'b0;
+                            state_q <= ST_COMPARE;
+                        end
+                    end
+
+                    ST_COMPARE: begin
+                        result_hash_o <= digest_q;
+
+                        if (!cmp_lt_q && !cmp_gt_q) begin
+                            if (digest_q[255 - (cmp_idx_q * 32) -: 32] <
+                                target_q[255 - (cmp_idx_q * 32) -: 32]) begin
+                                cmp_lt_q <= 1'b1;
+                            end else if (digest_q[255 - (cmp_idx_q * 32) -: 32] >
+                                         target_q[255 - (cmp_idx_q * 32) -: 32]) begin
+                                cmp_gt_q <= 1'b1;
+                            end
+                        end
+
+                        if (cmp_idx_q == 3'd7) begin
+                            if (cmp_lt_q ||
+                                (!cmp_gt_q &&
+                                 (digest_q[31:0] <= target_q[31:0]))) begin
                                 result_valid_o <= 1'b1;
                                 result_nonce_o <= nonce_q;
                             end
                             state_q <= ST_CHECK;
+                        end else begin
+                            cmp_idx_q <= cmp_idx_q + 3'd1;
                         end
                     end
 

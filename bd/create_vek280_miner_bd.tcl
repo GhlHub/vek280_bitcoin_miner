@@ -181,7 +181,7 @@ for {set idx 0} {$idx < [llength $noc_masters]} {incr idx} {
 set miner [create_bd_cell -type module -reference bitcoin_miner_axi miner_0]
 set_property -dict [list \
     CONFIG.NUM_ENGINES 128 \
-    CONFIG.CLUSTER_SIZE 16 \
+    CONFIG.CLUSTER_SIZE 32 \
     CONFIG.CLUSTER_FIFO_DEPTH 2 \
     CONFIG.AXI_ADDR_WIDTH 12 \
 ] $miner
@@ -225,6 +225,7 @@ save_bd_design
 
 make_wrapper -files [get_files [file join $out_dir vek280_miner_bd.srcs sources_1 bd $design_name ${design_name}.bd]] -top
 add_files -norecurse [file join $out_dir vek280_miner_bd.gen sources_1 bd $design_name hdl ${design_name}_wrapper.v]
+set_property top ${design_name}_wrapper [current_fileset]
 update_compile_order -fileset sources_1
 
 write_bd_tcl -force [file join $repo_dir bd ${design_name}_recreate.tcl]
@@ -232,7 +233,7 @@ set summary_file [open [file join $reports_dir ${design_name}_summary.rpt] w]
 puts $summary_file "Block design: $design_name"
 puts $summary_file "Part: $part_name"
 puts $summary_file "Board: $board_name"
-puts $summary_file "Miner: NUM_ENGINES=128 CLUSTER_SIZE=16 CLUSTER_FIFO_DEPTH=2"
+puts $summary_file "Miner: NUM_ENGINES=128 CLUSTER_SIZE=32 CLUSTER_FIFO_DEPTH=2"
 puts $summary_file "PL0 clock request: 250 MHz; Vivado CIPS actual is expected to be about 249.997498 MHz"
 puts $summary_file "PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_0/S_AXI at 0xA4000000 unless reassigned by Vivado"
 puts $summary_file "PS peripherals requested in CIPS config: GEM0 RGMII/MDIO, UART0, UART1, DDR via NoC mode"

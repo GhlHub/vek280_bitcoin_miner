@@ -382,7 +382,7 @@ proc create_root_design { parentCell } {
     set_property -dict [list \
     CONFIG.AXI_ADDR_WIDTH {12} \
     CONFIG.CLUSTER_FIFO_DEPTH {2} \
-    CONFIG.CLUSTER_SIZE {16} \
+    CONFIG.CLUSTER_SIZE {32} \
     CONFIG.NUM_ENGINES {128} \
   ] $miner_0
 

@@ -80,6 +80,9 @@ module bitcoin_miner_axi #(
 
     reg start_pulse_q;
     reg stop_pulse_q;
+    reg [NUM_ENGINES-1:0]    engine_start_q;
+    reg [NUM_ENGINES*32-1:0] engine_nonce_start_q;
+    reg [NUM_ENGINES*32-1:0] engine_nonce_count_q;
 
     wire [NUM_ENGINES-1:0] engine_busy;
     wire [NUM_ENGINES-1:0] engine_done;
@@ -152,26 +155,32 @@ module bitcoin_miner_axi #(
         end
     endfunction
 
+    function automatic [31:0] engine_work_count(
+        input [31:0] count,
+        input [31:0] engine_index
+    );
+        begin
+            engine_work_count = (count > engine_index) ?
+                                (((count - 32'd1 - engine_index) / NUM_ENGINES) + 32'd1) :
+                                32'd0;
+        end
+    endfunction
+
     genvar gen_idx;
     generate
         for (gen_idx = 0; gen_idx < NUM_ENGINES; gen_idx = gen_idx + 1) begin : g_engines
-            localparam [31:0] ENGINE_INDEX = gen_idx;
-            wire [31:0] local_count;
-            assign local_count = (nonce_count_q > ENGINE_INDEX) ?
-                                 (((nonce_count_q - 32'd1 - ENGINE_INDEX) / NUM_ENGINES) + 32'd1) :
-                                 32'd0;
             bitcoin_hash_engine #(
                 .NONCE_STRIDE(NUM_ENGINES)
             ) u_engine (
                 .clk_i(s_axi_aclk),
                 .rst_ni(s_axi_aresetn),
-                .start_i(start_pulse_q && (local_count != 32'd0)),
+                .start_i(engine_start_q[gen_idx]),
                 .stop_i(stop_pulse_q),
                 .midstate_i(midstate_q),
                 .header_tail_i(header_tail_q),
                 .target_i(target_q),
-                .nonce_start_i(nonce_start_q + gen_idx[31:0]),
-                .nonce_count_i(local_count),
+                .nonce_start_i(engine_nonce_start_q[gen_idx*32 +: 32]),
+                .nonce_count_i(engine_nonce_count_q[gen_idx*32 +: 32]),
                 .busy_o(engine_busy[gen_idx]),
                 .done_o(engine_done[gen_idx]),
                 .result_valid_o(engine_result_valid[gen_idx]),
@@ -260,6 +269,9 @@ module bitcoin_miner_axi #(
             result_hash_q <= 256'h0;
             start_pulse_q <= 1'b0;
             stop_pulse_q <= 1'b0;
+            engine_start_q <= {NUM_ENGINES{1'b0}};
+            engine_nonce_start_q <= {NUM_ENGINES*32{1'b0}};
+            engine_nonce_count_q <= {NUM_ENGINES*32{1'b0}};
             cluster_pop_q <= {NUM_CLUSTERS{1'b0}};
         end else begin
             s_axi_awready <= write_fire;
@@ -267,6 +279,7 @@ module bitcoin_miner_axi #(
             s_axi_arready <= read_fire;
             start_pulse_q <= 1'b0;
             stop_pulse_q <= 1'b0;
+            engine_start_q <= {NUM_ENGINES{1'b0}};
             cluster_pop_q <= {NUM_CLUSTERS{1'b0}};
 
             if (s_axi_bvalid && s_axi_bready) begin
@@ -298,6 +311,11 @@ module bitcoin_miner_axi #(
                                 nonce_done_q <= 1'b0;
                                 overflow_q <= 1'b0;
                                 result_valid_q <= 1'b0;
+                                for (i = 0; i < NUM_ENGINES; i = i + 1) begin
+                                    engine_nonce_start_q[i*32 +: 32] <= nonce_start_q + i[31:0];
+                                    engine_nonce_count_q[i*32 +: 32] <= engine_work_count(nonce_count_q, i[31:0]);
+                                    engine_start_q[i] <= (engine_work_count(nonce_count_q, i[31:0]) != 32'd0);
+                                end
                             end
                             if (s_axi_wdata[1]) begin
                                 stop_pulse_q <= 1'b1;

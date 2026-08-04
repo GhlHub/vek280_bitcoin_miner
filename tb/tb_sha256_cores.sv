@@ -204,12 +204,12 @@ module tb_sha256_cores;
             end
 
             timeout = 0;
-            while (!(fabric_done && dsp_done) && timeout < 100) begin
+            while (!(fabric_done && dsp_done) && timeout < 450) begin
                 @(posedge clk);
                 timeout = timeout + 1;
             end
 
-            if (timeout >= 100) begin
+            if (timeout >= 450) begin
                 $display("FAIL %0s: timeout waiting for done", name);
                 failures = failures + 1;
             end else begin

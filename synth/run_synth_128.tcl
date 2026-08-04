@@ -19,10 +19,10 @@ add_files -fileset sources_1 [list \
 add_files -fileset constrs_1 [file join $script_dir bitcoin_miner_250mhz.xdc]
 
 set_property top bitcoin_miner_axi [current_fileset]
-set_property generic {NUM_ENGINES=128 CLUSTER_SIZE=16 CLUSTER_FIFO_DEPTH=2 AXI_ADDR_WIDTH=12} [current_fileset]
+set_property generic {NUM_ENGINES=128 CLUSTER_SIZE=32 CLUSTER_FIFO_DEPTH=2 AXI_ADDR_WIDTH=12} [current_fileset]
 update_compile_order -fileset sources_1
 
-synth_design -top bitcoin_miner_axi -part $part_name -generic NUM_ENGINES=128 -generic CLUSTER_SIZE=16 -generic CLUSTER_FIFO_DEPTH=2 -generic AXI_ADDR_WIDTH=12 -mode out_of_context
+synth_design -top bitcoin_miner_axi -part $part_name -generic NUM_ENGINES=128 -generic CLUSTER_SIZE=32 -generic CLUSTER_FIFO_DEPTH=2 -generic AXI_ADDR_WIDTH=12 -mode out_of_context
 
 report_utilization -file [file join $out_dir utilization_synth.rpt] -hierarchical
 report_timing_summary -file [file join $out_dir timing_summary_synth.rpt]
