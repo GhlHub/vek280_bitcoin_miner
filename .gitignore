@@ -1,0 +1,30 @@
+# Vivado generated state
+.Xil/
+.vivado-ai/
+*.jou
+*.log
+*.str
+*.pb
+*.wdb
+*.xpr
+*.cache/
+*.gen/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.srcs/
+*.dcp
+
+# Local generated project/output directories
+bd/out_*/
+synth/out_*/
+reports/probe_*/
+
+# Simulator outputs
+sim/*.out
+sim/*.vcd
+
+# Editor/OS noise
+.DS_Store
+*~
