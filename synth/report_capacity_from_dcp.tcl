@@ -1,0 +1,5 @@
+set script_dir [file dirname [file normalize [info script]]]
+set repo_dir [file dirname $script_dir]
+set out_dir [file join $repo_dir synth out_128]
+open_checkpoint [file join $out_dir bitcoin_miner_128_synth.dcp]
+report_utilization -file [file join $out_dir utilization_synth_summary.rpt]
