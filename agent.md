@@ -33,10 +33,19 @@ Bitcoin integration notes:
 - Engines divide nonce work by stride: engine `i` scans `nonce_start + i`,
   `nonce_start + i + NUM_ENGINES`, and so on.
 - Engines are grouped by `CLUSTER_SIZE` for result collection. The default 128-engine
-  build uses 16 engines per cluster and a two-entry FIFO per cluster.
+  build uses four 32-engine clusters and a two-entry FIFO per cluster.
 - A second-stage arbiter moves one cluster FIFO result into the AXI-visible result
   register. Firmware clears that result to allow the next queued result to appear.
 - Cluster overflow is sticky in the AXI `overflow` status bit.
+- The fabric SHA-256 compression core uses a five-phase per-round pipeline. This
+  increases one compression from 64 cycles to 320 cycles, but shortens the round
+  adder and message-schedule paths enough for the current 128-engine fabric build
+  to meet 250 MHz after full implementation.
+- Each engine checks the 256-bit target threshold sequentially in eight 32-bit
+  compare cycles after the second SHA pass. That avoids a 256-bit combinational
+  comparator on the hash-complete path.
+- The AXI wrapper registers per-engine work descriptors at start time so active
+  engines do not depend on live wide nonce-count arithmetic/fanout.
 
 AXI4-Lite register map:
 - `0x000 CONTROL`: bit 0 start, bit 1 stop, bit 2 clear sticky status/results.
@@ -66,6 +75,16 @@ Verification:
   - clustered result FIFOing
   - second-stage result arbitration
   - result nonce, engine ID, interrupt, sticky status, and result hash readback
+- Latest local verification after timing-pipeline changes:
+  - `make sim`: pass
+  - `make lint`: pass
+  - `make synth128`: pass under Vivado 2026.1 with `NUM_ENGINES=128`,
+    `CLUSTER_SIZE=32`, and a 250 MHz OOC clock. Synthesis timing summary reports
+    WNS `+1.315 ns`, TNS `0.000 ns`, WHS `+0.055 ns`, and all user timing
+    constraints met. OOC clock insertion/skew remains approximate until full BD
+    implementation.
+- Latest 128-engine OOC synthesis utilization, before PS/NoC wrapper overhead:
+  379,686 LUTs, 478,944 FFs, 0 DSP, 0 BRAM, 0 URAM.
 
 VEK280 / XCVE2802 resource reference from Vivado 2025.2:
 - CLB LUTs available: 520,704
@@ -95,8 +114,8 @@ Block design:
 - The generated wrapper exposes the two LPDDR4 channel interfaces and the LPDDR4
   differential clock pins.
 - Vivado 2026.1 still reports incomplete NoC address-path warnings during
-  `validate_bd_design`, but the BD validates sufficiently to save and generate the
-  wrapper. This should be revisited before producing the final XSA/PDI.
+  `validate_bd_design`, but the BD validates sufficiently to save, generate the
+  wrapper, implement, route, and generate a PDI.
 - Miner interrupt is connected as `miner_0/irq_o -> cips_0/pl_ps_irq0`.
 - In Vivado 2026.1 CIPS, PL-to-PS IRQ exposure is controlled through the aggregate
   `PS_IRQ_USAGE` field inside `CONFIG.PS_PMC_CONFIG`; direct
@@ -106,3 +125,20 @@ Block design:
 - The BD sets `PFM.IRQ {pl_ps_irq0 {is_range "false"}}` on `cips_0` for Vitis
   platform metadata. Local Vivado export metadata maps `pl_ps_irq0` to IRQ ID 84,
   but firmware should verify the generated XSA/HWH/xparameters output.
+
+Implementation status:
+- `make impl` completed under Vivado 2026.1 on 2026-08-04.
+- Implementation status: `write_device_image Complete!`.
+- Generated PDI:
+  `bd/out_vek280_miner/vek280_miner_bd.runs/impl_1/miner_system_wrapper.pdi`.
+- Routed checkpoint:
+  `bd/out_vek280_miner/vek280_miner_bd.runs/impl_1/miner_system_wrapper_routed.dcp`.
+- Final timing from `reports/impl_vek280/timing_summary_impl.rpt`:
+  WNS `+0.088 ns`, TNS `0.000 ns`, WHS `+0.011 ns`, THS `0.000 ns`, WPWS
+  `+0.016 ns`; all user-specified timing constraints are met.
+- Route status from `reports/impl_vek280/route_status_impl.rpt`: 657,113 routable
+  nets fully routed, 0 nets with routing errors.
+- Final implemented utilization from `reports/impl_vek280/utilization_impl.rpt`:
+  352,372 LUTs, 449,244 FFs, 0 BRAM, 0 URAM, 0 DSP.
+- `report_power` completed, but vectorless power has caveats: NoC QoS was reported
+  out of date and no environmental constraints were supplied.

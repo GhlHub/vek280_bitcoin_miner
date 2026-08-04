@@ -1,7 +1,7 @@
 Block design: miner_system
 Part: xcve2802-vsvh1760-2MP-e-S
 Board: xilinx.com:vek280:part0:1.2
-Miner: NUM_ENGINES=128 CLUSTER_SIZE=16 CLUSTER_FIFO_DEPTH=2
+Miner: NUM_ENGINES=128 CLUSTER_SIZE=32 CLUSTER_FIFO_DEPTH=2
 PL0 clock request: 250 MHz; Vivado CIPS actual is expected to be about 249.997498 MHz
 PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_0/S_AXI at 0xA4000000 unless reassigned by Vivado
 PS peripherals requested in CIPS config: GEM0 RGMII/MDIO, UART0, UART1, DDR via NoC mode

@@ -30,6 +30,7 @@ module sha256_core_iterative (
     reg [31:0] g_q;
     reg [31:0] h_q;
     reg [6:0]  round_q;
+    reg [2:0]  phase_q;
     reg        busy_q;
 
     wire [3:0] w_idx = round_q[3:0];
@@ -37,10 +38,18 @@ module sha256_core_iterative (
     wire [3:0] w_idx_m7 = round_q[3:0] - 4'd7;
     wire [3:0] w_idx_m15 = round_q[3:0] - 4'd15;
     wire [3:0] w_idx_m16 = round_q[3:0] - 4'd0;
-    wire [31:0] w_new;
-    wire [31:0] w_round = (round_q < 16) ? w_mem[w_idx] : w_new;
-    wire [31:0] t1;
-    wire [31:0] t2;
+    reg [31:0] t1_a_q;
+    reg [31:0] t1_b_q;
+    reg [31:0] t1_c_q;
+    reg [31:0] t1_q;
+    reg [31:0] t2_q;
+    reg [31:0] w_new_q;
+    reg [31:0] w_s0_q;
+    reg [31:0] w_s1_q;
+    reg [31:0] w_m7_q;
+    reg [31:0] w_m16_q;
+    reg [31:0] w_ab_q;
+    reg [31:0] w_cd_q;
     wire [31:0] a_next;
     wire [31:0] e_next;
     wire [31:0] digest_h0;
@@ -120,14 +129,8 @@ module sha256_core_iterative (
         endcase
     endfunction
 
-    assign w_new = small_sigma1(w_mem[w_idx_m2]) +
-                   w_mem[w_idx_m7] +
-                   small_sigma0(w_mem[w_idx_m15]) +
-                   w_mem[w_idx_m16];
-    assign t1 = h_q + big_sigma1(e_q) + ch(e_q, f_q, g_q) + k(round_q) + w_round;
-    assign t2 = big_sigma0(a_q) + maj(a_q, b_q, c_q);
-    assign a_next = t1 + t2;
-    assign e_next = d_q + t1;
+    assign a_next = t1_q + t2_q;
+    assign e_next = d_q + t1_q;
     assign digest_h0 = h0_q + a_next;
     assign digest_h1 = h1_q + a_q;
     assign digest_h2 = h2_q + b_q;
@@ -160,7 +163,20 @@ module sha256_core_iterative (
             g_q <= 32'h00000000;
             h_q <= 32'h00000000;
             round_q <= 7'd0;
+            phase_q <= 3'd0;
             busy_q <= 1'b0;
+            t1_a_q <= 32'h00000000;
+            t1_b_q <= 32'h00000000;
+            t1_c_q <= 32'h00000000;
+            t1_q <= 32'h00000000;
+            t2_q <= 32'h00000000;
+            w_new_q <= 32'h00000000;
+            w_s0_q <= 32'h00000000;
+            w_s1_q <= 32'h00000000;
+            w_m7_q <= 32'h00000000;
+            w_m16_q <= 32'h00000000;
+            w_ab_q <= 32'h00000000;
+            w_cd_q <= 32'h00000000;
             done_o <= 1'b0;
             digest_o <= 256'h0;
         end else begin
@@ -187,28 +203,53 @@ module sha256_core_iterative (
                 g_q <= h_i[63:32];
                 h_q <= h_i[31:0];
                 round_q <= 7'd0;
+                phase_q <= 3'd0;
                 busy_q <= 1'b1;
             end else if (busy_q) begin
-                if (round_q >= 16) begin
-                    w_mem[w_idx] <= w_new;
-                end
-
-                a_q <= a_next;
-                b_q <= a_q;
-                c_q <= b_q;
-                d_q <= c_q;
-                e_q <= e_next;
-                f_q <= e_q;
-                g_q <= f_q;
-                h_q <= g_q;
-
-                if (round_q == ROUNDS - 1) begin
-                    digest_o <= {digest_h0, digest_h1, digest_h2, digest_h3,
-                                 digest_h4, digest_h5, digest_h6, digest_h7};
-                    busy_q <= 1'b0;
-                    done_o <= 1'b1;
+                if (phase_q == 3'd0) begin
+                    t1_a_q <= h_q + big_sigma1(e_q);
+                    t1_b_q <= ch(e_q, f_q, g_q) + k(round_q);
+                    t1_c_q <= w_mem[w_idx];
+                    t2_q <= big_sigma0(a_q) + maj(a_q, b_q, c_q);
+                    w_s1_q <= small_sigma1(w_mem[w_idx_m2]);
+                    w_m7_q <= w_mem[w_idx_m7];
+                    w_s0_q <= small_sigma0(w_mem[w_idx_m15]);
+                    w_m16_q <= w_mem[w_idx_m16];
+                    phase_q <= 3'd1;
+                end else if (phase_q == 3'd1) begin
+                    w_ab_q <= w_s1_q + w_m7_q;
+                    w_cd_q <= w_s0_q + w_m16_q;
+                    phase_q <= 3'd2;
+                end else if (phase_q == 3'd2) begin
+                    w_new_q <= w_ab_q + w_cd_q;
+                    phase_q <= 3'd3;
+                end else if (phase_q == 3'd3) begin
+                    t1_q <= t1_a_q + t1_b_q + ((round_q < 16) ? t1_c_q : w_new_q);
+                    phase_q <= 3'd4;
                 end else begin
-                    round_q <= round_q + 7'd1;
+                    if (round_q >= 16) begin
+                        w_mem[w_idx] <= w_new_q;
+                    end
+
+                    a_q <= a_next;
+                    b_q <= a_q;
+                    c_q <= b_q;
+                    d_q <= c_q;
+                    e_q <= e_next;
+                    f_q <= e_q;
+                    g_q <= f_q;
+                    h_q <= g_q;
+
+                    if (round_q == ROUNDS - 1) begin
+                        digest_o <= {digest_h0, digest_h1, digest_h2, digest_h3,
+                                     digest_h4, digest_h5, digest_h6, digest_h7};
+                        busy_q <= 1'b0;
+                        done_o <= 1'b1;
+                        phase_q <= 3'd0;
+                    end else begin
+                        round_q <= round_q + 7'd1;
+                        phase_q <= 3'd0;
+                    end
                 end
             end
         end

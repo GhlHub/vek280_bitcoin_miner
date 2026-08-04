@@ -337,12 +337,12 @@ module tb_bitcoin_miner_axi;
         for (result_idx = 0; result_idx < NUM_ENGINES; result_idx = result_idx + 1) begin
             timeout = 0;
             word = 32'h0;
-            while ((word[1] == 1'b0) && timeout < 500) begin
+            while ((word[1] == 1'b0) && timeout < 2400) begin
                 axi_read(ADDR_STATUS, word);
                 timeout = timeout + 1;
             end
 
-            if (timeout >= 500) begin
+            if (timeout >= 2400) begin
                 $display("FAIL timeout waiting for result %0d", result_idx);
                 failures = failures + 1;
             end else begin

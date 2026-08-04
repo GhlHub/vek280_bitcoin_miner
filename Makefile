@@ -5,7 +5,7 @@ MINER_TB := tb/tb_bitcoin_miner_axi.sv
 SHA_OUT := sim/tb_sha256_cores.out
 MINER_OUT := sim/tb_bitcoin_miner_axi.out
 
-.PHONY: sim lint clean
+.PHONY: sim lint bd synth128 impl clean
 
 sim: sim-sha sim-miner
 
@@ -26,6 +26,15 @@ $(MINER_OUT): $(MINER_RTL) $(MINER_TB)
 lint:
 	verilator --lint-only --timing -Wall --top-module tb_sha256_cores $(SHA_RTL) $(SHA_TB)
 	verilator --lint-only --timing -Wall --top-module tb_bitcoin_miner_axi $(MINER_RTL) $(MINER_TB)
+
+bd:
+	vivado -mode batch -source bd/create_vek280_miner_bd.tcl
+
+synth128:
+	vivado -mode batch -source synth/run_synth_128.tcl
+
+impl:
+	vivado -mode batch -source impl/run_vek280_impl.tcl
 
 clean:
 	rm -f $(SHA_OUT) $(MINER_OUT)
