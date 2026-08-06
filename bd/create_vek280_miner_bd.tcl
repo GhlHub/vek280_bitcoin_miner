@@ -55,6 +55,10 @@ set_property -dict [list \
     CONFIG.PS_PMC_CONFIG(PS_UART1_PERIPHERAL_ENABLE) {1} \
     CONFIG.PS_PMC_CONFIG(PS_UART1_PERIPHERAL_IO) {PMC_MIO_4:5} \
     CONFIG.PS_PMC_CONFIG(PS_UART1_BAUD_RATE) {115200} \
+    CONFIG.PS_PMC_CONFIG(PS_TTC0_PERIPHERAL_ENABLE) {1} \
+    CONFIG.PS_PMC_CONFIG(PS_TTC0_REF_CTRL_FREQMHZ) {100} \
+    CONFIG.PS_PMC_CONFIG(PS_TTC0_REF_CTRL_ACT_FREQMHZ) {100} \
+    CONFIG.PS_PMC_CONFIG(PS_TTC_APB_CLK_TTC0_SEL) {APB} \
     CONFIG.PS_PMC_CONFIG { \
         CLOCK_MODE {Custom} \
         DDR_MEMORY_MODE {Connectivity to DDR via NOC} \
@@ -67,6 +71,10 @@ set_property -dict [list \
         PS_USE_PSPL_IRQ_FPD {1} \
         PS_USE_M_AXI_FPD {1} \
         PS_USE_PMCPL_CLK0 {1} \
+        PS_TTC0_PERIPHERAL_ENABLE {1} \
+        PS_TTC0_REF_CTRL_FREQMHZ {100} \
+        PS_TTC0_REF_CTRL_ACT_FREQMHZ {100} \
+        PS_TTC_APB_CLK_TTC0_SEL {APB} \
         PMC_CRP_PL0_REF_CTRL_FREQMHZ {250} \
         PMC_CRP_PL0_REF_CTRL_ACT_FREQMHZ {250} \
         SMON_ALARMS {Set_Alarms_On} \
@@ -201,6 +209,7 @@ connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins cips_0/m_axi_fpd_ac
 connect_bd_net [get_bd_pins rst_pl0/peripheral_aresetn] [get_bd_pins axi_smc/aresetn]
 connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins miner_0/s_axi_aclk]
 connect_bd_net [get_bd_pins rst_pl0/peripheral_aresetn] [get_bd_pins miner_0/s_axi_aresetn]
+
 set cips_irq_pin [get_bd_pins -quiet cips_0/pl_ps_irq0]
 if {![llength $cips_irq_pin]} {
     puts "CIPS_IRQ_PINS_BEGIN"
@@ -214,10 +223,10 @@ connect_bd_net [get_bd_pins miner_0/irq_o] $cips_irq_pin
 set_property PFM.IRQ {pl_ps_irq0 {is_range "false"}} [get_bd_cells cips_0]
 
 assign_bd_address
-set miner_seg [get_bd_addr_segs -quiet miner_0/S_AXI/Reg]
+set ps_addr_space [get_bd_addr_spaces cips_0/M_AXI_FPD]
+set miner_seg [get_bd_addr_segs -quiet miner_0/S_AXI/reg0]
 if {[llength $miner_seg] != 0} {
-    set_property offset 0xA0000000 $miner_seg
-    set_property range 4K $miner_seg
+    assign_bd_address -offset 0xA4000000 -range 4K -target_address_space $ps_addr_space $miner_seg -force
 }
 
 validate_bd_design
@@ -235,8 +244,8 @@ puts $summary_file "Part: $part_name"
 puts $summary_file "Board: $board_name"
 puts $summary_file "Miner: NUM_ENGINES=128 CLUSTER_SIZE=32 CLUSTER_FIFO_DEPTH=2"
 puts $summary_file "PL0 clock request: 250 MHz; Vivado CIPS actual is expected to be about 249.997498 MHz"
-puts $summary_file "PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_0/S_AXI at 0xA4000000 unless reassigned by Vivado"
-puts $summary_file "PS peripherals requested in CIPS config: GEM0 RGMII/MDIO, UART0, UART1, DDR via NoC mode"
+puts $summary_file "PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_0/S_AXI at 0xA4000000"
+puts $summary_file "PS peripherals requested in CIPS config: GEM0 RGMII/MDIO, UART0, UART1, TTC0, DDR via NoC mode"
 puts $summary_file "DDR: axi_noc_0 LPDDR4 DDRMC subsystem connected to ch0_lpddr4_trip1, ch1_lpddr4_trip1, and lpddr4_clk1"
 puts $summary_file "DDR warning: Vivado still reports incomplete NoC address-path warnings during BD validation; wrapper generation succeeds."
 puts $summary_file "IRQ: miner_0/irq_o -> cips_0/pl_ps_irq0"

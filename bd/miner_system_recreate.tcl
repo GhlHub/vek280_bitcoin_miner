@@ -260,6 +260,10 @@ proc create_root_design { parentCell } {
       PS_IRQ_USAGE {{CH0 1} {CH1 1} {CH10 1} {CH11 1} {CH12 1} {CH13 1} {CH14 1} {CH15 1} {CH2 1} {CH3 1} {CH4 1} {CH5 1} {CH6 1} {CH7 1} {CH8 1} {CH9 1}} \
       PS_NUM_FABRIC_RESETS {1} \
       PS_PL_CONNECTIVITY_MODE {Custom} \
+      PS_TTC0_PERIPHERAL_ENABLE {1} \
+      PS_TTC0_REF_CTRL_ACT_FREQMHZ {149.998505} \
+      PS_TTC0_REF_CTRL_FREQMHZ {149.998505} \
+      PS_TTC_APB_CLK_TTC0_SEL {APB} \
       PS_USE_M_AXI_FPD {1} \
       PS_USE_PMCPL_CLK0 {1} \
       PS_USE_PSPL_IRQ_FPD {1} \
