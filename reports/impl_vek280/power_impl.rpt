@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2026.1 (lin64) Build 6511674 Tue Jun 16 11:01:26 MDT 2026
-| Date             : Tue Aug  4 10:30:46 2026
+| Date             : Tue Aug  4 21:21:29 2026
 | Host             : YouBing running 64-bit Ubuntu 24.04.4 LTS
 | Command          : report_power -file /raid/work/vek280_bitcoin_miner/reports/impl_vek280/power_impl.rpt
 | Design           : miner_system_wrapper

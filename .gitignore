@@ -20,6 +20,10 @@
 bd/out_*/
 synth/out_*/
 reports/probe_*/
+reports/vitis_hw/
+reports/impl_vek280/*.xsa
+vitis_ws/
+.repo.yaml
 
 # Simulator outputs
 sim/*.out
@@ -27,4 +31,5 @@ sim/*.vcd
 
 # Editor/OS noise
 .DS_Store
+._*
 *~

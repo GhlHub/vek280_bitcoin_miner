@@ -3,6 +3,7 @@ set repo_dir [file dirname $script_dir]
 set bd_script [file join $repo_dir bd create_vek280_miner_bd.tcl]
 set project_file [file join $repo_dir bd out_vek280_miner vek280_miner_bd.xpr]
 set impl_reports_dir [file join $repo_dir reports impl_vek280]
+set xsa_file [file join $impl_reports_dir miner_system_wrapper.xsa]
 
 file mkdir $impl_reports_dir
 
@@ -35,6 +36,7 @@ if {[string match "*Complete!*" $impl_status]} {
     report_timing_summary -file [file join $impl_reports_dir timing_summary_impl.rpt]
     report_route_status -file [file join $impl_reports_dir route_status_impl.rpt]
     report_power -file [file join $impl_reports_dir power_impl.rpt]
+    write_hw_platform -fixed -include_bit -force -file $xsa_file
 }
 
 set status_file [open [file join $impl_reports_dir impl_status.rpt] w]

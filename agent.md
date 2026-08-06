@@ -106,6 +106,9 @@ Block design:
   the miner AXI metadata uses that exact `FREQ_HZ` value for BD validation.
 - CIPS config requests GEM0 Ethernet on PMC MIO 26..37 with MDIO on PMC MIO 50..51.
 - CIPS config requests UART0 on PMC MIO 0..1 and UART1 on PMC MIO 4..5 at 115200 baud.
+- CIPS config enables PS TTC0. The Vitis 2026.1 R5 FreeRTOS BSP flow requires a
+  PS TTC timer for the FreeRTOS tick; a PL AXI timer is not sufficient for this
+  BSP.
 - DDR is implemented with `axi_noc_0` configured as an LPDDR4 DDRMC subsystem.
 - `axi_noc_0` connects all six CIPS NoC master interfaces:
   `FPD_CCI_NOC_0..3`, `LPD_AXI_NOC_0`, and `PMC_NOC_AXI_0`.
@@ -142,3 +145,50 @@ Implementation status:
   352,372 LUTs, 449,244 FFs, 0 BRAM, 0 URAM, 0 DSP.
 - `report_power` completed, but vectorless power has caveats: NoC QoS was reported
   out of date and no environmental constraints were supplied.
+- The current implementation reports and XSA include the TTC0 CIPS update required
+  by the Vitis BSP flow.
+
+FreeRTOS software port:
+- The user-provided FreeRTOS LTS source tree is under `FreeRTOS-LTS/`.
+- PS-side application sources are under `software/vek280_freertos/`.
+- Intended first software target is a Versal PS R5 FreeRTOS domain built from the
+  Vivado/Vitis exported XSA.
+- Vitis 2026.1 has XSCT disabled. BSP/platform creation is scripted with the Vitis
+  Python API in `software/vitis/create_bsp.py`.
+- `make vitis-bsp` first exports a Vitis hardware XSA at
+  `reports/vitis_hw/miner_system_wrapper.xsa`, then creates and builds the local
+  platform `vitis_ws/vek280_miner_platform/export/vek280_miner_platform/vek280_miner_platform.xpfm`.
+- The generated FreeRTOS BSP domain is `r5_freertos` on CPU `psv_cortexr5_0`; BSP
+  output is under
+  `vitis_ws/vek280_miner_platform/psv_cortexr5_0/r5_freertos/bsp`.
+- The generated BSP `xparameters.h` contains `XPAR_BITCOIN_MINER_AXI_0_BASEADDR`
+  at `0xa4000000` and TTC0 entries (`XPAR_XTTCPS_0_*`) for the FreeRTOS tick.
+- `software/vek280_freertos/include/FreeRTOSConfig.h` is configured for the
+  FreeRTOS ARM CR5 GCC port and uses generated `xparameters.h` values for the GIC
+  base addresses when available.
+- `software/vek280_freertos/include/FreeRTOSIPConfig.h` enables IPv4, DHCP by
+  default, DNS, TCP, and the compatibility `FreeRTOS_IPInit()` path used by the
+  current Xilinx FreeRTOS-Plus-TCP network interface ports.
+- `main.c` initializes FreeRTOS-Plus-TCP on PS GEM Ethernet, waits for network-up,
+  reports whether DHCP succeeded or fallback addressing was used, prints the IP
+  address, netmask, gateway, and DNS server on the UART console, then starts the
+  miner service, Stratum client, and telnet console tasks.
+- `miner_regs.c` provides the AXI4-Lite MMIO driver for the PL miner at default
+  base address `0xA4000000`.
+- `miner_service.c` provides a task-level miner control API and result bookkeeping.
+  It installs a `pl_ps_irq0` handler using `xPortInstallInterruptHandler()`, wakes
+  on a binary semaphore, drains PL result FIFO entries, and queues share
+  candidates with the active Stratum job metadata.
+- `telnet_server.c` exposes an unauthenticated TCP port 23 command shell with
+  `status`, `regs`, `start`, `stop`, `clear`, `pool`, `connect`, and
+  `disconnect` commands.
+- `stratum_client.c` resolves/connects to a Stratum v1 pool, sends
+  `mining.subscribe` and `mining.authorize`, parses subscription, authorization,
+  `mining.set_difficulty`, and `mining.notify`, builds coinbase + merkle root +
+  serialized block header work, programs PL midstate/tail/target jobs, rolls
+  `extranonce2` when the PL finishes a nonce range, and submits candidate shares
+  with `mining.submit`.
+- The Stratum parser is constrained to the message shapes used by Stratum v1
+  mining pools; it is not a general JSON parser.
+- Local standalone C syntax check against the FreeRTOS-LTS headers passes with
+  `make sw-syntax`.
