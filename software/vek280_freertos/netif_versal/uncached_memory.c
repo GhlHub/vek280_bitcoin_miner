@@ -22,7 +22,7 @@
 
 #define uncALIGNMENT_SIZE        64U
 
-static uint8_t ucDmaDescriptorPool[ uncMEMORY_SIZE ] __attribute__( ( aligned( uncMEMORY_SIZE ) ) );
+static uint8_t ucDmaDescriptorPool[ uncMEMORY_SIZE ] __attribute__( ( section( ".ddr_bss" ), aligned( uncMEMORY_SIZE ) ) );
 static uint32_t ulDmaDescriptorOffset;
 static uint8_t ucPoolInitialised;
 
