@@ -116,7 +116,8 @@ void miner_clear(void)
     for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
         miner_write_reg_instance(inst, MINER_REG_CONTROL, MINER_CONTROL_CLEAR);
         miner_write_reg_instance(inst, MINER_REG_RESULT_STATUS,
-                                 MINER_STATUS_RESULT | MINER_STATUS_OVERFLOW);
+                                 MINER_RESULT_STATUS_RESULT |
+                                 MINER_RESULT_STATUS_OVERFLOW);
     }
 }
 
@@ -164,7 +165,7 @@ bool miner_read_result(miner_result_t *result)
     for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
         uint32_t result_status = miner_read_reg_instance(inst, MINER_REG_RESULT_STATUS);
 
-        if ((result_status & MINER_STATUS_RESULT) == 0U) {
+        if ((result_status & MINER_RESULT_STATUS_RESULT) == 0U) {
             continue;
         }
 
@@ -177,7 +178,7 @@ bool miner_read_result(miner_result_t *result)
             result->hash[i] = miner_read_reg_instance(inst, MINER_REG_RESULT_HASH0 + (i * 4U));
         }
 
-        miner_write_reg_instance(inst, MINER_REG_RESULT_STATUS, MINER_STATUS_RESULT);
+        miner_write_reg_instance(inst, MINER_REG_RESULT_STATUS, MINER_RESULT_STATUS_RESULT);
         return true;
     }
 

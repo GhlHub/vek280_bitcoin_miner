@@ -26,6 +26,9 @@
 #define MINER_STATUS_DONE       (1U << 2)
 #define MINER_STATUS_OVERFLOW   (1U << 3)
 
+#define MINER_RESULT_STATUS_RESULT   (1U << 0)
+#define MINER_RESULT_STATUS_OVERFLOW (1U << 1)
+
 typedef struct {
     uint32_t nonce;
     uint32_t engine;

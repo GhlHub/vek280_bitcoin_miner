@@ -85,6 +85,7 @@ static void handle_command(Socket_t sock, char *line)
                     "commands:\r\n"
                     "  help\r\n"
                     "  status\r\n"
+                    "  stratum\r\n"
                     "  regs\r\n"
                     "  start <nonce_start_hex> <nonce_count_hex>\r\n"
                     "  stop\r\n"
@@ -114,6 +115,30 @@ static void handle_command(Socket_t sock, char *line)
             print_hash(sock, result.hash);
             sock_printf(sock, "\r\n");
         }
+    } else if (strcmp(cmd, "stratum") == 0) {
+        stratum_debug_t dbg;
+
+        memset(&dbg, 0, sizeof(dbg));
+        stratum_client_get_debug(&dbg);
+        sock_printf(sock,
+                    "stratum attempts=%lu successes=%lu disconnects=%lu tx=%lu rx=%lu notify=%lu diff=%lu target=%lu sub=%lu auth=%lu job_ok=%lu job_fail=%lu recv=%ld send=%ld\r\n",
+                    (unsigned long)dbg.connect_attempts,
+                    (unsigned long)dbg.connect_successes,
+                    (unsigned long)dbg.disconnects,
+                    (unsigned long)dbg.tx_lines,
+                    (unsigned long)dbg.rx_lines,
+                    (unsigned long)dbg.notify_count,
+                    (unsigned long)dbg.difficulty_count,
+                    (unsigned long)dbg.target_count,
+                    (unsigned long)dbg.subscribe_ok,
+                    (unsigned long)dbg.authorize_ok,
+                    (unsigned long)dbg.job_dispatch_ok,
+                    (unsigned long)dbg.job_dispatch_fail,
+                    (long)dbg.last_recv_status,
+                    (long)dbg.last_send_status);
+        sock_printf(sock, "event: %s\r\n", dbg.last_event);
+        sock_printf(sock, "last_tx: %s\r\n", dbg.last_tx);
+        sock_printf(sock, "last_rx: %s\r\n", dbg.last_rx);
     } else if (strcmp(cmd, "regs") == 0) {
         sock_printf(sock, "aggregate STATUS=0x%08lx NUM_ENGINES=%lu\r\n",
                     (unsigned long)miner_status(),
