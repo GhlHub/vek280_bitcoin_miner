@@ -468,12 +468,16 @@ static BaseType_t xUltrascaleNetworkInterfaceInitialise( NetworkInterface_t * px
             XEmacPs_SetOperatingSpeed( pxEMAC_PS, ulLinkSpeed );
 
             /* Setting the operating speed of the MAC needs a delay. */
+            prvNetifLog( "netif: speed set" );
             vTaskDelay( pdMS_TO_TICKS( 25UL ) );
+            prvNetifLog( "netif: post speed delay" );
 
             /* Enable 16-bytes AHB bursts */
             XEmacPs_DMABLengthUpdate( pxEMAC_PS, XEMACPS_16BYTE_BURST );
 
+            prvNetifLog( "netif: setup isr" );
             setup_isr( &( xEMACpsifs[ xEMACIndex ] ) );
+            prvNetifLog( "netif: init dma" );
             xStatus = init_dma( &( xEMACpsifs[ xEMACIndex ] ) );
             if( xStatus != XST_SUCCESS )
             {
@@ -808,6 +812,10 @@ static void prvEMACHandlerTask( void * pvParameters )
 
     for( ; ; )
     {
+        uint32_t ulBaseAddress = pxEMAC_PS->emacps.Config.BaseAddress;
+        uint32_t ulTxStatus = XEmacPs_ReadReg( ulBaseAddress, XEMACPS_TXSR_OFFSET );
+        uint32_t ulRxStatus = XEmacPs_ReadReg( ulBaseAddress, XEMACPS_RXSR_OFFSET );
+
         #if ( ipconfigHAS_PRINTF != 0 )
         {
             /* Call a function that monitors resources: the amount of free network
@@ -817,10 +825,34 @@ static void prvEMACHandlerTask( void * pvParameters )
         }
         #endif /* ( ipconfigHAS_PRINTF != 0 ) */
 
-        if( ( pxEMAC_PS->isr_events & EMAC_IF_ALL_EVENT ) == 0 )
+        if( ( ( pxEMAC_PS->isr_events & EMAC_IF_ALL_EVENT ) == 0 ) &&
+            ( ( ulRxStatus & ( XEMACPS_RXSR_FRAMERX_MASK |
+                               XEMACPS_RXSR_BUFFNA_MASK |
+                               XEMACPS_RXSR_RXOVR_MASK |
+                               XEMACPS_RXSR_HRESPNOK_MASK ) ) == 0U ) &&
+            ( ( ulTxStatus & ( XEMACPS_TXSR_TXCOMPL_MASK |
+                               XEMACPS_TXSR_USEDREAD_MASK |
+                               XEMACPS_TXSR_ERROR_MASK ) ) == 0U ) )
         {
             /* No events to process now, wait for the next. */
             ulTaskNotifyTake( pdFALSE, ulMaxBlockTime );
+        }
+
+        if( ( ulRxStatus & ( XEMACPS_RXSR_FRAMERX_MASK |
+                             XEMACPS_RXSR_BUFFNA_MASK |
+                             XEMACPS_RXSR_RXOVR_MASK |
+                             XEMACPS_RXSR_HRESPNOK_MASK ) ) != 0U )
+        {
+            XEmacPs_WriteReg( ulBaseAddress, XEMACPS_RXSR_OFFSET, ulRxStatus );
+            xResult = emacps_check_rx( pxEMAC_PS, pxMyInterfaces[ xEMACIndex ] );
+        }
+
+        if( ( ulTxStatus & ( XEMACPS_TXSR_TXCOMPL_MASK |
+                             XEMACPS_TXSR_USEDREAD_MASK |
+                             XEMACPS_TXSR_ERROR_MASK ) ) != 0U )
+        {
+            XEmacPs_WriteReg( ulBaseAddress, XEMACPS_TXSR_OFFSET, ulTxStatus );
+            emacps_check_tx( pxEMAC_PS );
         }
 
         if( ( pxEMAC_PS->isr_events & EMAC_IF_RX_EVENT ) != 0 )

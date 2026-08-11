@@ -10,8 +10,8 @@
 #define ipconfigDRIVER_INCLUDED_RX_IP_CHECKSUM     1
 #define ipconfigDRIVER_INCLUDED_TX_IP_CHECKSUM     1
 #define ipconfigNIC_LINKSPEED_AUTODETECT           1
-#define ipconfigHAS_PRINTF                         1
-#define ipconfigHAS_DEBUG_PRINTF                   1
+#define ipconfigHAS_PRINTF                         0
+#define ipconfigHAS_DEBUG_PRINTF                   0
 #define ipconfigUSE_DHCP                           NET_USE_DHCP
 #define ipconfigUSE_DHCP_HOOK                      0
 #define ipconfigUSE_DNS                            1

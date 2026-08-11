@@ -513,6 +513,28 @@ int emacps_check_rx( xemacpsif_s * xemacpsif,
         }
 
         pxBuffer = ( NetworkBufferDescriptor_t * ) pxDMA_rx_buffers[ xEMACIndex ][ head ];
+
+        /*
+         * The DMA has written the frame into a cached network buffer. Invalidate
+         * before looking at Ethernet/IP headers, otherwise packet filtering may
+         * inspect stale data and drop valid DHCP/ARP/broadcast traffic.
+         */
+        #if ( USE_JUMBO_FRAMES == 1 )
+        {
+            rx_bytes = xemacpsif->rxSegments[ head ].flags & XEMACPS_RXBUF_LEN_JUMBO_MASK;
+        }
+        #else
+        {
+            rx_bytes = xemacpsif->rxSegments[ head ].flags & XEMACPS_RXBUF_LEN_MASK;
+        }
+        #endif
+
+        if( ucIsCachedMemory( pxBuffer->pucEthernetBuffer ) != 0 )
+        {
+            Xil_DCacheInvalidateRange( ( ( uintptr_t ) pxBuffer->pucEthernetBuffer ) - ipconfigPACKET_FILLER_SIZE,
+                                       ( uint32_t ) rx_bytes + ipconfigPACKET_FILLER_SIZE );
+        }
+
         xAccepted = xMayAcceptPacket( pxBuffer->pucEthernetBuffer );
 
         if( xAccepted == pdFALSE )
@@ -542,22 +564,6 @@ int emacps_check_rx( xemacpsif_s * xemacpsif,
             /* Just avoiding to use or refer to the same buffer again */
             pxDMA_rx_buffers[ xEMACIndex ][ head ] = pxNewBuffer;
 
-            /*
-             * Adjust the buffer size to the actual number of bytes received.
-             * If port is built with Jumbo Frame support, then the XEMACPS_RXBUF_LEN_JUMBO_MASK
-             * should be used to obtain the size of the buffer. Otherwise the mask
-             * XEMACPS_RXBUF_LEN_MASK can be used.
-             */
-            #if ( USE_JUMBO_FRAMES == 1 )
-            {
-                rx_bytes = xemacpsif->rxSegments[ head ].flags & XEMACPS_RXBUF_LEN_JUMBO_MASK;
-            }
-            #else
-            {
-                rx_bytes = xemacpsif->rxSegments[ head ].flags & XEMACPS_RXBUF_LEN_MASK;
-            }
-            #endif /* ( USE_JUMBO_FRAMES == 1 ) */
-
             pxBuffer->xDataLength = rx_bytes;
 
             if( ulRxDebugCount < 8U )
@@ -568,11 +574,6 @@ int emacps_check_rx( xemacpsif_s * xemacpsif,
                             head,
                             ( long ) xAccepted );
                 ulRxDebugCount++;
-            }
-
-            if( ucIsCachedMemory( pxBuffer->pucEthernetBuffer ) != 0 )
-            {
-                Xil_DCacheInvalidateRange( ( ( uintptr_t ) pxBuffer->pucEthernetBuffer ) - ipconfigPACKET_FILLER_SIZE, ( unsigned ) rx_bytes );
             }
 
             /* store it in the receive queue, where it'll be processed by a
