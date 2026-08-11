@@ -64,6 +64,10 @@ module bitcoin_miner_axi #(
     localparam [11:0] ADDR_RESULT_STATUS = 12'h098;
     localparam [11:0] ADDR_RESULT_HASH   = 12'h0a0;
     localparam int unsigned NUM_CLUSTERS = (NUM_ENGINES + CLUSTER_SIZE - 1) / CLUSTER_SIZE;
+    localparam int unsigned ENGINE_INDEX_WIDTH = (NUM_ENGINES <= 1) ? 1 : $clog2(NUM_ENGINES);
+    localparam [1:0] LOAD_IDLE  = 2'd0;
+    localparam [1:0] LOAD_PREP  = 2'd1;
+    localparam [1:0] LOAD_START = 2'd2;
 
     reg [255:0] midstate_q;
     reg [127:0] header_tail_q;
@@ -80,9 +84,13 @@ module bitcoin_miner_axi #(
 
     reg start_pulse_q;
     reg stop_pulse_q;
+    reg clear_results_q;
     reg [NUM_ENGINES-1:0]    engine_start_q;
+    reg [NUM_ENGINES-1:0]    engine_stop_q;
     reg [NUM_ENGINES*32-1:0] engine_nonce_start_q;
     reg [NUM_ENGINES*32-1:0] engine_nonce_count_q;
+    reg [1:0] load_state_q;
+    reg [ENGINE_INDEX_WIDTH-1:0] load_engine_idx_q;
 
     wire [NUM_ENGINES-1:0] engine_busy;
     wire [NUM_ENGINES-1:0] engine_done;
@@ -175,7 +183,7 @@ module bitcoin_miner_axi #(
                 .clk_i(s_axi_aclk),
                 .rst_ni(s_axi_aresetn),
                 .start_i(engine_start_q[gen_idx]),
-                .stop_i(stop_pulse_q),
+                .stop_i(engine_stop_q[gen_idx]),
                 .midstate_i(midstate_q),
                 .header_tail_i(header_tail_q),
                 .target_i(target_q),
@@ -218,7 +226,7 @@ module bitcoin_miner_axi #(
             ) u_result_fifo (
                 .clk_i(s_axi_aclk),
                 .rst_ni(s_axi_aresetn),
-                .clear_i(stop_pulse_q || start_pulse_q || (write_fire && (wr_addr == ADDR_CONTROL) && s_axi_wdata[2])),
+                .clear_i(stop_pulse_q || start_pulse_q || clear_results_q),
                 .pop_i(cluster_pop[cluster_idx]),
                 .engine_valid_i(local_valid),
                 .engine_nonce_i(local_nonce),
@@ -269,9 +277,13 @@ module bitcoin_miner_axi #(
             result_hash_q <= 256'h0;
             start_pulse_q <= 1'b0;
             stop_pulse_q <= 1'b0;
+            clear_results_q <= 1'b0;
             engine_start_q <= {NUM_ENGINES{1'b0}};
+            engine_stop_q <= {NUM_ENGINES{1'b0}};
             engine_nonce_start_q <= {NUM_ENGINES*32{1'b0}};
             engine_nonce_count_q <= {NUM_ENGINES*32{1'b0}};
+            load_state_q <= LOAD_IDLE;
+            load_engine_idx_q <= {ENGINE_INDEX_WIDTH{1'b0}};
             cluster_pop_q <= {NUM_CLUSTERS{1'b0}};
         end else begin
             s_axi_awready <= write_fire;
@@ -279,7 +291,9 @@ module bitcoin_miner_axi #(
             s_axi_arready <= read_fire;
             start_pulse_q <= 1'b0;
             stop_pulse_q <= 1'b0;
+            clear_results_q <= 1'b0;
             engine_start_q <= {NUM_ENGINES{1'b0}};
+            engine_stop_q <= {NUM_ENGINES{1'b0}};
             cluster_pop_q <= {NUM_CLUSTERS{1'b0}};
 
             if (s_axi_bvalid && s_axi_bready) begin
@@ -305,24 +319,24 @@ module bitcoin_miner_axi #(
                 end else begin
                     case (wr_addr)
                         ADDR_CONTROL: begin
-                            if (s_axi_wdata[0]) begin
+                            if (s_axi_wdata[0] && (load_state_q == LOAD_IDLE)) begin
                                 start_pulse_q <= 1'b1;
                                 running_q <= 1'b1;
                                 nonce_done_q <= 1'b0;
                                 overflow_q <= 1'b0;
                                 result_valid_q <= 1'b0;
-                                for (i = 0; i < NUM_ENGINES; i = i + 1) begin
-                                    engine_nonce_start_q[i*32 +: 32] <= nonce_start_q + i[31:0];
-                                    engine_nonce_count_q[i*32 +: 32] <= engine_work_count(nonce_count_q, i[31:0]);
-                                    engine_start_q[i] <= (engine_work_count(nonce_count_q, i[31:0]) != 32'd0);
-                                end
+                                load_state_q <= LOAD_PREP;
+                                load_engine_idx_q <= {ENGINE_INDEX_WIDTH{1'b0}};
                             end
                             if (s_axi_wdata[1]) begin
                                 stop_pulse_q <= 1'b1;
+                                engine_stop_q <= {NUM_ENGINES{1'b1}};
+                                load_state_q <= LOAD_IDLE;
                                 running_q <= 1'b0;
                                 nonce_done_q <= 1'b1;
                             end
                             if (s_axi_wdata[2]) begin
+                                clear_results_q <= 1'b1;
                                 result_valid_q <= 1'b0;
                                 overflow_q <= 1'b0;
                                 nonce_done_q <= 1'b0;
@@ -354,6 +368,37 @@ module bitcoin_miner_axi #(
                 s_axi_rvalid <= 1'b1;
             end
 
+            case (load_state_q)
+                LOAD_IDLE: begin
+                end
+
+                LOAD_PREP: begin
+                    engine_nonce_start_q[load_engine_idx_q*32 +: 32] <= nonce_start_q + {{(32-ENGINE_INDEX_WIDTH){1'b0}}, load_engine_idx_q};
+                    engine_nonce_count_q[load_engine_idx_q*32 +: 32] <= engine_work_count(
+                        nonce_count_q,
+                        {{(32-ENGINE_INDEX_WIDTH){1'b0}}, load_engine_idx_q}
+                    );
+                    load_state_q <= LOAD_START;
+                end
+
+                LOAD_START: begin
+                    if (engine_nonce_count_q[load_engine_idx_q*32 +: 32] != 32'd0) begin
+                        engine_start_q[load_engine_idx_q] <= 1'b1;
+                    end
+
+                    if (load_engine_idx_q == NUM_ENGINES[ENGINE_INDEX_WIDTH-1:0] - {{(ENGINE_INDEX_WIDTH-1){1'b0}}, 1'b1}) begin
+                        load_state_q <= LOAD_IDLE;
+                    end else begin
+                        load_engine_idx_q <= load_engine_idx_q + {{(ENGINE_INDEX_WIDTH-1){1'b0}}, 1'b1};
+                        load_state_q <= LOAD_PREP;
+                    end
+                end
+
+                default: begin
+                    load_state_q <= LOAD_IDLE;
+                end
+            endcase
+
             if (|cluster_overflow) begin
                 overflow_q <= 1'b1;
             end
@@ -366,7 +411,9 @@ module bitcoin_miner_axi #(
                 cluster_pop_q[cluster_hit_idx_next] <= 1'b1;
             end
 
-            if (running_q && ((engine_busy == {NUM_ENGINES{1'b0}}) || (engine_done == {NUM_ENGINES{1'b1}})) && !start_pulse_q) begin
+            if (running_q && (load_state_q == LOAD_IDLE) &&
+                ((engine_busy == {NUM_ENGINES{1'b0}}) || (engine_done == {NUM_ENGINES{1'b1}})) &&
+                !start_pulse_q) begin
                 running_q <= 1'b0;
                 nonce_done_q <= 1'b1;
             end
