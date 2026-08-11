@@ -65,9 +65,10 @@ module bitcoin_miner_axi #(
     localparam [11:0] ADDR_RESULT_HASH   = 12'h0a0;
     localparam int unsigned NUM_CLUSTERS = (NUM_ENGINES + CLUSTER_SIZE - 1) / CLUSTER_SIZE;
     localparam int unsigned ENGINE_INDEX_WIDTH = (NUM_ENGINES <= 1) ? 1 : $clog2(NUM_ENGINES);
-    localparam [1:0] LOAD_IDLE  = 2'd0;
-    localparam [1:0] LOAD_PREP  = 2'd1;
-    localparam [1:0] LOAD_START = 2'd2;
+    localparam [1:0] LOAD_IDLE   = 2'd0;
+    localparam [1:0] LOAD_PREP   = 2'd1;
+    localparam [1:0] LOAD_DECODE = 2'd2;
+    localparam [1:0] LOAD_START  = 2'd3;
 
     reg [255:0] midstate_q;
     reg [127:0] header_tail_q;
@@ -91,6 +92,14 @@ module bitcoin_miner_axi #(
     reg [NUM_ENGINES*32-1:0] engine_nonce_count_q;
     reg [1:0] load_state_q;
     reg [ENGINE_INDEX_WIDTH-1:0] load_engine_idx_q;
+    reg [ENGINE_INDEX_WIDTH-1:0] load_start_idx_q;
+    reg [31:0] load_start_count_q;
+    reg load_start_last_q;
+    reg [NUM_ENGINES-1:0] load_start_onehot_q;
+    reg rd_stage1_valid_q;
+    reg [11:0] rd_stage1_addr_q;
+    reg rd_stage2_valid_q;
+    reg [31:0] rd_stage2_data_q;
 
     wire [NUM_ENGINES-1:0] engine_busy;
     wire [NUM_ENGINES-1:0] engine_done;
@@ -109,7 +118,6 @@ module bitcoin_miner_axi #(
     reg write_fire;
     reg read_fire;
     reg [11:0] wr_addr;
-    reg [11:0] rd_addr;
     reg [NUM_CLUSTERS-1:0] cluster_pop_q;
 
     assign irq_o = result_valid_q | overflow_q | nonce_done_q;
@@ -171,6 +179,20 @@ module bitcoin_miner_axi #(
             engine_work_count = (count > engine_index) ?
                                 (((count - 32'd1 - engine_index) / NUM_ENGINES) + 32'd1) :
                                 32'd0;
+        end
+    endfunction
+
+    function automatic [NUM_ENGINES-1:0] engine_onehot(
+        input [ENGINE_INDEX_WIDTH-1:0] engine_index
+    );
+        integer engine_idx;
+        begin
+            engine_onehot = {NUM_ENGINES{1'b0}};
+            for (engine_idx = 0; engine_idx < NUM_ENGINES; engine_idx = engine_idx + 1) begin
+                if (engine_index == engine_idx[ENGINE_INDEX_WIDTH-1:0]) begin
+                    engine_onehot[engine_idx] = 1'b1;
+                end
+            end
         end
     endfunction
 
@@ -242,9 +264,8 @@ module bitcoin_miner_axi #(
 
     always @(*) begin
         write_fire = s_axi_awvalid && s_axi_wvalid && !s_axi_bvalid;
-        read_fire = s_axi_arvalid && !s_axi_rvalid;
+        read_fire = s_axi_arvalid && !rd_stage1_valid_q && !rd_stage2_valid_q && !s_axi_rvalid;
         wr_addr = {s_axi_awaddr[11:2], s_axi_awaddr[1:0] & 2'b00};
-        rd_addr = {s_axi_araddr[11:2], s_axi_araddr[1:0] & 2'b00};
         cluster_hit_idx_next = -1;
         for (i = 0; i < NUM_CLUSTERS; i = i + 1) begin
             if ((cluster_hit_idx_next < 0) && cluster_valid[i]) begin
@@ -284,6 +305,14 @@ module bitcoin_miner_axi #(
             engine_nonce_count_q <= {NUM_ENGINES*32{1'b0}};
             load_state_q <= LOAD_IDLE;
             load_engine_idx_q <= {ENGINE_INDEX_WIDTH{1'b0}};
+            load_start_idx_q <= {ENGINE_INDEX_WIDTH{1'b0}};
+            load_start_count_q <= 32'h0;
+            load_start_last_q <= 1'b0;
+            load_start_onehot_q <= {NUM_ENGINES{1'b0}};
+            rd_stage1_valid_q <= 1'b0;
+            rd_stage1_addr_q <= 12'h000;
+            rd_stage2_valid_q <= 1'b0;
+            rd_stage2_data_q <= 32'h0;
             cluster_pop_q <= {NUM_CLUSTERS{1'b0}};
         end else begin
             s_axi_awready <= write_fire;
@@ -301,6 +330,24 @@ module bitcoin_miner_axi #(
             end
             if (s_axi_rvalid && s_axi_rready) begin
                 s_axi_rvalid <= 1'b0;
+            end
+
+            if (read_fire) begin
+                rd_stage1_valid_q <= 1'b1;
+                rd_stage1_addr_q <= {s_axi_araddr[11:2], s_axi_araddr[1:0] & 2'b00};
+            end
+
+            if (rd_stage1_valid_q) begin
+                rd_stage2_valid_q <= 1'b1;
+                rd_stage2_data_q <= read_reg(rd_stage1_addr_q);
+                rd_stage1_valid_q <= 1'b0;
+            end
+
+            if (rd_stage2_valid_q && !s_axi_rvalid) begin
+                s_axi_rdata <= rd_stage2_data_q;
+                s_axi_rresp <= 2'b00;
+                s_axi_rvalid <= 1'b1;
+                rd_stage2_valid_q <= 1'b0;
             end
 
             if (write_fire) begin
@@ -362,31 +409,36 @@ module bitcoin_miner_axi #(
                 end
             end
 
-            if (read_fire) begin
-                s_axi_rdata <= read_reg(rd_addr);
-                s_axi_rresp <= 2'b00;
-                s_axi_rvalid <= 1'b1;
-            end
-
             case (load_state_q)
                 LOAD_IDLE: begin
                 end
 
                 LOAD_PREP: begin
+                    load_start_idx_q <= load_engine_idx_q;
+                    load_start_count_q <= engine_work_count(
+                        nonce_count_q,
+                        {{(32-ENGINE_INDEX_WIDTH){1'b0}}, load_engine_idx_q}
+                    );
+                    load_start_last_q <= (load_engine_idx_q == NUM_ENGINES[ENGINE_INDEX_WIDTH-1:0] - {{(ENGINE_INDEX_WIDTH-1){1'b0}}, 1'b1});
                     engine_nonce_start_q[load_engine_idx_q*32 +: 32] <= nonce_start_q + {{(32-ENGINE_INDEX_WIDTH){1'b0}}, load_engine_idx_q};
                     engine_nonce_count_q[load_engine_idx_q*32 +: 32] <= engine_work_count(
                         nonce_count_q,
                         {{(32-ENGINE_INDEX_WIDTH){1'b0}}, load_engine_idx_q}
                     );
+                    load_state_q <= LOAD_DECODE;
+                end
+
+                LOAD_DECODE: begin
+                    load_start_onehot_q <= (load_start_count_q != 32'd0) ?
+                                           engine_onehot(load_start_idx_q) :
+                                           {NUM_ENGINES{1'b0}};
                     load_state_q <= LOAD_START;
                 end
 
                 LOAD_START: begin
-                    if (engine_nonce_count_q[load_engine_idx_q*32 +: 32] != 32'd0) begin
-                        engine_start_q[load_engine_idx_q] <= 1'b1;
-                    end
+                    engine_start_q <= load_start_onehot_q;
 
-                    if (load_engine_idx_q == NUM_ENGINES[ENGINE_INDEX_WIDTH-1:0] - {{(ENGINE_INDEX_WIDTH-1){1'b0}}, 1'b1}) begin
+                    if (load_start_last_q) begin
                         load_state_q <= LOAD_IDLE;
                     end else begin
                         load_engine_idx_q <= load_engine_idx_q + {{(ENGINE_INDEX_WIDTH-1){1'b0}}, 1'b1};
