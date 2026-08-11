@@ -1208,6 +1208,7 @@ static uint32_t get_IEEE_phy_speed_US( XEmacPs * xemacpsp,
 static uint32_t get_Generic_phy_speed_US( XEmacPs * xemacpsp,
                                           uint32_t phy_addr )
 {
+    static uint8_t ucAutonegStarted[ phyMAX_PHY_ADDRESS + 1U ];
     uint16_t control = 0;
     uint16_t status = 0;
     uint16_t advertise = 0;
@@ -1216,27 +1217,50 @@ static uint32_t get_Generic_phy_speed_US( XEmacPs * xemacpsp,
     uint16_t partner1000 = 0;
     uint32_t timeout_counter = 0;
 
-    XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_AUTONEGO_ADVERTISE_REG, &advertise );
-    advertise |= IEEE_ASYMMETRIC_PAUSE_MASK | IEEE_PAUSE_MASK | ADVERTISE_100 | ADVERTISE_10;
-    XEmacPs_PhyWrite( xemacpsp, phy_addr, IEEE_AUTONEGO_ADVERTISE_REG, advertise );
+    if( ( phy_addr <= phyMAX_PHY_ADDRESS ) && ( ucAutonegStarted[ phy_addr ] == 0U ) )
+    {
+        XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_AUTONEGO_ADVERTISE_REG, &advertise );
+        advertise |= IEEE_ASYMMETRIC_PAUSE_MASK | IEEE_PAUSE_MASK | ADVERTISE_100 | ADVERTISE_10;
+        XEmacPs_PhyWrite( xemacpsp, phy_addr, IEEE_AUTONEGO_ADVERTISE_REG, advertise );
 
-    XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_1000_ADVERTISE_REG_OFFSET, &advertise1000 );
-    advertise1000 |= ADVERTISE_1000FULL;
-    XEmacPs_PhyWrite( xemacpsp, phy_addr, IEEE_1000_ADVERTISE_REG_OFFSET, advertise1000 );
+        XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_1000_ADVERTISE_REG_OFFSET, &advertise1000 );
+        advertise1000 |= ADVERTISE_1000FULL;
+        XEmacPs_PhyWrite( xemacpsp, phy_addr, IEEE_1000_ADVERTISE_REG_OFFSET, advertise1000 );
 
-    XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_CONTROL_REG_OFFSET, &control );
-    control |= IEEE_CTRL_AUTONEGOTIATE_ENABLE | IEEE_STAT_AUTONEGOTIATE_RESTART;
-    XEmacPs_PhyWrite( xemacpsp, phy_addr, IEEE_CONTROL_REG_OFFSET, control );
+        XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_CONTROL_REG_OFFSET, &control );
+        control |= IEEE_CTRL_AUTONEGOTIATE_ENABLE | IEEE_STAT_AUTONEGOTIATE_RESTART;
+        XEmacPs_PhyWrite( xemacpsp, phy_addr, IEEE_CONTROL_REG_OFFSET, control );
+
+        ucAutonegStarted[ phy_addr ] = 1U;
+        xil_printf( "generic phy: start an\r\n" );
+    }
 
     do
     {
+        if( timeout_counter == 0U )
+        {
+            xil_printf( "phy wait0\r\n" );
+        }
+
         vTaskDelay( pdMS_TO_TICKS( 100U ) );
+
+        if( timeout_counter == 0U )
+        {
+            xil_printf( "phy rd0\r\n" );
+        }
+
         XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_STATUS_REG_OFFSET, &status );
         XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_STATUS_REG_OFFSET, &status );
+
+        if( timeout_counter == 0U )
+        {
+            xil_printf( "phy st0=0x%04x\r\n", status );
+        }
+
         timeout_counter++;
     } while( ( ( status & ( IEEE_STAT_LINK_STATUS | IEEE_STAT_AUTONEGOTIATE_COMPLETE ) ) !=
                ( IEEE_STAT_LINK_STATUS | IEEE_STAT_AUTONEGOTIATE_COMPLETE ) ) &&
-             ( timeout_counter < 50U ) );
+             ( timeout_counter < 10U ) );
 
     XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_AUTONEGO_ADVERTISE_REG, &advertise );
     XEmacPs_PhyRead( xemacpsp, phy_addr, IEEE_PARTNER_ABILITIES_1_REG_OFFSET, &partner );

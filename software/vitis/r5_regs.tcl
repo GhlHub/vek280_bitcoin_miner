@@ -1,7 +1,9 @@
 connect -url TCP:10.0.1.109:3121
 puts [targets]
 targets -set -filter {name =~ "*Cortex-R5*#0*"}
-rst -processor
-dow vitis_ws/vek280_miner_app/build/vek280_miner_app.elf
+stop
+puts "R5_REGS_START"
+rrd
+puts "R5_REGS_DONE"
 con
 exit

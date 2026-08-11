@@ -33,7 +33,15 @@
     #include "xil_exception.h"
     #include "xpseudo_asm.h"
     #include "xil_cache.h"
-    #include "xuartps.h"
+    #if defined(__has_include)
+        #if __has_include("xuartpsv.h")
+            #include "xuartpsv.h"
+        #else
+            #include "xuartps.h"
+        #endif
+    #else
+        #include "xuartps.h"
+    #endif
     #include "xscugic.h"
     #include "xemacps.h" /* defines XEmacPs API */
 

@@ -121,9 +121,10 @@ Block design:
   `SMON_PMBUS_ADDRESS=0x18`, and `PS_I2CSYSMON_PERIPHERAL={{ENABLE 1} {IO
   {PMC_MIO 39 .. 40}}}`. On VEK280 this maps SysMon SCL to `PMC_MIO39` and SDA to
   `PMC_MIO40`.
-- DDR is implemented with a split NoC topology. `ps_ddr_noc` accepts the four
-  CIPS FPD CCI NoC master interfaces `FPD_CCI_NOC_0..3`; four explicit
-  inter-NoC links connect `ps_ddr_noc/M00_INI..M03_INI` to
+- DDR is implemented with a split NoC topology. `ps_ddr_noc` accepts six CIPS
+  NoC master interfaces: the four FPD CCI NoC ports `FPD_CCI_NOC_0..3`, the R5
+  LPD master path `LPD_AXI_NOC_0`, and the PMC master path `PMC_NOC_AXI_0`.
+  Four explicit inter-NoC links connect `ps_ddr_noc/M00_INI..M03_INI` to
   `ddr_noc/S00_INI..S03_INI`.
 - `ddr_noc` is configured as an LPDDR4 DDRMC subsystem bound through VEK280
   board automation/presets to `ch0_lpddr4_trip1`, `ch1_lpddr4_trip1`, and
@@ -135,10 +136,12 @@ Block design:
   `impl-noddr`; outputs go under `bd/out_vek280_miner_noddr`,
   `reports/impl_vek280_noddr`, `bd/miner_system_recreate_noddr.tcl`, and
   `reports/miner_system_summary_noddr.rpt`.
-- Vivado 2026.1 still reports incomplete self-path warnings for the CIPS
-  LPD/PMC NoC interfaces during `validate_bd_design`, but the DDR address paths
-  are complete. Implementation logs read a NoC traffic file with 4 paths rather
-  than the earlier broken 0-path solution.
+- The R5-accessible DDR fix was to connect `cips_0/LPD_AXI_NOC_0` and
+  `cips_0/PMC_NOC_AXI_0` into `ps_ddr_noc`. Before this change, FPD CCI masters
+  could reach DDR but R5-side debugger/app accesses to `0x00100000` aborted.
+- Vivado 2026.1 still reports some NoC shared-segment and MC-port preference
+  warnings during validation/implementation, but the DDR address paths are
+  complete. The current implementation logs read a NoC traffic file with 6 paths.
 - Miner interrupt is connected as `miner_0/irq_o -> cips_0/pl_ps_irq0`.
 - In Vivado 2026.1 CIPS, PL-to-PS IRQ exposure is controlled through the aggregate
   `PS_IRQ_USAGE` field inside `CONFIG.PS_PMC_CONFIG`; direct
@@ -150,7 +153,7 @@ Block design:
   but firmware should verify the generated XSA/HWH/xparameters output.
 
 Implementation status:
-- `make impl` completed under Vivado 2026.1 on 2026-08-10 after reducing the
+- `make impl` completed under Vivado 2026.1 on 2026-08-11 after reducing the
   implemented miner fabric to one 32-engine AXI instance. The run was launched
   with `VIVADO_JOBS=4`, and `impl/run_vek280_impl.tcl` also applies
   `set_param general.maxThreads $vivado_jobs`.
@@ -160,9 +163,9 @@ Implementation status:
 - Routed checkpoint:
   `bd/out_vek280_miner/vek280_miner_bd.runs/impl_1/miner_system_wrapper_routed.dcp`.
 - Final timing from `reports/impl_vek280/timing_summary_impl.rpt`:
-  WNS `+0.183 ns`, TNS `0.000 ns`, WHS `+0.010 ns`, THS `0.000 ns`, WPWS
+  WNS `+0.255 ns`, TNS `0.000 ns`, WHS `+0.011 ns`, THS `0.000 ns`, WPWS
   `+0.016 ns`; all user-specified timing constraints are met.
-- Route status from `reports/impl_vek280/route_status_impl.rpt`: 168,034 routable
+- Route status from `reports/impl_vek280/route_status_impl.rpt`: 167,973 routable
   nets fully routed, 0 nets with routing errors.
 - Final implemented utilization from `reports/impl_vek280/utilization_impl.rpt`:
   88,274 LUTs, 113,833 FFs, 0 BRAM, 0 URAM, 0 DSP.
@@ -174,9 +177,13 @@ Implementation status:
   2026-08-09, but later attempts to implement the 4x32 AXI-slave version caused
   host out-of-memory reboots. The current one-32-engine build is the active
   memory-safe hardware configuration.
-- Hardware-manager programming of the DDR-enabled PDI succeeded on 2026-08-09
+- Hardware-manager programming of the DDR-enabled PDI succeeded on 2026-08-11
   against remote `hw_server` `10.0.1.109:3121`; Vivado reported
   `Successfully programmed PDI file` and `DONE bit: HIGH`.
+- Direct DDR access was verified on hardware through XSDB targeting
+  `Cortex-R5 #0`: after `rst -processor`, writes to `0x00100000` and
+  `0x00100004` read back as `0x12345678` and `0xA5A55A5A`. This confirms the
+  R5/LPD DDR path is now functional.
 - Earlier DDR-enabled PDIs failed with PLM error `0x02030004`
   (`XPLM_ERR_EXCEPTION`, `DATA_BUS_ERROR_EXCEPTION`), DONE low, BOOT first error
   `0x34d`, and `pdi_dbg_util` traces ending at
@@ -200,6 +207,13 @@ FreeRTOS software port:
   Vivado/Vitis exported XSA.
 - Vitis 2026.1 has XSCT disabled. BSP/platform creation is scripted with the Vitis
   Python API in `software/vitis/create_bsp.py`.
+- Vitis 2026.1 app component creation can block after writing the generated app
+  directory. `software/vitis/create_app.py` is idempotent: once
+  `vitis_ws/vek280_miner_app` exists, rerunning the script patches the generated
+  `UserConfig.cmake` and `lscript.ld` without recreating the component.
+- `software/vitis/build_app.py` builds the existing app component with the Vitis
+  Python API. The current generated ELF is
+  `vitis_ws/vek280_miner_app/build/vek280_miner_app.elf`.
 - `make vitis-bsp` first exports a Vitis hardware XSA at
   `reports/vitis_hw/miner_system_wrapper.xsa`, then creates and builds the local
   platform `vitis_ws/vek280_miner_platform/export/vek280_miner_platform/vek280_miner_platform.xpfm`.
@@ -218,6 +232,19 @@ FreeRTOS software port:
   reports whether DHCP succeeded or fallback addressing was used, prints the IP
   address, netmask, gateway, and DNS server on the UART console, then starts the
   miner service, Stratum client, and telnet console tasks.
+- The full FreeRTOS+TCP/Stratum/Telnet app no longer links with all data in OCM.
+  The generated Vitis linker script keeps code, stacks, the small C heap, and
+  normal `.bss` in OCM for reliable R5 startup. Only explicitly tagged
+  `.ddr_bss` and `.ddr_heap` sections are placed in `psv_ddr_MEM_0` starting at
+  `0x00100000`.
+- `software/vitis/create_app.py` enables `APP_USE_DDR_HEAP=1` for the generated
+  Vitis app, includes `heap_4.c`, and places the application-provided FreeRTOS
+  `ucHeap` in `.ddr_heap`. The current generated ELF places
+  `ddr_test_buffer` at `0x00100000` and the 512 KiB `ucHeap` at `0x00100400`.
+- The generated R5 BSP currently exports only OCM in its standalone memory config,
+  so the BSP boot MPU setup does not map the DDR window. `app_ddr_configure_mpu()`
+  adds a 1 MiB non-cacheable normal-memory MPU region at `0x00100000` before the
+  first R5 CPU DDR access.
 - `miner_regs.c` provides the AXI4-Lite MMIO driver for the PL miner at default
   base address `0xA4000000`.
 - `miner_service.c` provides a task-level miner control API and result bookkeeping.
@@ -237,3 +264,16 @@ FreeRTOS software port:
   mining pools; it is not a general JSON parser.
 - Local standalone C syntax check against the FreeRTOS-LTS headers passes with
   `make sw-syntax`.
+- Current Vitis app build succeeds with `vitis -s software/vitis/build_app.py`.
+  Latest ELF size: text 207,636 bytes, data 5,764 bytes, bss 562,064 bytes.
+- `software/vitis/load_r5_app.tcl` loads
+  `vitis_ws/vek280_miner_app/build/vek280_miner_app.elf` to `Cortex-R5 #0`.
+- The UART-to-telnet bridge at `10.0.1.109:2323` captured the R5 app after the
+  linker/MPU fix. Hardware output showed `DDR MPU region configured`, `DDR smoke
+  test passed`, FreeRTOS heap base `0x00100400`, heap size `0x00080000`, and
+  FreeRTOS-Plus-TCP starting on GEM Ethernet.
+- One intermediate hardware run reached FreeRTOS network-up but DHCP did not return
+  a lease before fallback addressing; UART output showed `DHCP failed; using
+  fallback IP address` and fallback IP `192.168.1.80`. The final 512 KiB heap run
+  confirmed GEM initialization and 1000 Mbps link, but was stopped before DHCP
+  completed or fell back.

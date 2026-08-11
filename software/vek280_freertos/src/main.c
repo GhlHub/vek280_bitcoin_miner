@@ -4,10 +4,12 @@
 #include "FreeRTOS_IP.h"
 #include "task.h"
 
+#include "app_memory.h"
 #include "app_config.h"
 #include "miner_service.h"
 #include "stratum_client.h"
 #include "telnet_server.h"
+#include "xiltimer.h"
 
 #ifdef __has_include
 #if __has_include("xil_printf.h")
@@ -20,6 +22,23 @@ uint32_t SystemCoreClock = 333333333U;
 static volatile BaseType_t g_network_up;
 static volatile BaseType_t g_dhcp_acquired;
 static volatile BaseType_t g_dhcp_failed;
+
+void __real_XTimer_SetHandler(XTimer_TickHandler func,
+                              void *callback_ref,
+                              uint8_t priority);
+
+void __wrap_XTimer_SetHandler(XTimer_TickHandler func,
+                              void *callback_ref,
+                              uint8_t priority)
+{
+    const uint8_t max_api_priority = (uint8_t)(configMAX_API_CALL_INTERRUPT_PRIORITY << 3);
+
+    if (priority > max_api_priority) {
+        priority = max_api_priority;
+    }
+
+    __real_XTimer_SetHandler(func, callback_ref, priority);
+}
 
 uint32_t miner_platform_rand32(void)
 {
@@ -69,6 +88,13 @@ static void app_log_ipv4(const char *label, uint32_t addr)
     (void)addr;
 #endif
 }
+
+#ifdef APP_HAVE_XIL_PRINTF
+static void app_log_hex32(const char *label, uint32_t value)
+{
+    xil_printf("%s0x%08lx\r\n", label, (unsigned long)value);
+}
+#endif
 
 static void app_log_network_config(void)
 {
@@ -172,6 +198,18 @@ int main(void)
     BaseType_t task_status;
 
     app_log("VEK280 miner FreeRTOS app starting");
+    app_log(app_ddr_configure_mpu() ? "DDR MPU region configured" : "DDR MPU region failed");
+#if APP_USE_DDR_HEAP
+    app_log(app_ddr_smoke_test() ? "DDR smoke test passed" : "DDR smoke test failed");
+    app_log_hex32("FreeRTOS heap base: ", (uint32_t)app_freertos_heap_addr());
+    app_log_hex32("FreeRTOS heap size: ", app_freertos_heap_size());
+#else
+    app_log("DDR heap disabled; using OCM heap");
+#if APP_DDR_SMOKE_AT_BOOT
+    app_log_hex32("DDR smoke base: ", (uint32_t)APP_DDR_TEST_BASE);
+    app_log(app_ddr_smoke_test() ? "DDR smoke test passed" : "DDR smoke test failed");
+#endif
+#endif
 
     FreeRTOS_IPInit(kStaticIpAddress,
                     kStaticNetmask,

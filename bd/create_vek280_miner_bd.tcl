@@ -77,6 +77,7 @@ set ps_pmc_config [list \
         PS_USE_PSPL_IRQ_FPD {1} \
         PS_USE_M_AXI_FPD {1} \
         PS_USE_FPD_CCI_NOC {1} \
+        PMC_USE_PMC_NOC_AXI0 {1} \
         PS_GEM0_ROUTE_THROUGH_FPD {0} \
         PS_ENET0_PERIPHERAL {{ENABLE 1} {IO {PS_MIO 0 .. 11}}} \
         PS_ENET0_MDIO {{ENABLE 1} {IO {PS_MIO 24 .. 25}}} \
@@ -113,10 +114,10 @@ set_property -dict $cips_config $cips
 if {$enable_ddr} {
     set ps_ddr_noc [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_noc ps_ddr_noc]
     set_property -dict [list \
-    CONFIG.NUM_SI {4} \
+    CONFIG.NUM_SI {6} \
     CONFIG.NUM_MI {0} \
     CONFIG.NUM_NMI {4} \
-    CONFIG.NUM_CLKS {4} \
+    CONFIG.NUM_CLKS {6} \
 ] $ps_ddr_noc
 
     foreach {port connections} {
@@ -124,6 +125,8 @@ if {$enable_ddr} {
         S01_AXI {M01_INI {read_bw {500} write_bw {500} read_avg_burst {4} write_avg_burst {4} initial_boot {true}}}
         S02_AXI {M02_INI {read_bw {500} write_bw {500} read_avg_burst {4} write_avg_burst {4} initial_boot {true}}}
         S03_AXI {M03_INI {read_bw {500} write_bw {500} read_avg_burst {4} write_avg_burst {4} initial_boot {true}}}
+        S04_AXI {M00_INI {read_bw {500} write_bw {500} read_avg_burst {4} write_avg_burst {4} initial_boot {true}}}
+        S05_AXI {M00_INI {read_bw {500} write_bw {500} read_avg_burst {4} write_avg_burst {4} initial_boot {true}}}
     } {
         set_property -dict [list CONFIG.CONNECTIONS $connections] [get_bd_intf_pins ps_ddr_noc/$port]
     }
@@ -176,6 +179,8 @@ if {$enable_ddr} {
     connect_bd_intf_net [get_bd_intf_pins cips_0/FPD_CCI_NOC_1] [get_bd_intf_pins ps_ddr_noc/S01_AXI]
     connect_bd_intf_net [get_bd_intf_pins cips_0/FPD_CCI_NOC_2] [get_bd_intf_pins ps_ddr_noc/S02_AXI]
     connect_bd_intf_net [get_bd_intf_pins cips_0/FPD_CCI_NOC_3] [get_bd_intf_pins ps_ddr_noc/S03_AXI]
+    connect_bd_intf_net [get_bd_intf_pins cips_0/LPD_AXI_NOC_0] [get_bd_intf_pins ps_ddr_noc/S04_AXI]
+    connect_bd_intf_net [get_bd_intf_pins cips_0/PMC_NOC_AXI_0] [get_bd_intf_pins ps_ddr_noc/S05_AXI]
     connect_bd_intf_net [get_bd_intf_pins ps_ddr_noc/M00_INI] [get_bd_intf_pins ddr_noc/S00_INI]
     connect_bd_intf_net [get_bd_intf_pins ps_ddr_noc/M01_INI] [get_bd_intf_pins ddr_noc/S01_INI]
     connect_bd_intf_net [get_bd_intf_pins ps_ddr_noc/M02_INI] [get_bd_intf_pins ddr_noc/S02_INI]
@@ -184,6 +189,8 @@ if {$enable_ddr} {
     connect_bd_net [get_bd_pins cips_0/fpd_cci_noc_axi1_clk] [get_bd_pins ps_ddr_noc/aclk1]
     connect_bd_net [get_bd_pins cips_0/fpd_cci_noc_axi2_clk] [get_bd_pins ps_ddr_noc/aclk2]
     connect_bd_net [get_bd_pins cips_0/fpd_cci_noc_axi3_clk] [get_bd_pins ps_ddr_noc/aclk3]
+    connect_bd_net [get_bd_pins cips_0/lpd_axi_noc_clk] [get_bd_pins ps_ddr_noc/aclk4]
+    connect_bd_net [get_bd_pins cips_0/pmc_axi_noc_axi0_clk] [get_bd_pins ps_ddr_noc/aclk5]
 }
 
 set num_miner_slaves 1
@@ -275,7 +282,7 @@ puts $summary_file "PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_0/S_AXI 
 if {$enable_ddr} {
     puts $summary_file "PS peripherals requested in CIPS config: GEM0 RGMII/MDIO on PS_MIO0..11/24..25, UART0 on PMC_MIO42..43, TTC0, DDR via NoC mode, SysMon I2C on PMC_MIO39/40 at address 0x18"
     puts $summary_file "DDR: ddr_noc LPDDR4 DDRMC subsystem connected to ch0_lpddr4_trip1, ch1_lpddr4_trip1, and lpddr4_clk1"
-    puts $summary_file "DDR NoC: four CIPS FPD CCI NoC master ports enter ps_ddr_noc, then four inter-NoC links feed ddr_noc MC ports."
+    puts $summary_file "DDR NoC: four CIPS FPD CCI NoC master ports plus R5/LPD_AXI_NOC_0 and PMC_NOC_AXI_0 enter ps_ddr_noc, then four inter-NoC links feed ddr_noc MC ports."
 } else {
     puts $summary_file "PS peripherals requested in CIPS config: GEM0 RGMII/MDIO on PS_MIO0..11/24..25, UART0 on PMC_MIO42..43, TTC0, SysMon I2C on PMC_MIO39/40 at address 0x18; DDR disabled for hardware programming isolation"
     puts $summary_file "DDR: disabled"
