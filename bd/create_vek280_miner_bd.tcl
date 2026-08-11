@@ -4,9 +4,26 @@ set enable_ddr 1
 if {[info exists ::env(MINER_ENABLE_DDR)]} {
     set enable_ddr $::env(MINER_ENABLE_DDR)
 }
+set num_miner_slaves 1
+if {[info exists ::env(MINER_NUM_SLAVES)] && $::env(MINER_NUM_SLAVES) ne ""} {
+    set num_miner_slaves $::env(MINER_NUM_SLAVES)
+}
+set use_ooc_miner32 0
+if {[info exists ::env(MINER_USE_OOC_MINER32)] && $::env(MINER_USE_OOC_MINER32) ne ""} {
+    set use_ooc_miner32 $::env(MINER_USE_OOC_MINER32)
+}
+if {($num_miner_slaves < 1) || ($num_miner_slaves > 4)} {
+    error "MINER_NUM_SLAVES must be in the range 1..4"
+}
 set variant_suffix ""
 if {!$enable_ddr} {
     set variant_suffix "_noddr"
+}
+if {$num_miner_slaves != 1} {
+    append variant_suffix "_${num_miner_slaves}x32"
+}
+if {$use_ooc_miner32} {
+    append variant_suffix "_ooc"
 }
 set out_dir [file join $repo_dir bd out_vek280_miner${variant_suffix}]
 set reports_dir [file join $repo_dir reports]
@@ -21,14 +38,19 @@ set_property board_part $board_name [current_project]
 set_property target_language Verilog [current_project]
 set_property default_lib work [current_project]
 
-add_files -fileset sources_1 [list \
-    [file join $repo_dir rtl sha256_core_iterative.sv] \
-    [file join $repo_dir rtl sha256_core_fabric.sv] \
-    [file join $repo_dir rtl bitcoin_hash_engine.sv] \
-    [file join $repo_dir rtl bitcoin_result_cluster_fifo.sv] \
-    [file join $repo_dir rtl bitcoin_miner_axi.sv] \
-    [file join $repo_dir rtl irq_or4.v] \
-]
+set rtl_files [list [file join $repo_dir rtl irq_or4.v]]
+if {$use_ooc_miner32} {
+    lappend rtl_files [file join $repo_dir rtl bitcoin_miner_axi_32_stub.sv]
+} else {
+    lappend rtl_files \
+        [file join $repo_dir rtl sha256_core_iterative.sv] \
+        [file join $repo_dir rtl sha256_core_fabric.sv] \
+        [file join $repo_dir rtl bitcoin_hash_engine.sv] \
+        [file join $repo_dir rtl bitcoin_result_cluster_fifo.sv] \
+        [file join $repo_dir rtl bitcoin_miner_axi.sv] \
+        [file join $repo_dir rtl bitcoin_miner_axi_32.sv]
+}
+add_files -fileset sources_1 $rtl_files
 update_compile_order -fileset sources_1
 
 create_bd_design $design_name
@@ -193,21 +215,15 @@ if {$enable_ddr} {
     connect_bd_net [get_bd_pins cips_0/pmc_axi_noc_axi0_clk] [get_bd_pins ps_ddr_noc/aclk5]
 }
 
-set num_miner_slaves 1
 set miner_engines_per_slave 32
 set miner_cluster_size 32
 set miner_fifo_depth 2
 set miner_base_addr 0xA4000000
 set miner_addr_stride 0x00001000
+set miner_module bitcoin_miner_axi_32
 
 for {set idx 0} {$idx < $num_miner_slaves} {incr idx} {
-    set miner [create_bd_cell -type module -reference bitcoin_miner_axi miner_$idx]
-    set_property -dict [list \
-        CONFIG.NUM_ENGINES $miner_engines_per_slave \
-        CONFIG.CLUSTER_SIZE $miner_cluster_size \
-        CONFIG.CLUSTER_FIFO_DEPTH $miner_fifo_depth \
-        CONFIG.AXI_ADDR_WIDTH 12 \
-    ] $miner
+    set miner [create_bd_cell -type module -reference $miner_module miner_$idx]
 }
 
 set axi_ic [create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect axi_smc]
@@ -276,9 +292,9 @@ set summary_file [open [file join $reports_dir ${design_name}_summary${variant_s
 puts $summary_file "Block design: $design_name"
 puts $summary_file "Part: $part_name"
 puts $summary_file "Board: $board_name"
-puts $summary_file "Miner: 1 AXI4-Lite slave, NUM_ENGINES=32 CLUSTER_SIZE=32 CLUSTER_FIFO_DEPTH=2"
+puts $summary_file "Miner: $num_miner_slaves AXI4-Lite slave(s), NUM_ENGINES=32 per slave, CLUSTER_SIZE=32 CLUSTER_FIFO_DEPTH=2, OOC_MINER32=$use_ooc_miner32"
 puts $summary_file "PL0 clock request: 250 MHz; Vivado CIPS actual is expected to be about 249.997498 MHz"
-puts $summary_file "PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_0/S_AXI at 0xA4000000"
+puts $summary_file "PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_N/S_AXI starting at 0xA4000000, stride 0x00001000"
 if {$enable_ddr} {
     puts $summary_file "PS peripherals requested in CIPS config: GEM0 RGMII/MDIO on PS_MIO0..11/24..25, UART0 on PMC_MIO42..43, TTC0, DDR via NoC mode, SysMon I2C on PMC_MIO39/40 at address 0x18"
     puts $summary_file "DDR: ddr_noc LPDDR4 DDRMC subsystem connected to ch0_lpddr4_trip1, ch1_lpddr4_trip1, and lpddr4_clk1"
@@ -287,5 +303,9 @@ if {$enable_ddr} {
     puts $summary_file "PS peripherals requested in CIPS config: GEM0 RGMII/MDIO on PS_MIO0..11/24..25, UART0 on PMC_MIO42..43, TTC0, SysMon I2C on PMC_MIO39/40 at address 0x18; DDR disabled for hardware programming isolation"
     puts $summary_file "DDR: disabled"
 }
-puts $summary_file "IRQ: miner_0/irq_o -> cips_0/pl_ps_irq0"
+if {$num_miner_slaves > 1} {
+    puts $summary_file "IRQ: miner_N/irq_o -> irq_or -> cips_0/pl_ps_irq0"
+} else {
+    puts $summary_file "IRQ: miner_0/irq_o -> cips_0/pl_ps_irq0"
+}
 close $summary_file

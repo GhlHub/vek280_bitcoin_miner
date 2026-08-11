@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import os
 import re
 import shutil
 from pathlib import Path
@@ -39,6 +40,14 @@ nicUSE_UNCACHED_MEMORY=0
 ipconfigNIC_N_TX_DESC=8
 ipconfigNIC_N_RX_DESC=8
 """.strip()
+    miner_axi_instances = os.environ.get("MINER_AXI_INSTANCES", "")
+    if not miner_axi_instances:
+        miner_slaves = os.environ.get("MINER_NUM_SLAVES", "")
+        if miner_slaves:
+            miner_axi_instances = miner_slaves
+    if miner_axi_instances:
+        definitions += f"\nMINER_AXI_INSTANCES={miner_axi_instances}U"
+        definitions += f"\nMINER_NUM_ENGINES_EXPECTED=({miner_axi_instances}U * 32U)"
     includes = """
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/include
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/netif_versal
