@@ -12,7 +12,7 @@ FREERTOS_APP_INC := \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/include \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/portable/Compiler/GCC
 
-.PHONY: sim lint sw-syntax bd bd-noddr synth128 impl impl-noddr xsa vitis-hw vitis-bsp clean
+.PHONY: sim lint sw-syntax bd bd-noddr bd4x32 synth128 synth-miner32-ooc impl impl-noddr impl4x32-ooc xsa vitis-hw vitis-bsp clean
 
 sim: sim-sha sim-miner
 
@@ -43,14 +43,23 @@ bd:
 bd-noddr:
 	MINER_ENABLE_DDR=0 vivado -mode batch -source bd/create_vek280_miner_bd.tcl
 
+bd4x32:
+	MINER_NUM_SLAVES=4 MINER_USE_OOC_MINER32=1 vivado -mode batch -source bd/create_vek280_miner_bd.tcl
+
 synth128:
 	vivado -mode batch -source synth/run_synth_128.tcl
+
+synth-miner32-ooc:
+	VIVADO_JOBS=1 vivado -mode batch -source synth/run_miner32_ooc.tcl
 
 impl:
 	vivado -mode batch -source impl/run_vek280_impl.tcl
 
 impl-noddr:
 	MINER_ENABLE_DDR=0 vivado -mode batch -source impl/run_vek280_impl.tcl
+
+impl4x32-ooc: synth-miner32-ooc
+	MINER_NUM_SLAVES=4 MINER_USE_OOC_MINER32=1 VIVADO_JOBS=1 vivado -mode batch -source impl/run_vek280_impl.tcl
 
 xsa: impl
 
