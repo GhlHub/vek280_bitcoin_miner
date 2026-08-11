@@ -1,5 +1,7 @@
 #include "miner_regs.h"
 
+#include "app_config.h"
+
 #ifdef __has_include
 #if __has_include("xil_io.h")
 #include "xil_io.h"
@@ -8,6 +10,31 @@
 #endif
 
 static uintptr_t g_miner_base;
+
+static uintptr_t miner_instance_base(uint32_t instance)
+{
+    return g_miner_base + ((uintptr_t)instance * (uintptr_t)MINER_AXI_INSTANCE_STRIDE);
+}
+
+static uint32_t miner_read_at(uintptr_t addr)
+{
+#ifdef MINER_HAVE_XIL_IO
+    return Xil_In32(addr);
+#else
+    volatile uint32_t *reg = (volatile uint32_t *)addr;
+    return *reg;
+#endif
+}
+
+static void miner_write_at(uintptr_t addr, uint32_t value)
+{
+#ifdef MINER_HAVE_XIL_IO
+    Xil_Out32(addr, value);
+#else
+    volatile uint32_t *reg = (volatile uint32_t *)addr;
+    *reg = value;
+#endif
+}
 
 void miner_init(uintptr_t base_addr)
 {
@@ -18,82 +45,141 @@ void miner_init(uintptr_t base_addr)
 
 uint32_t miner_read_reg(uint32_t offset)
 {
-#ifdef MINER_HAVE_XIL_IO
-    return Xil_In32(g_miner_base + offset);
-#else
-    volatile uint32_t *reg = (volatile uint32_t *)(g_miner_base + offset);
-    return *reg;
-#endif
+    return miner_read_reg_instance(0, offset);
+}
+
+uint32_t miner_read_reg_instance(uint32_t instance, uint32_t offset)
+{
+    if (instance >= MINER_AXI_INSTANCES) {
+        return 0U;
+    }
+
+    return miner_read_at(miner_instance_base(instance) + offset);
 }
 
 void miner_write_reg(uint32_t offset, uint32_t value)
 {
-#ifdef MINER_HAVE_XIL_IO
-    Xil_Out32(g_miner_base + offset, value);
-#else
-    volatile uint32_t *reg = (volatile uint32_t *)(g_miner_base + offset);
-    *reg = value;
-#endif
+    miner_write_reg_instance(0, offset, value);
+}
+
+void miner_write_reg_instance(uint32_t instance, uint32_t offset, uint32_t value)
+{
+    if (instance >= MINER_AXI_INSTANCES) {
+        return;
+    }
+
+    miner_write_at(miner_instance_base(instance) + offset, value);
 }
 
 uint32_t miner_num_engines(void)
 {
-    return miner_read_reg(MINER_REG_NUM_ENGINES);
+    uint32_t total = 0;
+
+    for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+        total += miner_read_reg_instance(inst, MINER_REG_NUM_ENGINES);
+    }
+
+    return total;
 }
 
 uint32_t miner_status(void)
 {
-    return miner_read_reg(MINER_REG_STATUS);
+    uint32_t aggregate = 0;
+    bool all_done = true;
+
+    for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+        uint32_t status = miner_read_reg_instance(inst, MINER_REG_STATUS);
+
+        if ((status & MINER_STATUS_RUNNING) != 0U) {
+            aggregate |= MINER_STATUS_RUNNING;
+        }
+        if ((status & MINER_STATUS_RESULT) != 0U) {
+            aggregate |= MINER_STATUS_RESULT;
+        }
+        if ((status & MINER_STATUS_OVERFLOW) != 0U) {
+            aggregate |= MINER_STATUS_OVERFLOW;
+        }
+        if ((status & MINER_STATUS_DONE) == 0U) {
+            all_done = false;
+        }
+    }
+
+    if (all_done) {
+        aggregate |= MINER_STATUS_DONE;
+    }
+
+    return aggregate;
 }
 
 void miner_clear(void)
 {
-    miner_write_reg(MINER_REG_CONTROL, MINER_CONTROL_CLEAR);
-    miner_write_reg(MINER_REG_RESULT_STATUS, MINER_STATUS_RESULT | MINER_STATUS_OVERFLOW);
+    for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+        miner_write_reg_instance(inst, MINER_REG_CONTROL, MINER_CONTROL_CLEAR);
+        miner_write_reg_instance(inst, MINER_REG_RESULT_STATUS,
+                                 MINER_STATUS_RESULT | MINER_STATUS_OVERFLOW);
+    }
 }
 
 void miner_stop(void)
 {
-    miner_write_reg(MINER_REG_CONTROL, MINER_CONTROL_STOP);
+    for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+        miner_write_reg_instance(inst, MINER_REG_CONTROL, MINER_CONTROL_STOP);
+    }
 }
 
 void miner_program_job(const uint32_t midstate[8],
                        const uint32_t header_tail[4],
                        const uint32_t target[8])
 {
-    for (uint32_t i = 0; i < 8U; ++i) {
-        miner_write_reg(MINER_REG_MIDSTATE0 + (i * 4U), midstate[i]);
-        miner_write_reg(MINER_REG_TARGET0 + (i * 4U), target[i]);
-    }
+    for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+        for (uint32_t i = 0; i < 8U; ++i) {
+            miner_write_reg_instance(inst, MINER_REG_MIDSTATE0 + (i * 4U), midstate[i]);
+            miner_write_reg_instance(inst, MINER_REG_TARGET0 + (i * 4U), target[i]);
+        }
 
-    for (uint32_t i = 0; i < 4U; ++i) {
-        miner_write_reg(MINER_REG_HEADER_TAIL0 + (i * 4U), header_tail[i]);
+        for (uint32_t i = 0; i < 4U; ++i) {
+            miner_write_reg_instance(inst, MINER_REG_HEADER_TAIL0 + (i * 4U), header_tail[i]);
+        }
     }
 }
 
 void miner_start_range(uint32_t nonce_start, uint32_t nonce_count)
 {
-    miner_write_reg(MINER_REG_NONCE_START, nonce_start);
-    miner_write_reg(MINER_REG_NONCE_COUNT, nonce_count);
-    miner_write_reg(MINER_REG_CONTROL, MINER_CONTROL_START);
+    uint32_t base_count = nonce_count / MINER_AXI_INSTANCES;
+    uint32_t remainder = nonce_count % MINER_AXI_INSTANCES;
+    uint32_t range_start = nonce_start;
+
+    for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+        uint32_t range_count = base_count + ((inst < remainder) ? 1U : 0U);
+
+        miner_write_reg_instance(inst, MINER_REG_NONCE_START, range_start);
+        miner_write_reg_instance(inst, MINER_REG_NONCE_COUNT, range_count);
+        miner_write_reg_instance(inst, MINER_REG_CONTROL, MINER_CONTROL_START);
+        range_start += range_count;
+    }
 }
 
 bool miner_read_result(miner_result_t *result)
 {
-    uint32_t result_status = miner_read_reg(MINER_REG_RESULT_STATUS);
+    for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+        uint32_t result_status = miner_read_reg_instance(inst, MINER_REG_RESULT_STATUS);
 
-    if ((result_status & MINER_STATUS_RESULT) == 0U) {
-        return false;
+        if ((result_status & MINER_STATUS_RESULT) == 0U) {
+            continue;
+        }
+
+        result->nonce = miner_read_reg_instance(inst, MINER_REG_RESULT_NONCE);
+        result->engine = miner_read_reg_instance(inst, MINER_REG_RESULT_ENGINE) +
+                         (inst * MINER_ENGINES_PER_INSTANCE);
+        result->status = result_status;
+
+        for (uint32_t i = 0; i < 8U; ++i) {
+            result->hash[i] = miner_read_reg_instance(inst, MINER_REG_RESULT_HASH0 + (i * 4U));
+        }
+
+        miner_write_reg_instance(inst, MINER_REG_RESULT_STATUS, MINER_STATUS_RESULT);
+        return true;
     }
 
-    result->nonce = miner_read_reg(MINER_REG_RESULT_NONCE);
-    result->engine = miner_read_reg(MINER_REG_RESULT_ENGINE);
-    result->status = result_status;
-
-    for (uint32_t i = 0; i < 8U; ++i) {
-        result->hash[i] = miner_read_reg(MINER_REG_RESULT_HASH0 + (i * 4U));
-    }
-
-    miner_write_reg(MINER_REG_RESULT_STATUS, MINER_STATUS_RESULT);
-    return true;
+    return false;
 }

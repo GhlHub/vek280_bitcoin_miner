@@ -115,10 +115,18 @@ static void handle_command(Socket_t sock, char *line)
             sock_printf(sock, "\r\n");
         }
     } else if (strcmp(cmd, "regs") == 0) {
-        sock_printf(sock, "CONTROL unavailable-write-only STATUS=0x%08lx NUM_ENGINES=%lu RESULT_STATUS=0x%08lx\r\n",
+        sock_printf(sock, "aggregate STATUS=0x%08lx NUM_ENGINES=%lu\r\n",
                     (unsigned long)miner_status(),
-                    (unsigned long)miner_num_engines(),
-                    (unsigned long)miner_read_reg(MINER_REG_RESULT_STATUS));
+                    (unsigned long)miner_num_engines());
+        for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+            sock_printf(sock,
+                        "miner%lu base=0x%08lx STATUS=0x%08lx NUM_ENGINES=%lu RESULT_STATUS=0x%08lx\r\n",
+                        (unsigned long)inst,
+                        (unsigned long)(MINER_AXI_BASEADDR + (inst * MINER_AXI_INSTANCE_STRIDE)),
+                        (unsigned long)miner_read_reg_instance(inst, MINER_REG_STATUS),
+                        (unsigned long)miner_read_reg_instance(inst, MINER_REG_NUM_ENGINES),
+                        (unsigned long)miner_read_reg_instance(inst, MINER_REG_RESULT_STATUS));
+        }
     } else if (strcmp(cmd, "start") == 0) {
         char *nonce_s = next_token(&cursor);
         char *count_s = next_token(&cursor);

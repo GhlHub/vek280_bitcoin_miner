@@ -26,7 +26,7 @@ typedef struct {
 } miner_result_event_t;
 
 typedef void (*miner_irq_handler_t)(void *);
-extern BaseType_t xPortInstallInterruptHandler(uint8_t ucInterruptID,
+extern BaseType_t xPortInstallInterruptHandler(uint16_t ucInterruptID,
                                                miner_irq_handler_t pxHandler,
                                                void *pvCallBackRef);
 extern void vPortEnableInterrupt(uint8_t ucInterruptID);
