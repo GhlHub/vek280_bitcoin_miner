@@ -42,8 +42,10 @@
 
 #include "xparameters.h"
 #include "xparameters_ps.h"
+#include "xinterrupt_wrap.h"
 #include "xil_exception.h"
 #include "xil_mmu.h"
+#include "xil_printf.h"
 
 #include "uncached_memory.h"
 
@@ -58,6 +60,8 @@
     #error Please define ipconfigPACKET_FILLER_SIZE as the value '2'
 #endif
 #define TX_OFFSET    ipconfigPACKET_FILLER_SIZE
+
+#define VEK280_ISR_PRIORITY    ( ( uint8_t ) ( configMAX_API_CALL_INTERRUPT_PRIORITY << 3 ) )
 
 #if ( ipconfigNETWORK_MTU > 1526 )
     #if ( ipconfigPORT_SUPPRESS_WARNING == 0 )
@@ -96,6 +100,11 @@ static NetworkBufferDescriptor_t * pxDMA_rx_buffers[ XPAR_XEMACPS_NUM_INSTANCES 
 extern struct xtopology_t xXTopologies[ XPAR_XEMACPS_NUM_INSTANCES ];
 
 static SemaphoreHandle_t xTXDescriptorSemaphore[ XPAR_XEMACPS_NUM_INSTANCES ];
+
+static uint32_t ulTxDebugCount;
+static uint32_t ulTxIsrDebugCount;
+static uint32_t ulRxIsrDebugCount;
+static uint32_t ulRxDebugCount;
 
 /*
  *  The FreeRTOS+TCP port does not make use of "src/xemacps_bdring.c".
@@ -201,6 +210,12 @@ void emacps_send_handler( void * arg )
     xemacpsif->isr_events |= EMAC_IF_TX_EVENT;
     xemacpsif->txBusy = pdFALSE;
 
+    if( ulTxIsrDebugCount < 8U )
+    {
+        xil_printf( "emac tx isr%lu\r\n", ( unsigned long ) ulTxIsrDebugCount );
+        ulTxIsrDebugCount++;
+    }
+
     if( xEMACTaskHandles[ xEMACIndex ] != NULL )
     {
         vTaskNotifyGiveFromISR( xEMACTaskHandles[ xEMACIndex ], &xHigherPriorityTaskWoken );
@@ -234,6 +249,8 @@ XStatus emacps_send_message( xemacpsif_s * xemacpsif,
     uint32_t ulBaseAddress = xemacpsif->emacps.Config.BaseAddress;
     BaseType_t xEMACIndex = xVek280EmacIndexFromIf( xemacpsif );
     TickType_t xBlockTimeTicks = pdMS_TO_TICKS( 5000U );
+    size_t uxTxLength = 0U;
+    int iSentHead = head;
 
     /* This driver wants to own all network buffers which are to be transmitted. */
     configASSERT( iReleaseAfterSend != pdFALSE );
@@ -258,6 +275,9 @@ XStatus emacps_send_message( xemacpsif_s * xemacpsif,
             FreeRTOS_printf( ( "emacps_send_message: Time-out waiting for TX buffer\n" ) );
             break;
         }
+
+        uxTxLength = pxBuffer->xDataLength;
+        iSentHead = head;
 
         /* Pass the pointer (and its ownership) directly to DMA. */
         pxDMA_tx_buffers[ xEMACIndex ][ head ] = pxBuffer->pucEthernetBuffer;
@@ -314,6 +334,16 @@ XStatus emacps_send_message( xemacpsif_s * xemacpsif,
         XEmacPs_WriteReg( ulBaseAddress, XEMACPS_NWCTRL_OFFSET, ( ulValue | XEMACPS_NWCTRL_STARTTX_MASK ) );
         /* Read back the register to make sure the data is flushed. */
         ( void ) XEmacPs_ReadReg( ulBaseAddress, XEMACPS_NWCTRL_OFFSET );
+
+        if( ulTxDebugCount < 8U )
+        {
+            xil_printf( "emac tx%lu len=%lu head=%d buf=0x%08lx\r\n",
+                        ( unsigned long ) ulTxDebugCount,
+                        ( unsigned long ) uxTxLength,
+                        iSentHead,
+                        ( unsigned long ) pxDMA_tx_buffers[ xEMACIndex ][ iSentHead ] );
+            ulTxDebugCount++;
+        }
     }
 
     dsb();
@@ -329,6 +359,12 @@ void emacps_recv_handler( void * arg )
     xemacpsif = ( xemacpsif_s * ) arg;
     xemacpsif->isr_events |= EMAC_IF_RX_EVENT;
     BaseType_t xEMACIndex = xVek280EmacIndexFromIf( xemacpsif );
+
+    if( ulRxIsrDebugCount < 8U )
+    {
+        xil_printf( "emac rx isr%lu\r\n", ( unsigned long ) ulRxIsrDebugCount );
+        ulRxIsrDebugCount++;
+    }
 
     /* The driver has already cleared the FRAMERX, BUFFNA and error bits
      * in the XEMACPS_RXSR register,
@@ -523,6 +559,16 @@ int emacps_check_rx( xemacpsif_s * xemacpsif,
             #endif /* ( USE_JUMBO_FRAMES == 1 ) */
 
             pxBuffer->xDataLength = rx_bytes;
+
+            if( ulRxDebugCount < 8U )
+            {
+                xil_printf( "emac rx%lu len=%d head=%d accept=%ld\r\n",
+                            ( unsigned long ) ulRxDebugCount,
+                            rx_bytes,
+                            head,
+                            ( long ) xAccepted );
+                ulRxDebugCount++;
+            }
 
             if( ucIsCachedMemory( pxBuffer->pucEthernetBuffer ) != 0 )
             {
@@ -784,15 +830,25 @@ XStatus init_dma( xemacpsif_s * xemacpsif )
     XEmacPs_BdClear( xemacpsif->txBdTerminator );
     XEmacPs_BdSetStatus( xemacpsif->txBdTerminator,
                          ( XEMACPS_TXBUF_USED_MASK | XEMACPS_TXBUF_WRAP_MASK ) );
-    XEmacPs_Out32( ( emac->Config.BaseAddress + XEMACPS_TXQBASE_OFFSET ),
+    XEmacPs_Out32( ( emac->Config.BaseAddress + XEMACPS_TXQ1BASE_OFFSET ),
                    ( UINTPTR ) xemacpsif->txBdTerminator );
 
     /* These variables will be used in XEmacPs_Start (see src/xemacps.c). */
     XEmacPs_SetQueuePtr( emac, ( uintptr_t ) xemacpsif->rxSegments, 0, XEMACPS_RECV );
 
-    XEmacPs_SetQueuePtr( emac, ( uintptr_t ) xemacpsif->txSegments, 1, XEMACPS_SEND );
+    XEmacPs_SetQueuePtr( emac, ( uintptr_t ) xemacpsif->txSegments, 0, XEMACPS_SEND );
 
     xPortInstallInterruptHandler( ( uint16_t ) xtopologyp->scugic_emac_intr, XEmacPs_IntrHandler, emac );
+
+    #if defined( SDT )
+    {
+        XSetPriorityTriggerType( ( uint32_t ) xtopologyp->scugic_emac_intr,
+                                 VEK280_ISR_PRIORITY,
+                                 emac->Config.IntrParent );
+        XEnableIntrId( ( uint32_t ) xtopologyp->scugic_emac_intr,
+                       emac->Config.IntrParent );
+    }
+    #endif
 
     /*
      * Enable the interrupt for emacps.

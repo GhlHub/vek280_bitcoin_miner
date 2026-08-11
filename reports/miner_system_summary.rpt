@@ -6,5 +6,5 @@ PL0 clock request: 250 MHz; Vivado CIPS actual is expected to be about 249.99749
 PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_0/S_AXI at 0xA4000000
 PS peripherals requested in CIPS config: GEM0 RGMII/MDIO on PS_MIO0..11/24..25, UART0 on PMC_MIO42..43, TTC0, DDR via NoC mode, SysMon I2C on PMC_MIO39/40 at address 0x18
 DDR: ddr_noc LPDDR4 DDRMC subsystem connected to ch0_lpddr4_trip1, ch1_lpddr4_trip1, and lpddr4_clk1
-DDR NoC: four CIPS FPD CCI NoC master ports enter ps_ddr_noc, then four inter-NoC links feed ddr_noc MC ports.
+DDR NoC: four CIPS FPD CCI NoC master ports plus R5/LPD_AXI_NOC_0 and PMC_NOC_AXI_0 enter ps_ddr_noc, then four inter-NoC links feed ddr_noc MC ports.
 IRQ: miner_0/irq_o -> cips_0/pl_ps_irq0

@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "app_config.h"
+
 #if defined(__has_include)
 #if __has_include("xparameters.h")
 #include "xparameters.h"
@@ -19,7 +21,13 @@ extern uint32_t SystemCoreClock;
 #define configTICK_RATE_HZ                      1000
 #define configMAX_PRIORITIES                    7
 #define configMINIMAL_STACK_SIZE                256
-#define configTOTAL_HEAP_SIZE                   (80U * 1024U)
+#if APP_USE_DDR_HEAP
+#define configTOTAL_HEAP_SIZE                   (512U * 1024U)
+#define configAPPLICATION_ALLOCATED_HEAP        1
+#else
+#define configTOTAL_HEAP_SIZE                   (64U * 1024U)
+#define configAPPLICATION_ALLOCATED_HEAP        0
+#endif
 #define configMAX_TASK_NAME_LEN                 16
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
@@ -32,6 +40,9 @@ extern uint32_t SystemCoreClock;
 #define configTIMER_TASK_PRIORITY               5
 #define configTIMER_QUEUE_LENGTH                8
 #define configTIMER_TASK_STACK_DEPTH            512
+#define configTIMER_BASEADDR                    XPAR_XTTCPS_0_BASEADDR
+#define configTIMER_ID                          configTIMER_BASEADDR
+#define configTIMER_INTERRUPT_ID                XPAR_XTTCPS_0_INTR
 #define configCHECK_FOR_STACK_OVERFLOW          2
 #define configUSE_MALLOC_FAILED_HOOK            1
 #define configSUPPORT_DYNAMIC_ALLOCATION        1
@@ -68,6 +79,9 @@ extern uint32_t SystemCoreClock;
 #define configUSE_TRACE_FACILITY                0
 #define configGENERATE_RUN_TIME_STATS           0
 #define configUSE_STATS_FORMATTING_FUNCTIONS    0
+
+void FreeRTOS_SetupTickInterrupt(void);
+#define configSETUP_TICK_INTERRUPT() FreeRTOS_SetupTickInterrupt()
 
 #define INCLUDE_vTaskPrioritySet                1
 #define INCLUDE_uxTaskPriorityGet               1

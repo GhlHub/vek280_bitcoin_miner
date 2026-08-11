@@ -1,0 +1,510 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2026.1 (lin64) Build 6511674 Tue Jun 16 11:01:26 MDT 2026
+| Date              : Sat Aug  8 20:27:17 2026
+| Host              : YouBing running 64-bit Ubuntu 24.04.4 LTS
+| Command           : report_timing_summary -file /raid/work/vek280_bitcoin_miner/reports/impl_vek280_noddr/timing_summary_impl.rpt
+| Design            : miner_system_wrapper
+| Device            : xcve2802-vsvh1760
+| Speed File        : -2MP  PRODUCTION 2.04 2026-03-17
+| Design State      : Routed
+| Temperature Grade : E
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Summary Report
+
+------------------------------------------------------------------------------------------------
+| Timer Settings
+| --------------
+------------------------------------------------------------------------------------------------
+
+  Enable Multi Corner Analysis               :  Yes
+  Enable Pessimism Removal                   :  Yes
+  Pessimism Removal Resolution               :  Nearest Common Node
+  Enable Input Delay Default Clock           :  No
+  Enable Preset / Clear Arcs                 :  No
+  Disable Flight Delays                      :  No
+  Ignore I/O Paths                           :  No
+  Timing Early Launch at Borrowing Latches   :  No
+  Borrow Time for Max Delay Exceptions       :  Yes
+  Merge Timing Exceptions                    :  Yes
+  Inter-SLR Compensation                     :  Conservative
+
+  Corner  Analyze    Analyze    
+  Name    Max Paths  Min Paths  
+  ------  ---------  ---------  
+  Slow    Yes        Yes        
+  Fast    Yes        Yes        
+
+
+------------------------------------------------------------------------------------------------
+| Report Methodology
+| ------------------
+------------------------------------------------------------------------------------------------
+
+Rule      Severity  Description                                 Violations  
+--------  --------  ------------------------------------------  ----------  
+AVAL-344  Advisory  Design_needs_USER_RAM_AVERAGE_ACTIVITY_set  1           
+
+Note: This report is based on the most recent report_methodology run and may not be up-to-date. Run report_methodology on the current design for the latest report.
+
+
+
+check_timing report
+
+Table of Contents
+-----------------
+1. checking no_clock (0)
+2. checking constant_clock (0)
+3. checking pulse_width_clock (0)
+4. checking unconstrained_internal_endpoints (0)
+5. checking no_input_delay (0)
+6. checking no_output_delay (0)
+7. checking multiple_clock (0)
+8. checking generated_clocks (0)
+9. checking loops (0)
+10. checking partial_input_delay (0)
+11. checking partial_output_delay (0)
+12. checking latch_loops (0)
+
+1. checking no_clock (0)
+------------------------
+ There are 0 register/latch pins with no clock.
+
+
+2. checking constant_clock (0)
+------------------------------
+ There are 0 register/latch pins with constant_clock.
+
+
+3. checking pulse_width_clock (0)
+---------------------------------
+ There are 0 register/latch pins which need pulse_width check
+
+
+4. checking unconstrained_internal_endpoints (0)
+------------------------------------------------
+ There are 0 pins that are not constrained for maximum delay.
+
+ There are 0 pins that are not constrained for maximum delay due to constant clock.
+
+
+5. checking no_input_delay (0)
+------------------------------
+ There are 0 input ports with no input delay specified.
+
+ There are 0 input ports with no input delay but user has a false path constraint.
+
+
+6. checking no_output_delay (0)
+-------------------------------
+ There are 0 ports with no output delay specified.
+
+ There are 0 ports with no output delay but user has a false path constraint
+
+ There are 0 ports with no output delay but with a timing clock defined on it or propagating through it
+
+
+7. checking multiple_clock (0)
+------------------------------
+ There are 0 register/latch pins with multiple clocks.
+
+
+8. checking generated_clocks (0)
+--------------------------------
+ There are 0 generated clocks that are not connected to a clock source.
+
+
+9. checking loops (0)
+---------------------
+ There are 0 combinational loops in the design.
+
+
+10. checking partial_input_delay (0)
+------------------------------------
+ There are 0 input ports with partial input delay specified.
+
+
+11. checking partial_output_delay (0)
+-------------------------------------
+ There are 0 ports with partial output delay specified.
+
+
+12. checking latch_loops (0)
+----------------------------
+ There are 0 combinational latch loops in the design through latch input
+
+
+
+------------------------------------------------------------------------------------------------
+| Design Timing Summary
+| ---------------------
+------------------------------------------------------------------------------------------------
+
+    WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
+    -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
+      0.046        0.000                      0              1343758        0.011        0.000                      0              1343758        0.571        0.000                       0                448880  
+
+
+All user specified timing constraints are met.
+
+
+------------------------------------------------------------------------------------------------
+| Clock Summary
+| -------------
+------------------------------------------------------------------------------------------------
+
+Clock     Waveform(ns)         Period(ns)      Frequency(MHz)
+-----     ------------         ----------      --------------
+clk_pl_0  {0.000 2.000}        4.000           250.000         
+
+
+------------------------------------------------------------------------------------------------
+| Intra Clock Table
+| -----------------
+------------------------------------------------------------------------------------------------
+
+Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
+-----             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
+clk_pl_0            0.046        0.000                      0               895656        0.011        0.000                      0               895656        0.571        0.000                       0                448880  
+
+
+------------------------------------------------------------------------------------------------
+| Inter Clock Table
+| -----------------
+------------------------------------------------------------------------------------------------
+
+From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
+----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+
+
+------------------------------------------------------------------------------------------------
+| Other Path Groups Table
+| -----------------------
+------------------------------------------------------------------------------------------------
+
+Path Group         From Clock         To Clock               WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
+----------         ----------         --------               -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+**async_default**  clk_pl_0           clk_pl_0                 1.275        0.000                      0               448102        0.918        0.000                      0               448102  
+
+
+------------------------------------------------------------------------------------------------
+| Timing Details
+| --------------
+------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------
+From Clock:  clk_pl_0
+  To Clock:  clk_pl_0
+
+Setup :            0  Failing Endpoints,  Worst Slack        0.046ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.011ns,  Total Violation        0.000ns
+PW    :            0  Failing Endpoints,  Worst Slack        0.571ns,  Total Violation        0.000ns
+---------------------------------------------------------------------------------------------------
+
+
+Max Delay Paths
+--------------------------------------------------------------------------------------
+Slack (MET) :             0.046ns  (required time - arrival time)
+  Source:                 miner_system_i/miner_0/inst/g_engines[16].u_engine/u_core/u_core/busy_q_reg_replica_21/C
+                            (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            miner_system_i/miner_0/inst/running_q_reg/D
+                            (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             clk_pl_0
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            4.000ns  (clk_pl_0 rise@4.000ns - clk_pl_0 rise@0.000ns)
+  Data Path Delay:        3.521ns  (logic 0.721ns (20.478%)  route 2.800ns (79.522%))
+  Logic Levels:           11  (LOOKAHEAD8=7 LUT4=2 LUT5=1 LUTCY2=1)
+  Clock Path Skew:        -0.366ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.301ns = ( 6.301 - 4.000 ) 
+    Source Clock Delay      (SCD):    2.783ns
+    Clock Pessimism Removal (CPR):    0.116ns
+  Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
+    Clock Jitter             (CJ):    0.148ns
+    Phase Error              (PE):    0.000ns
+    Phase Jitter             (PJ):    0.000ns
+  Clock Net Delay (Source):      2.680ns (routing 0.625ns, distribution 2.055ns)
+  Clock Net Delay (Destination): 2.246ns (routing 0.557ns, distribution 1.689ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_pl_0 rise edge)
+                                                      0.000     0.000 r  <hidden>
+    PS9_X0Y0             PS9                          0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0]
+                         net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
+    BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
+                                                      0.103     0.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
+    X3Y2 (CLOCK_ROOT)    net (fo=448879, routed)      2.680     2.783    miner_system_i/miner_0/inst/g_engines[16].u_engine/u_core/u_core/s_axi_aclk
+    SLICE_X49Y298        FDCE                                         r  miner_system_i/miner_0/inst/g_engines[16].u_engine/u_core/u_core/busy_q_reg_replica_21/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X49Y298        FDCE (Prop_AFF2_SLICEM_C_Q)
+                                                      0.091     2.874 r  miner_system_i/miner_0/inst/g_engines[16].u_engine/u_core/u_core/busy_q_reg_replica_21/Q
+                         net (fo=65, routed)          1.283     4.157    miner_system_i/miner_0/inst/g_engines[16].u_engine/u_core/u_core/busy_q_reg_0_repN_21
+    SLICE_X118Y253       LUT4 (Prop_C6LUT_SLICEL_I3_O)
+                                                      0.028     4.185 r  miner_system_i/miner_0/inst/g_engines[16].u_engine/u_core/u_core/running_q_i_244/O
+                         net (fo=2, routed)           0.910     5.095    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_203/I3
+    SLICE_X126Y160       LUTCY2 (Prop_A6LUT_SLICEL_I3_GE)
+                                                      0.071     5.166 f  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_203/LUTCY2_INST/GE
+                         net (fo=1, routed)           0.039     5.205    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_203_n_0
+    SLICE_X126Y160       LOOKAHEAD8 (Prop_LOOKAHEAD8_SLICEL_GEA_COUTH)
+                                                      0.148     5.353 f  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_168/COUTH
+                         net (fo=3, routed)           0.001     5.354    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_168_n_3
+    SLICE_X126Y161       LOOKAHEAD8 (Prop_LOOKAHEAD8_SLICEL_CIN_COUTH)
+                                                      0.039     5.393 f  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_134/COUTH
+                         net (fo=3, routed)           0.001     5.394    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_134_n_3
+    SLICE_X126Y162       LOOKAHEAD8 (Prop_LOOKAHEAD8_SLICEL_CIN_COUTH)
+                                                      0.039     5.433 f  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_100/COUTH
+                         net (fo=3, routed)           0.001     5.434    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_100_n_3
+    SLICE_X126Y163       LOOKAHEAD8 (Prop_LOOKAHEAD8_SLICEL_CIN_COUTH)
+                                                      0.039     5.473 f  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_66/COUTH
+                         net (fo=3, routed)           0.001     5.474    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_66_n_3
+    SLICE_X126Y164       LOOKAHEAD8 (Prop_LOOKAHEAD8_SLICEL_CIN_COUTH)
+                                                      0.039     5.513 f  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_32/COUTH
+                         net (fo=3, routed)           0.001     5.514    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_32_n_3
+    SLICE_X126Y165       LOOKAHEAD8 (Prop_LOOKAHEAD8_SLICEL_CIN_COUTH)
+                                                      0.039     5.553 f  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_14/COUTH
+                         net (fo=3, routed)           0.001     5.554    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_14_n_3
+    SLICE_X126Y166       LOOKAHEAD8 (Prop_LOOKAHEAD8_SLICEL_CIN_COUTH)
+                                                      0.039     5.593 f  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_reg_i_4/COUTH
+                         net (fo=1, routed)           0.331     5.924    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q40_in
+    SLICE_X125Y164       LUT4 (Prop_C6LUT_SLICEM_I3_O)
+                                                      0.029     5.953 r  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_i_2/O
+                         net (fo=2, routed)           0.164     6.117    miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_i_2_n_0
+    SLICE_X125Y164       LUT5 (Prop_A6LUT_SLICEM_I0_O)
+                                                      0.120     6.237 r  miner_system_i/miner_0/inst/g_engines[1].u_engine/u_core/u_core/running_q_i_1/O
+                         net (fo=1, routed)           0.067     6.304    miner_system_i/miner_0/inst/g_engines[1].u_engine_n_5
+    SLICE_X125Y164       FDCE                                         r  miner_system_i/miner_0/inst/running_q_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_pl_0 rise edge)
+                                                      4.000     4.000 r  <hidden>
+    PS9_X0Y0             PS9                          0.000     4.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0]
+                         net (fo=1, routed)           0.000     4.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
+    BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
+                                                      0.055     4.055 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
+    X3Y2 (CLOCK_ROOT)    net (fo=448879, routed)      2.246     6.301    miner_system_i/miner_0/inst/s_axi_aclk
+    SLICE_X125Y164       FDCE                                         r  miner_system_i/miner_0/inst/running_q_reg/C
+                         clock pessimism              0.116     6.417    <hidden>
+                         clock uncertainty           -0.074     6.343    <hidden>
+    SLICE_X125Y164       FDCE (Setup_AFF2_SLICEM_C_D)
+                                                      0.007     6.350    miner_system_i/miner_0/inst/running_q_reg
+  -------------------------------------------------------------------
+                         required time                          6.350    <hidden>
+                         arrival time                          -6.304    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.046    <hidden>
+
+
+
+
+
+Min Delay Paths
+--------------------------------------------------------------------------------------
+Slack (MET) :             0.011ns  (arrival time - required time)
+  Source:                 miner_system_i/miner_0/inst/g_engines[124].u_engine/core_block_q_reg[302]/C
+                            (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            miner_system_i/miner_0/inst/g_engines[124].u_engine/u_core/u_core/w_mem_reg[6][14]/D
+                            (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             clk_pl_0
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk_pl_0 rise@0.000ns - clk_pl_0 rise@0.000ns)
+  Data Path Delay:        0.284ns  (logic 0.059ns (20.775%)  route 0.225ns (79.225%))
+  Logic Levels:           1  (LUT4=1)
+  Clock Path Skew:        0.238ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    2.192ns
+    Source Clock Delay      (SCD):    1.789ns
+    Clock Pessimism Removal (CPR):    0.165ns
+  Clock Net Delay (Source):      1.747ns (routing 0.401ns, distribution 1.346ns)
+  Clock Net Delay (Destination): 2.112ns (routing 0.463ns, distribution 1.649ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_pl_0 rise edge)
+                                                      0.000     0.000 r  <hidden>
+    PS9_X0Y0             PS9                          0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0]
+                         net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
+    BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
+                                                      0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
+    X3Y2 (CLOCK_ROOT)    net (fo=448879, routed)      1.747     1.789    miner_system_i/miner_0/inst/g_engines[124].u_engine/s_axi_aclk
+    SLICE_X210Y73        FDCE                                         r  miner_system_i/miner_0/inst/g_engines[124].u_engine/core_block_q_reg[302]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X210Y73        FDCE (Prop_HFF2_SLICEL_C_Q)
+                                                      0.050     1.839 r  miner_system_i/miner_0/inst/g_engines[124].u_engine/core_block_q_reg[302]/Q
+                         net (fo=1, routed)           0.210     2.049    miner_system_i/miner_0/inst/g_engines[124].u_engine/core_block_q_reg_n_0_[302]
+    SLICE_X212Y73        LUT4 (Prop_E6LUT_SLICEL_I2_O)
+                                                      0.009     2.058 r  miner_system_i/miner_0/inst/g_engines[124].u_engine/i___520/O
+                         net (fo=1, routed)           0.015     2.073    miner_system_i/miner_0/inst/g_engines[124].u_engine/u_core/u_core/w_mem_reg[6][31]_0[14]
+    SLICE_X212Y73        FDCE                                         r  miner_system_i/miner_0/inst/g_engines[124].u_engine/u_core/u_core/w_mem_reg[6][14]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_pl_0 rise edge)
+                                                      0.000     0.000 r  <hidden>
+    PS9_X0Y0             PS9                          0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0]
+                         net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
+    BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
+                                                      0.080     0.080 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
+    X3Y2 (CLOCK_ROOT)    net (fo=448879, routed)      2.112     2.192    miner_system_i/miner_0/inst/g_engines[124].u_engine/u_core/u_core/s_axi_aclk
+    SLICE_X212Y73        FDCE                                         r  miner_system_i/miner_0/inst/g_engines[124].u_engine/u_core/u_core/w_mem_reg[6][14]/C
+                         clock pessimism             -0.165     2.027    <hidden>
+    SLICE_X212Y73        FDCE (Hold_EFF2_SLICEL_C_D)
+                                                      0.035     2.062    miner_system_i/miner_0/inst/g_engines[124].u_engine/u_core/u_core/w_mem_reg[6][14]
+  -------------------------------------------------------------------
+                         required time                         -2.062    <hidden>
+                         arrival time                           2.073    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.011    <hidden>
+
+
+
+
+
+Pulse Width Checks
+--------------------------------------------------------------------------------------
+Clock Name:         clk_pl_0
+Waveform(ns):       { 0.000 2.000 }
+Period(ns):         4.000
+Sources:            { miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0] }
+
+Check Type        Corner  Lib Pin          Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location  Pin
+Min Period        n/a     PS9/MAXIGP0ACLK  n/a            2.857         4.000       1.143      PS9_X0Y0  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/MAXIGP0ACLK
+Low Pulse Width   Slow    PS9/MAXIGP0ACLK  n/a            1.429         2.000       0.571      PS9_X0Y0  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/MAXIGP0ACLK
+High Pulse Width  Slow    PS9/MAXIGP0ACLK  n/a            1.429         2.000       0.571      PS9_X0Y0  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/MAXIGP0ACLK
+
+
+
+---------------------------------------------------------------------------------------------------
+Path Group:  **async_default**
+From Clock:  clk_pl_0
+  To Clock:  clk_pl_0
+
+Setup :            0  Failing Endpoints,  Worst Slack        1.275ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.918ns,  Total Violation        0.000ns
+---------------------------------------------------------------------------------------------------
+
+
+Max Delay Paths
+--------------------------------------------------------------------------------------
+Slack (MET) :             1.275ns  (required time - arrival time)
+  Source:                 miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+                            (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            miner_system_i/miner_0/inst/g_engines[18].u_engine/u_core/u_core/w_new_q_reg[16]/CLR
+                            (recovery check against rising-edge clock clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             **async_default**
+  Path Type:              Recovery (Max at Slow Process Corner)
+  Requirement:            4.000ns  (clk_pl_0 rise@4.000ns - clk_pl_0 rise@0.000ns)
+  Data Path Delay:        2.654ns  (logic 0.248ns (9.344%)  route 2.406ns (90.656%))
+  Logic Levels:           1  (BUFG_FABRIC=1)
+  Clock Path Skew:        0.111ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.579ns = ( 6.579 - 4.000 ) 
+    Source Clock Delay      (SCD):    2.540ns
+    Clock Pessimism Removal (CPR):    0.072ns
+  Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
+    Clock Jitter             (CJ):    0.148ns
+    Phase Error              (PE):    0.000ns
+    Phase Jitter             (PJ):    0.000ns
+  Clock Net Delay (Source):      2.437ns (routing 0.625ns, distribution 1.812ns)
+  Clock Net Delay (Destination): 2.524ns (routing 0.557ns, distribution 1.967ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_pl_0 rise edge)
+                                                      0.000     0.000 r  <hidden>
+    PS9_X0Y0             PS9                          0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0]
+                         net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
+    BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
+                                                      0.103     0.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
+    X3Y2 (CLOCK_ROOT)    net (fo=448879, routed)      2.437     2.540    miner_system_i/rst_pl0/U0/slowest_sync_clk
+    IRI_QUAD_X80Y592     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+  -------------------------------------------------------------------    -------------------
+    IRI_QUAD_X80Y592     FDRE (Prop_IMUX21_IMR_IRI_QUAD_EVEN_C_Q)
+                                                      0.233     2.773 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=1, routed)           0.304     3.077    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
+    BUFG_FABRIC_X2Y35    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
+                                                      0.015     3.092 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
+                         net (fo=448103, routed)      2.102     5.194    miner_system_i/miner_0/inst/g_engines[18].u_engine/u_core/u_core/round_q_reg[0]_0
+    SLICE_X21Y322        FDCE                                         f  miner_system_i/miner_0/inst/g_engines[18].u_engine/u_core/u_core/w_new_q_reg[16]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_pl_0 rise edge)
+                                                      4.000     4.000 r  <hidden>
+    PS9_X0Y0             PS9                          0.000     4.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0]
+                         net (fo=1, routed)           0.000     4.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
+    BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
+                                                      0.055     4.055 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
+    X3Y2 (CLOCK_ROOT)    net (fo=448879, routed)      2.524     6.579    miner_system_i/miner_0/inst/g_engines[18].u_engine/u_core/u_core/s_axi_aclk
+    SLICE_X21Y322        FDCE                                         r  miner_system_i/miner_0/inst/g_engines[18].u_engine/u_core/u_core/w_new_q_reg[16]/C
+                         clock pessimism              0.072     6.651    <hidden>
+                         clock uncertainty           -0.074     6.577    <hidden>
+    SLICE_X21Y322        FDCE (Recov_AFF_SLICEM_C_CLR)
+                                                     -0.108     6.469    miner_system_i/miner_0/inst/g_engines[18].u_engine/u_core/u_core/w_new_q_reg[16]
+  -------------------------------------------------------------------
+                         required time                          6.469    <hidden>
+                         arrival time                          -5.194    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  1.275    <hidden>
+
+
+
+
+
+Min Delay Paths
+--------------------------------------------------------------------------------------
+Slack (MET) :             0.918ns  (arrival time - required time)
+  Source:                 miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+                            (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            miner_system_i/miner_0/inst/g_engines[44].u_engine/core_block_q_reg[304]/CLR
+                            (removal check against rising-edge clock clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Path Group:             **async_default**
+  Path Type:              Removal (Min at Fast Process Corner)
+  Requirement:            0.000ns  (clk_pl_0 rise@0.000ns - clk_pl_0 rise@0.000ns)
+  Data Path Delay:        1.463ns  (logic 0.104ns (7.111%)  route 1.359ns (92.889%))
+  Logic Levels:           1  (BUFG_FABRIC=1)
+  Clock Path Skew:        0.538ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    2.195ns
+    Source Clock Delay      (SCD):    1.607ns
+    Clock Pessimism Removal (CPR):    0.051ns
+  Clock Net Delay (Source):      1.565ns (routing 0.401ns, distribution 1.164ns)
+  Clock Net Delay (Destination): 2.115ns (routing 0.463ns, distribution 1.652ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_pl_0 rise edge)
+                                                      0.000     0.000 r  <hidden>
+    PS9_X0Y0             PS9                          0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0]
+                         net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
+    BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
+                                                      0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
+    X3Y2 (CLOCK_ROOT)    net (fo=448879, routed)      1.565     1.607    miner_system_i/rst_pl0/U0/slowest_sync_clk
+    IRI_QUAD_X80Y592     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+  -------------------------------------------------------------------    -------------------
+    IRI_QUAD_X80Y592     FDRE (Prop_IMUX21_IMR_IRI_QUAD_EVEN_C_Q)
+                                                      0.093     1.700 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=1, routed)           0.086     1.786    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
+    BUFG_FABRIC_X2Y35    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
+                                                      0.011     1.797 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
+                         net (fo=448103, routed)      1.273     3.070    miner_system_i/miner_0/inst/g_engines[44].u_engine/round_q_reg_0_sn_1
+    SLICE_X222Y265       FDCE                                         f  miner_system_i/miner_0/inst/g_engines[44].u_engine/core_block_q_reg[304]/CLR  (IS_INVERTED)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_pl_0 rise edge)
+                                                      0.000     0.000 r  <hidden>
+    PS9_X0Y0             PS9                          0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0]
+                         net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
+    BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
+                                                      0.080     0.080 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
+    X3Y2 (CLOCK_ROOT)    net (fo=448879, routed)      2.115     2.195    miner_system_i/miner_0/inst/g_engines[44].u_engine/s_axi_aclk
+    SLICE_X222Y265       FDCE                                         r  miner_system_i/miner_0/inst/g_engines[44].u_engine/core_block_q_reg[304]/C
+                         clock pessimism             -0.051     2.145    <hidden>
+    SLICE_X222Y265       FDCE (Remov_AFF_SLICEL_C_CLR)
+                                                      0.007     2.152    miner_system_i/miner_0/inst/g_engines[44].u_engine/core_block_q_reg[304]
+  -------------------------------------------------------------------
+                         required time                         -2.152    <hidden>
+                         arrival time                           3.070    <hidden>
+  -------------------------------------------------------------------
+                         slack                                  0.918    <hidden>
+
+
+
+
+

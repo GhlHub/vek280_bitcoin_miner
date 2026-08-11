@@ -21,6 +21,26 @@
 #define MINER_NUM_ENGINES_EXPECTED 32U
 #define MINER_HASHRATE_HS          12250000UL
 
+#ifndef APP_USE_DDR_HEAP
+#define APP_USE_DDR_HEAP           0
+#endif
+
+#ifndef APP_DDR_SMOKE_AT_BOOT
+#define APP_DDR_SMOKE_AT_BOOT      1
+#endif
+
+#ifndef APP_DDR_TEST_BASE
+#define APP_DDR_TEST_BASE          0x00100000UL
+#endif
+
+#ifndef APP_DDR_MPU_BASE
+#define APP_DDR_MPU_BASE           0x00100000UL
+#endif
+
+#ifndef APP_DDR_MPU_SIZE
+#define APP_DDR_MPU_SIZE           0x00100000UL
+#endif
+
 #define TELNET_LISTEN_PORT         23U
 #define TELNET_RX_BUFFER_BYTES     256U
 #define TELNET_TX_BUFFER_BYTES     512U
