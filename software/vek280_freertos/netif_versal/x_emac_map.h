@@ -9,17 +9,35 @@
 #define ZYNQMP_EMACPS_2_BASEADDR    0xFF0D0000
 #define ZYNQMP_EMACPS_3_BASEADDR    0xFF0E0000
 
-#define ZYNQMP_EMACPS_0_IRQ_ID    XPAR_XEMACPS_0_INTR
+#if defined( SDT ) && defined( XPAR_XEMACPS_0_INTERRUPTS )
+    #define ZYNQMP_EMACPS_0_IRQ_ID    XPAR_XEMACPS_0_INTERRUPTS
+#elif defined( SDT ) && defined( XPAR_GEM0_INTERRUPTS )
+    #define ZYNQMP_EMACPS_0_IRQ_ID    XPAR_GEM0_INTERRUPTS
+#else
+    #define ZYNQMP_EMACPS_0_IRQ_ID    XPAR_XEMACPS_0_INTR
+#endif
 
-#if defined( XPAR_XEMACPS_1_INTR )
+#if defined( SDT ) && defined( XPAR_XEMACPS_1_INTERRUPTS )
+    #define ZYNQMP_EMACPS_1_IRQ_ID    XPAR_XEMACPS_1_INTERRUPTS
+#elif defined( SDT ) && defined( XPAR_GEM1_INTERRUPTS )
+    #define ZYNQMP_EMACPS_1_IRQ_ID    XPAR_GEM1_INTERRUPTS
+#elif defined( XPAR_XEMACPS_1_INTR )
     #define ZYNQMP_EMACPS_1_IRQ_ID    XPAR_XEMACPS_1_INTR
 #endif
 
-#if defined( XPAR_XEMACPS_2_INTR )
+#if defined( SDT ) && defined( XPAR_XEMACPS_2_INTERRUPTS )
+    #define ZYNQMP_EMACPS_2_IRQ_ID    XPAR_XEMACPS_2_INTERRUPTS
+#elif defined( SDT ) && defined( XPAR_GEM2_INTERRUPTS )
+    #define ZYNQMP_EMACPS_2_IRQ_ID    XPAR_GEM2_INTERRUPTS
+#elif defined( XPAR_XEMACPS_2_INTR )
     #define ZYNQMP_EMACPS_2_IRQ_ID    XPAR_XEMACPS_2_INTR
 #endif
 
-#if defined( XPAR_XEMACPS_3_INTR )
+#if defined( SDT ) && defined( XPAR_XEMACPS_3_INTERRUPTS )
+    #define ZYNQMP_EMACPS_3_IRQ_ID    XPAR_XEMACPS_3_INTERRUPTS
+#elif defined( SDT ) && defined( XPAR_GEM3_INTERRUPTS )
+    #define ZYNQMP_EMACPS_3_IRQ_ID    XPAR_GEM3_INTERRUPTS
+#elif defined( XPAR_XEMACPS_3_INTR )
     #define ZYNQMP_EMACPS_3_IRQ_ID    XPAR_XEMACPS_3_INTR
 #endif
 

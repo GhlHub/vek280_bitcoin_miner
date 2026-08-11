@@ -80,6 +80,10 @@
 /* Defined in NetworkInterface.c */
 extern TaskHandle_t xEMACTaskHandles[ XPAR_XEMACPS_NUM_INSTANCES ];
 
+#if defined( SDT )
+    extern XEmacPs_Config mac_configs[ XPAR_XEMACPS_NUM_INSTANCES ];
+#endif
+
 /*
  *  pxDMA_tx_buffers: these are character arrays, each one is big enough to hold 1 MTU.
  *  The actual TX buffers are located in uncached RAM.
@@ -839,6 +843,19 @@ XStatus init_dma( xemacpsif_s * xemacpsif )
 
     XEmacPs_SetQueuePtr( emac, ( uintptr_t ) xemacpsif->txSegments, 0, XEMACPS_SEND );
 
+    #if defined( SDT )
+    {
+        xil_printf( "netif: install GEM irq id=0x%lx parent=0x%lx\r\n",
+                    ( unsigned long ) xtopologyp->scugic_emac_intr,
+                    ( unsigned long ) emac->Config.IntrParent );
+    }
+    #else
+    {
+        xil_printf( "netif: install GEM irq id=%lu\r\n",
+                    ( unsigned long ) xtopologyp->scugic_emac_intr );
+    }
+    #endif
+
     xPortInstallInterruptHandler( ( uint16_t ) xtopologyp->scugic_emac_intr, XEmacPs_IntrHandler, emac );
 
     #if defined( SDT )
@@ -897,10 +914,24 @@ void resetrx_on_no_rxdata( xemacpsif_s * xemacpsif )
 
 void EmacDisableIntr( int xEMACIndex )
 {
+    #if defined( SDT )
+    {
+        XDisableIntrId( ( uint32_t ) xXTopologies[ xEMACIndex ].scugic_emac_intr,
+                        mac_configs[ xEMACIndex ].IntrParent );
+    }
+    #else
     vPortDisableInterrupt( ( uint8_t ) xXTopologies[ xEMACIndex ].scugic_emac_intr );
+    #endif
 }
 
 void EmacEnableIntr( int xEMACIndex )
 {
+    #if defined( SDT )
+    {
+        XEnableIntrId( ( uint32_t ) xXTopologies[ xEMACIndex ].scugic_emac_intr,
+                       mac_configs[ xEMACIndex ].IntrParent );
+    }
+    #else
     vPortEnableInterrupt( ( uint8_t ) xXTopologies[ xEMACIndex ].scugic_emac_intr );
+    #endif
 }
