@@ -677,7 +677,7 @@ static BaseType_t prvGMACWaitLS( BaseType_t xEMACIndex,
 #if ( nicUSE_UNCACHED_MEMORY == 0 )
     size_t uxNetworkInterfaceAllocateRAMToBuffers( NetworkBufferDescriptor_t pxNetworkBuffers[ ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS ] )
     {
-        static uint8_t ucNetworkPackets[ ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS * niBUFFER_1_PACKET_SIZE ] __attribute__( ( aligned( 32 ) ) );
+        static uint8_t ucNetworkPackets[ ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS * niBUFFER_1_PACKET_SIZE ] __attribute__( ( section( ".ddr_bss" ), aligned( 64 ) ) );
         uint8_t * ucRAMBuffer = ucNetworkPackets;
         uint32_t ul;
 
