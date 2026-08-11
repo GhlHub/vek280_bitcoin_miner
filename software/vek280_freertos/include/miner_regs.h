@@ -35,7 +35,9 @@ typedef struct {
 
 void miner_init(uintptr_t base_addr);
 uint32_t miner_read_reg(uint32_t offset);
+uint32_t miner_read_reg_instance(uint32_t instance, uint32_t offset);
 void miner_write_reg(uint32_t offset, uint32_t value);
+void miner_write_reg_instance(uint32_t instance, uint32_t offset, uint32_t value);
 uint32_t miner_num_engines(void);
 uint32_t miner_status(void);
 void miner_clear(void);

@@ -1,9 +1,18 @@
 set script_dir [file dirname [file normalize [info script]]]
 set repo_dir [file dirname $script_dir]
 set bd_script [file join $repo_dir bd create_vek280_miner_bd.tcl]
-set project_file [file join $repo_dir bd out_vek280_miner vek280_miner_bd.xpr]
-set impl_reports_dir [file join $repo_dir reports impl_vek280]
+set variant_suffix ""
+if {[info exists ::env(MINER_ENABLE_DDR)] && !$::env(MINER_ENABLE_DDR)} {
+    set variant_suffix "_noddr"
+}
+set project_file [file join $repo_dir bd out_vek280_miner${variant_suffix} vek280_miner_bd.xpr]
+set impl_reports_dir [file join $repo_dir reports impl_vek280${variant_suffix}]
 set xsa_file [file join $impl_reports_dir miner_system_wrapper.xsa]
+set vivado_jobs 4
+if {[info exists ::env(VIVADO_JOBS)] && $::env(VIVADO_JOBS) ne ""} {
+    set vivado_jobs $::env(VIVADO_JOBS)
+}
+set_param general.maxThreads $vivado_jobs
 
 file mkdir $impl_reports_dir
 
@@ -15,16 +24,16 @@ if {[current_project -quiet] eq ""} {
 set_property top miner_system_wrapper [current_fileset]
 update_compile_order -fileset sources_1
 
-generate_target all [get_files [file join $repo_dir bd out_vek280_miner vek280_miner_bd.srcs sources_1 bd miner_system miner_system.bd]]
+generate_target all [get_files [file join $repo_dir bd out_vek280_miner${variant_suffix} vek280_miner_bd.srcs sources_1 bd miner_system miner_system.bd]]
 
 reset_run synth_1
-launch_runs synth_1 -jobs 8
+launch_runs synth_1 -jobs $vivado_jobs
 wait_on_run synth_1
 if {[get_property PROGRESS [get_runs synth_1]] ne "100%"} {
     error "synth_1 did not complete"
 }
 
-launch_runs impl_1 -to_step write_device_image -jobs 8
+launch_runs impl_1 -to_step write_device_image -jobs $vivado_jobs
 wait_on_run impl_1
 
 set impl_status [get_property STATUS [get_runs impl_1]]

@@ -1,0 +1,26 @@
+#ifndef VEK280_X_EMAC_MAP_H
+#define VEK280_X_EMAC_MAP_H
+
+#include "xparameters.h"
+#include "xparameters_ps.h"
+
+#define ZYNQMP_EMACPS_0_BASEADDR    0xFF0B0000
+#define ZYNQMP_EMACPS_1_BASEADDR    0xFF0C0000
+#define ZYNQMP_EMACPS_2_BASEADDR    0xFF0D0000
+#define ZYNQMP_EMACPS_3_BASEADDR    0xFF0E0000
+
+#define ZYNQMP_EMACPS_0_IRQ_ID    XPAR_XEMACPS_0_INTR
+
+#if defined( XPAR_XEMACPS_1_INTR )
+    #define ZYNQMP_EMACPS_1_IRQ_ID    XPAR_XEMACPS_1_INTR
+#endif
+
+#if defined( XPAR_XEMACPS_2_INTR )
+    #define ZYNQMP_EMACPS_2_IRQ_ID    XPAR_XEMACPS_2_INTR
+#endif
+
+#if defined( XPAR_XEMACPS_3_INTR )
+    #define ZYNQMP_EMACPS_3_IRQ_ID    XPAR_XEMACPS_3_INTR
+#endif
+
+#endif

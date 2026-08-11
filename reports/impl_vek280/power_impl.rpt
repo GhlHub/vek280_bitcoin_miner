@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2026.1 (lin64) Build 6511674 Tue Jun 16 11:01:26 MDT 2026
-| Date             : Tue Aug  4 21:21:29 2026
+| Date             : Mon Aug 10 21:08:24 2026
 | Host             : YouBing running 64-bit Ubuntu 24.04.4 LTS
 | Command          : report_power -file /raid/work/vek280_bitcoin_miner/reports/impl_vek280/power_impl.rpt
 | Design           : miner_system_wrapper
@@ -31,12 +31,12 @@ Table of Contents
 ----------
 
 +--------------------------+--------------+
-| Total On-Chip Power (W)  | 14.846       |
+| Total On-Chip Power (W)  | 13.013       |
 | Design Power Budget (W)  | Unspecified* |
 | Power Budget Margin (W)  | NA           |
-| Dynamic (W)              | 5.590        |
-| Device Static (W)        | 9.256**      |
-| Effective TJA (C/W)      | 5.1          |
+| Dynamic (W)              | 3.771        |
+| Device Static (W)        | 9.242**      |
+| Effective TJA (C/W)      | 5.8          |
 | Max Ambient (C)          | 25.0         |
 | Junction Temperature (C) | 100.0**      |
 | Confidence Level         | Low          |
@@ -63,26 +63,26 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 +-------------------------+-----------+----------+-----------+-----------------+
 | On-Chip                 | Power (W) | Used     | Available | Utilization (%) |
 +-------------------------+-----------+----------+-----------+-----------------+
-| Clocks                  |     1.807 |        9 |       --- |             --- |
-| Logic                   |     0.713 |   994790 |       --- |             --- |
-|   LUT as Logic          |     0.663 |   352371 |    520704 |           67.67 |
-|   CLE FF Register       |     0.028 |   449244 |   1041408 |           43.14 |
-|   LOOKAHEAD8            |     0.022 |    10010 |     65088 |           15.38 |
+| Clocks                  |     0.489 |        9 |       --- |             --- |
+| Logic                   |     0.189 |   251559 |       --- |             --- |
+|   LUT as Logic          |     0.175 |    88273 |    520704 |           16.95 |
+|   CLE FF Register       |     0.008 |   113833 |   1041408 |           10.93 |
+|   LOOKAHEAD8            |     0.006 |     2506 |     65088 |            3.85 |
 |   BUFG                  |    <0.001 |        1 |        56 |            1.79 |
 |   IRI IMUX Register     |    <0.001 |        1 |   1219392 |           <0.01 |
-|   Others                |     0.000 |      591 |       --- |             --- |
+|   Others                |     0.000 |      200 |       --- |             --- |
 |   LUT as Shift Register |     0.000 |        1 |    260352 |           <0.01 |
-| Signals                 |     0.599 |   660631 |       --- |             --- |
+| Signals                 |     0.186 |   170360 |       --- |             --- |
 | XPLL                    |     0.163 |        2 |        18 |           11.11 |
 | I/O                     |     1.141 |      112 |       --- |             --- |
-| NoC-DDRMC               |     0.000 |        2 |       --- |             --- |
-|   DDRMC                 |     0.000 |        1 |         3 |           33.33 |
-|   NoC                   |     0.000 |        1 |       --- |             --- |
-| PS9                     |     1.166 |        1 |       --- |             --- |
-| Static Power            |     9.256 |          |           |                 |
+| NoC-DDRMC               |     0.424 |        2 |       --- |             --- |
+|   NoC                   |     0.215 |        1 |       --- |             --- |
+|   DDRMC                 |     0.209 |        1 |         3 |           33.33 |
+| PS9                     |     1.179 |        1 |       --- |             --- |
+| Static Power            |     9.242 |          |           |                 |
 |   PS Static             |     0.233 |          |           |                 |
-|   PL Static             |     9.023 |          |           |                 |
-| Total                   |    14.846 |          |           |                 |
+|   PL Static             |     9.010 |          |           |                 |
+| Total                   |    13.013 |          |           |                 |
 +-------------------------+-----------+----------+-----------+-----------------+
 
 
@@ -92,15 +92,15 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 +---------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
 | Source        | Voltage (V) | Total (A) | Dynamic (A) | Static (A) | Powerup (A) | Budget (A)  | Margin (A) |
 +---------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
-| Vccint        |       0.800 |    13.451 |       3.877 |      9.574 |       NA    | Unspecified | NA         |
-| VCC_SOC       |       0.800 |     1.518 |       0.008 |      1.510 |       NA    | Unspecified | NA         |
+| Vccint        |       0.800 |    10.640 |       1.066 |      9.574 |       NA    | Unspecified | NA         |
+| VCC_SOC       |       0.800 |     2.047 |       0.537 |      1.510 |       NA    | Unspecified | NA         |
 | VCC_IO        |       0.800 |     0.860 |       0.659 |      0.201 |       NA    | Unspecified | NA         |
-| VCC_RAM       |       0.800 |     0.068 |       0.015 |      0.053 |       NA    | Unspecified | NA         |
-| Vccaux        |       1.500 |     0.614 |       0.196 |      0.418 |       NA    | Unspecified | NA         |
+| VCC_RAM       |       0.800 |     0.059 |       0.006 |      0.053 |       NA    | Unspecified | NA         |
+| Vccaux        |       1.500 |     0.604 |       0.196 |      0.408 |       NA    | Unspecified | NA         |
 | VCCO_503      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | VCCO_500      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | VCCO_501      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
-| VCCO_502      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCCO_502      |       1.800 |     0.006 |       0.006 |      0.000 |       NA    | Unspecified | NA         |
 | VCC_FUSE      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | VCC_BATT      |       1.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | Vcco33        |       3.300 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
@@ -114,7 +114,7 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 | VCC_PMC       |       0.800 |     0.300 |       0.248 |      0.051 |       NA    | Unspecified | NA         |
 | VCCAUX_PMC    |       1.500 |     0.069 |       0.068 |      0.001 |       NA    | Unspecified | NA         |
 | VCCAUX_SMON   |       1.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
-| VCC_PSLP      |       0.800 |     0.333 |       0.217 |      0.116 |       NA    | Unspecified | NA         |
+| VCC_PSLP      |       0.800 |     0.335 |       0.220 |      0.116 |       NA    | Unspecified | NA         |
 | VCC_PSFP      |       0.800 |     1.018 |       0.865 |      0.153 |       NA    | Unspecified | NA         |
 | VCC_CPM5      |       0.800 |     0.383 |       0.000 |      0.383 |       NA    | Unspecified | NA         |
 | VGTYP_AVCC    |       0.920 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
@@ -147,24 +147,24 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 
 +------------------+------+
 | Ambient Temp (C) | 25.0 |
-| ThetaJA (C/W)    | 5.1  |
+| ThetaJA (C/W)    | 5.8  |
 +------------------+------+
 
 
 2.2 Clock Constraints
 ---------------------
 
-+-------------------------+---------------------------------------------------------------------------------------+-----------------+
-| Clock                   | Domain                                                                                | Constraint (ns) |
-+-------------------------+---------------------------------------------------------------------------------------+-----------------+
-| bank1_clkout0           | miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_clkout0           |             1.1 |
-| bank1_xpll0_fifo_rd_clk | miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_xpll0_fifo_rd_clk |             1.1 |
-| clk_pl_0                | miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]                             |             4.0 |
-| lpddr4_clk1_clk_p       | lpddr4_clk1_clk_p                                                                     |             5.0 |
-| mc_clk_xpll             | miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/mc_clk_xpll             |             1.1 |
-| pll_clk_xpll            | miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clk_xpll            |             0.3 |
-| pll_clktoxphy[0]        | miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clktoxphy[0]        |             0.3 |
-+-------------------------+---------------------------------------------------------------------------------------+-----------------+
++-------------------------+-------------------------------------------------------------------------------------+-----------------+
+| Clock                   | Domain                                                                              | Constraint (ns) |
++-------------------------+-------------------------------------------------------------------------------------+-----------------+
+| bank1_clkout0           | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_clkout0           |             1.1 |
+| bank1_xpll0_fifo_rd_clk | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_xpll0_fifo_rd_clk |             1.1 |
+| clk_pl_0                | miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]                           |             4.0 |
+| lpddr4_clk1_clk_p       | lpddr4_clk1_clk_p                                                                   |             5.0 |
+| mc_clk_xpll             | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/mc_clk_xpll             |             1.1 |
+| pll_clk_xpll            | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clk_xpll            |             0.3 |
+| pll_clktoxphy[0]        | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clktoxphy[0]        |             0.3 |
++-------------------------+-------------------------------------------------------------------------------------+-----------------+
 
 
 3. Detailed Reports
@@ -176,34 +176,36 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 +----------------------+-----------+
 | Name                 | Power (W) |
 +----------------------+-----------+
-| miner_system_wrapper |     5.590 |
-|   miner_system_i     |     5.590 |
-|     axi_noc_0        |     1.344 |
-|       inst           |     1.344 |
-|     axi_smc          |     0.015 |
-|       inst           |     0.015 |
-|     cips_0           |     1.220 |
-|       inst           |     1.220 |
-|     miner_0          |     3.004 |
-|       inst           |     3.004 |
-|     rst_pl0          |     0.007 |
-|       U0             |     0.007 |
+| miner_system_wrapper |     3.771 |
+|   miner_system_i     |     3.771 |
+|     axi_smc          |     0.012 |
+|       inst           |     0.012 |
+|     cips_0           |     1.214 |
+|       inst           |     1.214 |
+|     ddr_noc          |     1.530 |
+|       inst           |     1.530 |
+|     miner_0          |     0.783 |
+|       inst           |     0.783 |
+|     ps_ddr_noc       |     0.229 |
+|       inst           |     0.229 |
+|     rst_pl0          |     0.002 |
+|       U0             |     0.002 |
 +----------------------+-----------+
 
 
 3.2 By Clock Domain
 -------------------
 
-+---------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
-| Name                                                                                  | Power (W) | Frequency (MHz) | Buffer | Clock Buffer Enable (%) | Clock Enable | Fanout   | Sites    | Fanout/Site |
-+---------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
-| miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG                 |     1.804 |          250.00 | BUFG   |                     N/A | None         |   449248 |    62789 |        7.16 |
-| miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clktoxphy[0]        |     0.001 |         3700.00 | N/A    |                     N/A | None         |        9 |        9 |        1.00 |
-| miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clk_xpll            |     0.001 |         3700.00 | N/A    |                     N/A | None         |        9 |        9 |        1.00 |
-| miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_xpll0_fifo_rd_clk |    <0.001 |          925.00 | N/A    |                     N/A | None         |       18 |       18 |        1.00 |
-| miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/mc_clk_xpll             |    <0.001 |          925.00 | N/A    |                     N/A | None         |        1 |        1 |        1.00 |
-| miner_system_i/axi_noc_0/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_clkout0           |    <0.001 |          925.00 | N/A    |                     N/A | None         |        1 |        1 |        1.00 |
-| lpddr4_clk1_clk_p                                                                     |    <0.001 |          200.00 | N/A    |                     N/A | None         |        2 |        2 |        1.00 |
-+---------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
++-------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
+| Name                                                                                | Power (W) | Frequency (MHz) | Buffer | Clock Buffer Enable (%) | Clock Enable | Fanout   | Sites    | Fanout/Site |
++-------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
+| miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG               |     0.486 |          250.00 | BUFG   |                     N/A | None         |   113837 |    16472 |        6.91 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clktoxphy[0]        |     0.001 |         3700.00 | N/A    |                     N/A | None         |        9 |        9 |        1.00 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clk_xpll            |     0.001 |         3700.00 | N/A    |                     N/A | None         |        9 |        9 |        1.00 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_xpll0_fifo_rd_clk |    <0.001 |          925.00 | N/A    |                     N/A | None         |       18 |       18 |        1.00 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/mc_clk_xpll             |    <0.001 |          925.00 | N/A    |                     N/A | None         |        1 |        1 |        1.00 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_clkout0           |    <0.001 |          925.00 | N/A    |                     N/A | None         |        1 |        1 |        1.00 |
+| lpddr4_clk1_clk_p                                                                   |    <0.001 |          200.00 | N/A    |                     N/A | None         |        2 |        2 |        1.00 |
++-------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
 
 

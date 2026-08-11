@@ -99,6 +99,7 @@ static void app_log_network_config(void)
 
 void vApplicationMallocFailedHook(void)
 {
+    app_log("malloc failed");
     taskDISABLE_INTERRUPTS();
     for (;;) {}
 }
@@ -107,6 +108,7 @@ void vApplicationStackOverflowHook(TaskHandle_t task, char *name)
 {
     (void)task;
     (void)name;
+    app_log("stack overflow");
     taskDISABLE_INTERRUPTS();
     for (;;) {}
 }
@@ -114,8 +116,10 @@ void vApplicationStackOverflowHook(TaskHandle_t task, char *name)
 void vApplicationIPNetworkEventHook(eIPCallbackEvent_t event)
 {
     if (event == eNetworkUp) {
+        app_log("network event: up");
         g_network_up = pdTRUE;
     } else {
+        app_log("network event: down");
         g_network_up = pdFALSE;
     }
 }
@@ -141,9 +145,16 @@ uint32_t ulApplicationGetNextSequenceNumber(uint32_t src_addr,
 
 static void network_wait_task(void *arg)
 {
+    uint32_t waits = 0;
+
     (void)arg;
 
+    app_log("netwait task running");
+
     while (g_network_up != pdTRUE) {
+        if ((waits++ % 20U) == 0U) {
+            app_log("waiting for network up");
+        }
         vTaskDelay(pdMS_TO_TICKS(250));
     }
 
@@ -158,6 +169,8 @@ static void network_wait_task(void *arg)
 
 int main(void)
 {
+    BaseType_t task_status;
+
     app_log("VEK280 miner FreeRTOS app starting");
 
     FreeRTOS_IPInit(kStaticIpAddress,
@@ -165,9 +178,18 @@ int main(void)
                     kStaticGateway,
                     kStaticDns,
                     kDefaultMacAddress);
+    app_log("FreeRTOS_IPInit returned");
 
-    xTaskCreate(network_wait_task, "netwait", 1024, NULL, 3, NULL);
+    task_status = xTaskCreate(network_wait_task, "netwait", 1024, NULL, 3, NULL);
+    if (task_status != pdPASS) {
+        app_log("netwait task create failed");
+    } else {
+        app_log("netwait task created");
+    }
+
+    app_log("starting scheduler");
     vTaskStartScheduler();
 
+    app_log("scheduler returned");
     for (;;) {}
 }

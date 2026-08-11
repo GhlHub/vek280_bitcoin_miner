@@ -9,7 +9,8 @@ Current scope:
   - `sha256_core_dsp`: requests DSP-backed arithmetic where synthesis can map 32-bit additions into DSP resources.
 - Self-checking SystemVerilog testbench covering both variants.
 - `bitcoin_miner_axi`: AXI4-Lite controlled Bitcoin nonce scanner with `NUM_ENGINES`
-  defaulting to 128.
+  parameterized. The current VEK280 block design instantiates one 32-engine AXI
+  miner to keep Vivado implementation memory within this host's limits.
 - `bitcoin_hash_engine`: one nonce-scanning lane using the fabric SHA-256 compression
   core for first-pass block 1 and second-pass block 0.
 - `bitcoin_result_cluster_fifo`: per-cluster result capture FIFO used to avoid a flat
@@ -32,8 +33,10 @@ Bitcoin integration notes:
   engine nonce.
 - Engines divide nonce work by stride: engine `i` scans `nonce_start + i`,
   `nonce_start + i + NUM_ENGINES`, and so on.
-- Engines are grouped by `CLUSTER_SIZE` for result collection. The default 128-engine
-  build uses four 32-engine clusters and a two-entry FIFO per cluster.
+- Engines are grouped by `CLUSTER_SIZE` for result collection. The current VEK280
+  build uses one 32-engine cluster and a two-entry FIFO. Earlier 128-engine and
+  4x32 AXI-slave variants are useful architectural targets, but exhausted this
+  host's available memory during implementation.
 - A second-stage arbiter moves one cluster FIFO result into the AXI-visible result
   register. Firmware clears that result to allow the next queued result to appear.
 - Cluster overflow is sticky in the AXI `overflow` status bit.
@@ -102,23 +105,40 @@ Block design:
   `bitcoin_miner_axi`.
 - PS-to-PL control path: `cips_0/M_AXI_FPD -> axi_smc -> miner_0/S_AXI`.
 - Miner AXI address is auto-assigned by Vivado at `0xA4000000` in the current build.
+- Current VEK280 miner sizing: one AXI4-Lite slave, `NUM_ENGINES=32`,
+  `CLUSTER_SIZE=32`, `CLUSTER_FIFO_DEPTH=2`.
 - CIPS PL0 clock is requested at 250 MHz. Vivado realizes this as 249.997498 MHz, so
   the miner AXI metadata uses that exact `FREQ_HZ` value for BD validation.
-- CIPS config requests GEM0 Ethernet on PMC MIO 26..37 with MDIO on PMC MIO 50..51.
-- CIPS config requests UART0 on PMC MIO 0..1 and UART1 on PMC MIO 4..5 at 115200 baud.
+- CIPS config requests GEM0 Ethernet on PS MIO 0..11 with MDIO on PS MIO
+  24..25, matching the VEK280 base platform routing.
+- CIPS config requests UART0 on PMC MIO 42..43 at 115200 baud, matching the
+  VEK280 USB-UART bridge routing used by the base platform.
 - CIPS config enables PS TTC0. The Vitis 2026.1 R5 FreeRTOS BSP flow requires a
   PS TTC timer for the FreeRTOS tick; a PL AXI timer is not sufficient for this
   BSP.
-- DDR is implemented with `axi_noc_0` configured as an LPDDR4 DDRMC subsystem.
-- `axi_noc_0` connects all six CIPS NoC master interfaces:
-  `FPD_CCI_NOC_0..3`, `LPD_AXI_NOC_0`, and `PMC_NOC_AXI_0`.
-- `axi_noc_0` is bound to VEK280 board interfaces `ch0_lpddr4_trip1`,
-  `ch1_lpddr4_trip1`, and `lpddr4_clk1`.
+- CIPS config enables the Versal SysMon external I2C interface for the VEK280
+  system controller: `SMON_INTERFACE_TO_USE=I2C`, internal CIPS address parameter
+  `SMON_PMBUS_ADDRESS=0x18`, and `PS_I2CSYSMON_PERIPHERAL={{ENABLE 1} {IO
+  {PMC_MIO 39 .. 40}}}`. On VEK280 this maps SysMon SCL to `PMC_MIO39` and SDA to
+  `PMC_MIO40`.
+- DDR is implemented with a split NoC topology. `ps_ddr_noc` accepts the four
+  CIPS FPD CCI NoC master interfaces `FPD_CCI_NOC_0..3`; four explicit
+  inter-NoC links connect `ps_ddr_noc/M00_INI..M03_INI` to
+  `ddr_noc/S00_INI..S03_INI`.
+- `ddr_noc` is configured as an LPDDR4 DDRMC subsystem bound through VEK280
+  board automation/presets to `ch0_lpddr4_trip1`, `ch1_lpddr4_trip1`, and
+  `lpddr4_clk1`.
 - The generated wrapper exposes the two LPDDR4 channel interfaces and the LPDDR4
   differential clock pins.
-- Vivado 2026.1 still reports incomplete NoC address-path warnings during
-  `validate_bd_design`, but the BD validates sufficiently to save, generate the
-  wrapper, implement, route, and generate a PDI.
+- Set `MINER_ENABLE_DDR=0` when running the BD or implementation scripts to build a
+  no-DDR hardware-programming isolation variant. Make targets are `bd-noddr` and
+  `impl-noddr`; outputs go under `bd/out_vek280_miner_noddr`,
+  `reports/impl_vek280_noddr`, `bd/miner_system_recreate_noddr.tcl`, and
+  `reports/miner_system_summary_noddr.rpt`.
+- Vivado 2026.1 still reports incomplete self-path warnings for the CIPS
+  LPD/PMC NoC interfaces during `validate_bd_design`, but the DDR address paths
+  are complete. Implementation logs read a NoC traffic file with 4 paths rather
+  than the earlier broken 0-path solution.
 - Miner interrupt is connected as `miner_0/irq_o -> cips_0/pl_ps_irq0`.
 - In Vivado 2026.1 CIPS, PL-to-PS IRQ exposure is controlled through the aggregate
   `PS_IRQ_USAGE` field inside `CONFIG.PS_PMC_CONFIG`; direct
@@ -130,23 +150,48 @@ Block design:
   but firmware should verify the generated XSA/HWH/xparameters output.
 
 Implementation status:
-- `make impl` completed under Vivado 2026.1 on 2026-08-04.
+- `make impl` completed under Vivado 2026.1 on 2026-08-10 after reducing the
+  implemented miner fabric to one 32-engine AXI instance. The run was launched
+  with `VIVADO_JOBS=4`, and `impl/run_vek280_impl.tcl` also applies
+  `set_param general.maxThreads $vivado_jobs`.
 - Implementation status: `write_device_image Complete!`.
 - Generated PDI:
   `bd/out_vek280_miner/vek280_miner_bd.runs/impl_1/miner_system_wrapper.pdi`.
 - Routed checkpoint:
   `bd/out_vek280_miner/vek280_miner_bd.runs/impl_1/miner_system_wrapper_routed.dcp`.
 - Final timing from `reports/impl_vek280/timing_summary_impl.rpt`:
-  WNS `+0.088 ns`, TNS `0.000 ns`, WHS `+0.011 ns`, THS `0.000 ns`, WPWS
+  WNS `+0.183 ns`, TNS `0.000 ns`, WHS `+0.010 ns`, THS `0.000 ns`, WPWS
   `+0.016 ns`; all user-specified timing constraints are met.
-- Route status from `reports/impl_vek280/route_status_impl.rpt`: 657,113 routable
+- Route status from `reports/impl_vek280/route_status_impl.rpt`: 168,034 routable
   nets fully routed, 0 nets with routing errors.
 - Final implemented utilization from `reports/impl_vek280/utilization_impl.rpt`:
-  352,372 LUTs, 449,244 FFs, 0 BRAM, 0 URAM, 0 DSP.
-- `report_power` completed, but vectorless power has caveats: NoC QoS was reported
-  out of date and no environmental constraints were supplied.
+  88,274 LUTs, 113,833 FFs, 0 BRAM, 0 URAM, 0 DSP.
+- `report_power` completed, but vectorless power has caveats: no environmental
+  constraints were supplied and reset activity may be pessimistic.
 - The current implementation reports and XSA include the TTC0 CIPS update required
   by the Vitis BSP flow.
+- The earlier 128-engine DDR-enabled PDI built and programmed successfully on
+  2026-08-09, but later attempts to implement the 4x32 AXI-slave version caused
+  host out-of-memory reboots. The current one-32-engine build is the active
+  memory-safe hardware configuration.
+- Hardware-manager programming of the DDR-enabled PDI succeeded on 2026-08-09
+  against remote `hw_server` `10.0.1.109:3121`; Vivado reported
+  `Successfully programmed PDI file` and `DONE bit: HIGH`.
+- Earlier DDR-enabled PDIs failed with PLM error `0x02030004`
+  (`XPLM_ERR_EXCEPTION`, `DATA_BUS_ERROR_EXCEPTION`), DONE low, BOOT first error
+  `0x34d`, and `pdi_dbg_util` traces ending at
+  `XPIO_DCI_COMPONENT_0.REG_PCSR_STATUS.CALDONE[4]` mask-polls. Those failures
+  were from the pre-split/incomplete NoC topology and are retained here only as
+  debugging history.
+- `make impl-noddr` completed under Vivado 2026.1 on 2026-08-08. The generated PDI
+  `bd/out_vek280_miner_noddr/vek280_miner_bd.runs/impl_1/miner_system_wrapper.pdi`
+  programmed successfully through the same remote `hw_server`; Vivado reported
+  `DONE bit: HIGH` and `ERROR_STATUS=0`.
+- Final no-DDR timing from `reports/impl_vek280_noddr/timing_summary_impl.rpt`:
+  WNS `+0.046 ns`, TNS `0.000 ns`, WHS `+0.011 ns`, THS `0.000 ns`, WPWS
+  `+0.571 ns`; all user-specified timing constraints are met.
+- No-DDR route status: 654,092 routable nets fully routed, 0 nets with routing
+  errors. No-DDR utilization: 378,651 LUTs, 448,876 FFs, 0 BRAM, 0 URAM, 0 DSP.
 
 FreeRTOS software port:
 - The user-provided FreeRTOS LTS source tree is under `FreeRTOS-LTS/`.

@@ -19,7 +19,7 @@ extern uint32_t SystemCoreClock;
 #define configTICK_RATE_HZ                      1000
 #define configMAX_PRIORITIES                    7
 #define configMINIMAL_STACK_SIZE                256
-#define configTOTAL_HEAP_SIZE                   (512U * 1024U)
+#define configTOTAL_HEAP_SIZE                   (80U * 1024U)
 #define configMAX_TASK_NAME_LEN                 16
 #define configUSE_16_BIT_TICKS                  0
 #define configIDLE_SHOULD_YIELD                 1
@@ -30,8 +30,8 @@ extern uint32_t SystemCoreClock;
 #define configUSE_TASK_NOTIFICATIONS            1
 #define configUSE_TIMERS                        1
 #define configTIMER_TASK_PRIORITY               5
-#define configTIMER_QUEUE_LENGTH                16
-#define configTIMER_TASK_STACK_DEPTH            1024
+#define configTIMER_QUEUE_LENGTH                8
+#define configTIMER_TASK_STACK_DEPTH            512
 #define configCHECK_FOR_STACK_OVERFLOW          2
 #define configUSE_MALLOC_FAILED_HOOK            1
 #define configSUPPORT_DYNAMIC_ALLOCATION        1
@@ -78,5 +78,10 @@ extern uint32_t SystemCoreClock;
 #define INCLUDE_xTaskGetCurrentTaskHandle       1
 
 #define configASSERT(x) do { if ((x) == 0) { taskDISABLE_INTERRUPTS(); for (;;) {} } } while (0)
+
+#ifndef pdTICKS_TO_MS
+#define pdTICKS_TO_MS(ticks) \
+    ((TickType_t)(((uint64_t)(ticks) * 1000ULL) / (uint64_t)configTICK_RATE_HZ))
+#endif
 
 #endif
