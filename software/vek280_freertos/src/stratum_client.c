@@ -1,6 +1,7 @@
 #include "stratum_client.h"
 
 #include <ctype.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +13,7 @@
 #include "FreeRTOS_Sockets.h"
 #include "semphr.h"
 #include "task.h"
+#include "xil_printf.h"
 
 #include "app_config.h"
 #include "miner_service.h"
@@ -52,9 +54,83 @@ static stratum_config_t g_config = {
 };
 
 static SemaphoreHandle_t g_config_lock;
+static SemaphoreHandle_t g_debug_lock;
 static volatile bool g_connect_requested;
 static volatile bool g_disconnect_requested;
 static volatile bool g_connected;
+static stratum_debug_t g_debug;
+
+static void stratum_debug_set_event(const char *fmt, ...)
+{
+    va_list ap;
+
+    if ((g_debug_lock == NULL) ||
+        (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) != pdTRUE)) {
+        return;
+    }
+
+    va_start(ap, fmt);
+    (void)vsnprintf(g_debug.last_event, sizeof(g_debug.last_event), fmt, ap);
+    va_end(ap);
+    xSemaphoreGive(g_debug_lock);
+
+    xil_printf("stratum: %s\r\n", g_debug.last_event);
+}
+
+static void stratum_debug_set_rx_line(const char *line)
+{
+    if ((g_debug_lock == NULL) ||
+        (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) != pdTRUE)) {
+        return;
+    }
+
+    (void)snprintf(g_debug.last_rx, sizeof(g_debug.last_rx), "%s", line);
+    xSemaphoreGive(g_debug_lock);
+}
+
+static void stratum_debug_set_tx_line(const char *line)
+{
+    if ((g_debug_lock == NULL) ||
+        (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) != pdTRUE)) {
+        return;
+    }
+
+    (void)snprintf(g_debug.last_tx, sizeof(g_debug.last_tx), "%s", line);
+    xSemaphoreGive(g_debug_lock);
+}
+
+static void stratum_debug_inc(uint32_t *counter)
+{
+    if ((g_debug_lock == NULL) ||
+        (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) != pdTRUE)) {
+        return;
+    }
+
+    ++*counter;
+    xSemaphoreGive(g_debug_lock);
+}
+
+static void stratum_debug_set_recv_status(BaseType_t status)
+{
+    if ((g_debug_lock == NULL) ||
+        (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) != pdTRUE)) {
+        return;
+    }
+
+    g_debug.last_recv_status = (int32_t)status;
+    xSemaphoreGive(g_debug_lock);
+}
+
+static void stratum_debug_set_send_status(BaseType_t status)
+{
+    if ((g_debug_lock == NULL) ||
+        (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) != pdTRUE)) {
+        return;
+    }
+
+    g_debug.last_send_status = (int32_t)status;
+    xSemaphoreGive(g_debug_lock);
+}
 
 static int hex_value(char ch)
 {
@@ -270,6 +346,24 @@ static bool json_has_id(const char *line, uint32_t id)
     return false;
 }
 
+static bool json_method_is(const char *line, const char *method)
+{
+    const char *p = strstr(line, "\"method\"");
+    char parsed[64];
+
+    if (p == NULL) {
+        return false;
+    }
+    p += 8;
+    p = skip_ws(p);
+    if (*p != ':') {
+        return false;
+    }
+    ++p;
+    return read_json_string(&p, parsed, sizeof(parsed)) &&
+           (strcmp(parsed, method) == 0);
+}
+
 static bool params_string(const char **cursor, char *dst, size_t dst_size)
 {
     const char *s = skip_ws(*cursor);
@@ -375,6 +469,34 @@ static bool parse_difficulty(const char *line, double *difficulty)
     }
     *difficulty = strtod(p, NULL);
     return (*difficulty > 0.0);
+}
+
+static bool parse_target(const char *line, uint32_t target[8])
+{
+    const char *p = find_params_array(line);
+    char target_hex[65];
+    uint8_t bytes[32];
+    size_t target_len = 0;
+
+    if (p == NULL) {
+        return false;
+    }
+    if (!params_string(&p, target_hex, sizeof(target_hex))) {
+        return false;
+    }
+    if (!hex_to_bytes(target_hex, bytes, sizeof(bytes), &target_len) ||
+        (target_len != sizeof(bytes))) {
+        return false;
+    }
+
+    for (uint32_t i = 0; i < 8U; ++i) {
+        target[i] = ((uint32_t)bytes[i * 4U] << 24) |
+                    ((uint32_t)bytes[(i * 4U) + 1U] << 16) |
+                    ((uint32_t)bytes[(i * 4U) + 2U] << 8) |
+                    bytes[(i * 4U) + 3U];
+    }
+
+    return true;
 }
 
 static bool parse_subscribe_response(const char *line, stratum_state_t *state)
@@ -558,10 +680,14 @@ static bool dispatch_notify_work(const stratum_notify_t *notify, stratum_state_t
     miner_job_t job;
 
     if (!build_job(notify, state, &job)) {
+        stratum_debug_inc(&g_debug.job_dispatch_fail);
+        stratum_debug_set_event("job materialization failed");
         return false;
     }
 
     miner_service_submit_job(&job);
+    stratum_debug_inc(&g_debug.job_dispatch_ok);
+    stratum_debug_set_event("job dispatched id=%s", job.job_id);
     return true;
 }
 
@@ -596,7 +722,23 @@ static void refill_if_idle(stratum_state_t *state)
 static BaseType_t send_line(Socket_t sock, const char *line)
 {
     size_t len = strlen(line);
-    return FreeRTOS_send(sock, line, len, 0);
+    size_t sent = 0;
+
+    stratum_debug_set_tx_line(line);
+
+    while (sent < len) {
+        BaseType_t rc = FreeRTOS_send(sock, &line[sent], len - sent, 0);
+
+        stratum_debug_set_send_status(rc);
+        if (rc <= 0) {
+            stratum_debug_set_event("send failed rc=%ld", (long)rc);
+            return rc;
+        }
+        sent += (size_t)rc;
+    }
+
+    stratum_debug_inc(&g_debug.tx_lines);
+    return (BaseType_t)sent;
 }
 
 static void send_subscribe_authorize(Socket_t sock, const stratum_config_t *config)
@@ -606,11 +748,13 @@ static void send_subscribe_authorize(Socket_t sock, const stratum_config_t *conf
     (void)snprintf(line, sizeof(line),
                    "{\"id\":1,\"method\":\"mining.subscribe\",\"params\":[\"vek280_bitcoin_miner/0.1\"]}\n");
     (void)send_line(sock, line);
+    stratum_debug_set_event("tx subscribe");
 
     (void)snprintf(line, sizeof(line),
                    "{\"id\":2,\"method\":\"mining.authorize\",\"params\":[\"%s\",\"%s\"]}\n",
                    config->user, config->password);
     (void)send_line(sock, line);
+    stratum_debug_set_event("tx authorize");
 }
 
 static void submit_share(Socket_t sock, const stratum_config_t *config,
@@ -630,29 +774,59 @@ static void submit_share(Socket_t sock, const stratum_config_t *config,
                    job->ntime,
                    (unsigned long)result->nonce);
     (void)send_line(sock, line);
+    stratum_debug_set_event("tx submit nonce=%08lx", (unsigned long)result->nonce);
 }
 
 static void handle_stratum_line(const char *line, stratum_state_t *state)
 {
-    if (strstr(line, "\"mining.notify\"") != NULL) {
+    stratum_debug_inc(&g_debug.rx_lines);
+    stratum_debug_set_rx_line(line);
+
+    if (json_method_is(line, "mining.notify")) {
         stratum_notify_t notify;
 
         if (parse_notify(line, &notify)) {
+            stratum_debug_inc(&g_debug.notify_count);
+            stratum_debug_set_event("rx notify id=%s branches=%lu",
+                                    notify.job_id,
+                                    (unsigned long)notify.merkle_count);
             state->pending_notify = notify;
             state->have_pending_notify = true;
             try_dispatch_pending_notify(state);
+        } else {
+            stratum_debug_set_event("notify parse failed");
         }
-    } else if (strstr(line, "\"mining.set_difficulty\"") != NULL) {
+    } else if (json_method_is(line, "mining.set_difficulty")) {
         double difficulty;
 
         if (parse_difficulty(line, &difficulty)) {
+            stratum_debug_inc(&g_debug.difficulty_count);
             compact_target_for_difficulty(difficulty, state->target);
             state->have_target = true;
+            stratum_debug_set_event("rx difficulty");
             try_dispatch_pending_notify(state);
+        } else {
+            stratum_debug_set_event("difficulty parse failed");
+        }
+    } else if (json_method_is(line, "mining.set_target")) {
+        if (parse_target(line, state->target)) {
+            stratum_debug_inc(&g_debug.target_count);
+            state->have_target = true;
+            stratum_debug_set_event("rx target");
+            try_dispatch_pending_notify(state);
+        } else {
+            stratum_debug_set_event("target parse failed");
         }
     } else {
-        (void)parse_subscribe_response(line, state);
-        (void)parse_authorize_response(line, state);
+        if (parse_subscribe_response(line, state)) {
+            stratum_debug_inc(&g_debug.subscribe_ok);
+            stratum_debug_set_event("rx subscribe ok extranonce2=%lu",
+                                    (unsigned long)state->extranonce2_size);
+        }
+        if (parse_authorize_response(line, state)) {
+            stratum_debug_inc(&g_debug.authorize_ok);
+            stratum_debug_set_event("rx authorize ok");
+        }
         try_dispatch_pending_notify(state);
     }
 }
@@ -663,13 +837,24 @@ static Socket_t connect_socket(const stratum_config_t *config)
     Socket_t sock;
     uint32_t ip;
 
-    ip = FreeRTOS_gethostbyname(config->host);
+    ip = FreeRTOS_inet_addr(config->host);
     if (ip == 0U) {
+        ip = FreeRTOS_gethostbyname(config->host);
+    }
+    if (ip == 0U) {
+        stratum_debug_set_event("dns failed host=%s", config->host);
         return FREERTOS_INVALID_SOCKET;
     }
+    stratum_debug_set_event("dns ok host=%s ip=%lu.%lu.%lu.%lu",
+                            config->host,
+                            (unsigned long)(ip & 0xffU),
+                            (unsigned long)((ip >> 8) & 0xffU),
+                            (unsigned long)((ip >> 16) & 0xffU),
+                            (unsigned long)((ip >> 24) & 0xffU));
 
     sock = FreeRTOS_socket(FREERTOS_AF_INET, FREERTOS_SOCK_STREAM, FREERTOS_IPPROTO_TCP);
     if (sock == FREERTOS_INVALID_SOCKET) {
+        stratum_debug_set_event("socket create failed");
         return sock;
     }
 
@@ -682,10 +867,12 @@ static Socket_t connect_socket(const stratum_config_t *config)
     addr.sin_port = FreeRTOS_htons(config->port);
 
     if (FreeRTOS_connect(sock, &addr, sizeof(addr)) != 0) {
+        stratum_debug_set_event("connect failed");
         FreeRTOS_closesocket(sock);
         return FREERTOS_INVALID_SOCKET;
     }
 
+    stratum_debug_set_event("connect ok");
     return sock;
 }
 
@@ -713,13 +900,17 @@ static void stratum_task(void *arg)
         }
 
         stratum_config_t config;
+        stratum_debug_inc(&g_debug.connect_attempts);
+
         if (xSemaphoreTake(g_config_lock, pdMS_TO_TICKS(100)) == pdTRUE) {
             config = g_config;
             xSemaphoreGive(g_config_lock);
         } else {
+            stratum_debug_set_event("config lock timeout");
             vTaskDelay(pdMS_TO_TICKS(1000));
             continue;
         }
+        stratum_debug_set_event("connect attempt host=%s port=%u", config.host, config.port);
 
         Socket_t sock = connect_socket(&config);
         if (sock == FREERTOS_INVALID_SOCKET) {
@@ -730,6 +921,7 @@ static void stratum_task(void *arg)
         stratum_state_t state;
         memset(&state, 0, sizeof(state));
         g_connected = true;
+        stratum_debug_inc(&g_debug.connect_successes);
         g_disconnect_requested = false;
         send_subscribe_authorize(sock, &config);
 
@@ -741,9 +933,16 @@ static void stratum_task(void *arg)
             BaseType_t got = FreeRTOS_recv(sock, &ch, 1, 0);
 
             if (got == 0) {
-                break;
+                drain_share_results(sock, &config, pdMS_TO_TICKS(25));
+                refill_if_idle(&state);
+                continue;
             }
             if (got < 0) {
+                if (got != -pdFREERTOS_ERRNO_EWOULDBLOCK) {
+                    stratum_debug_set_recv_status(got);
+                    stratum_debug_set_event("recv error rc=%ld", (long)got);
+                    break;
+                }
                 drain_share_results(sock, &config, pdMS_TO_TICKS(25));
                 refill_if_idle(&state);
                 continue;
@@ -760,12 +959,14 @@ static void stratum_task(void *arg)
                     line[used++] = ch;
                 } else {
                     used = 0;
+                    stratum_debug_set_event("rx line overflow");
                 }
             }
         }
 
         FreeRTOS_closesocket(sock);
         g_connected = false;
+        stratum_debug_inc(&g_debug.disconnects);
 
         if (!g_disconnect_requested) {
             vTaskDelay(pdMS_TO_TICKS(5000));
@@ -777,6 +978,8 @@ void stratum_client_start(void)
 {
     g_config_lock = xSemaphoreCreateMutex();
     configASSERT(g_config_lock != NULL);
+    g_debug_lock = xSemaphoreCreateMutex();
+    configASSERT(g_debug_lock != NULL);
     xTaskCreate(stratum_task, "stratum", 4096, NULL, 3, NULL);
 }
 
@@ -793,6 +996,14 @@ void stratum_client_get_config(stratum_config_t *config)
     if (xSemaphoreTake(g_config_lock, pdMS_TO_TICKS(100)) == pdTRUE) {
         *config = g_config;
         xSemaphoreGive(g_config_lock);
+    }
+}
+
+void stratum_client_get_debug(stratum_debug_t *debug)
+{
+    if (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(100)) == pdTRUE) {
+        *debug = g_debug;
+        xSemaphoreGive(g_debug_lock);
     }
 }
 
