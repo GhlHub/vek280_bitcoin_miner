@@ -30,11 +30,17 @@ module bitcoin_result_cluster_fifo #(
 
     integer i;
     integer hit_idx;
-    integer valid_count;
-    reg push_valid;
-    reg [31:0] push_engine_id;
-    reg [31:0] push_nonce;
-    reg [255:0] push_hash;
+    integer input_valid_count;
+    integer stage1_valid_count;
+    reg [CLUSTER_SIZE-1:0]      stage1_valid_q;
+    reg [CLUSTER_SIZE*32-1:0]   stage1_nonce_q;
+    reg [CLUSTER_SIZE*256-1:0]  stage1_hash_q;
+    reg                         stage1_overflow_q;
+    reg                         stage2_valid_q;
+    reg [31:0]                  stage2_engine_id_q;
+    reg [31:0]                  stage2_nonce_q;
+    reg [255:0]                 stage2_hash_q;
+    reg                         stage2_overflow_q;
     wire do_pop;
     wire do_push;
 
@@ -43,30 +49,23 @@ module bitcoin_result_cluster_fifo #(
     assign nonce_o = nonce_mem[rd_ptr_q];
     assign hash_o = hash_mem[rd_ptr_q];
     assign do_pop = pop_i && (count_q != 0);
-    assign do_push = push_valid && ((count_q < FIFO_DEPTH[PTR_WIDTH:0]) || do_pop);
+    assign do_push = stage2_valid_q && ((count_q < FIFO_DEPTH[PTR_WIDTH:0]) || do_pop);
 
     always @(*) begin
         hit_idx = -1;
-        valid_count = 0;
-        push_valid = 1'b0;
-        push_engine_id = 32'h0;
-        push_nonce = 32'h0;
-        push_hash = 256'h0;
+        input_valid_count = 0;
+        stage1_valid_count = 0;
 
         for (i = 0; i < CLUSTER_SIZE; i = i + 1) begin
             if (engine_valid_i[i]) begin
-                valid_count = valid_count + 1;
+                input_valid_count = input_valid_count + 1;
+            end
+            if (stage1_valid_q[i]) begin
+                stage1_valid_count = stage1_valid_count + 1;
                 if (hit_idx < 0) begin
                     hit_idx = i;
                 end
             end
-        end
-
-        if (hit_idx >= 0) begin
-            push_valid = 1'b1;
-            push_engine_id = CLUSTER_BASE_ID + hit_idx[31:0];
-            push_nonce = engine_nonce_i[hit_idx*32 +: 32];
-            push_hash = engine_hash_i[hit_idx*256 +: 256];
         end
     end
 
@@ -76,6 +75,15 @@ module bitcoin_result_cluster_fifo #(
             rd_ptr_q <= {PTR_WIDTH{1'b0}};
             count_q <= {(PTR_WIDTH+1){1'b0}};
             overflow_o <= 1'b0;
+            stage1_valid_q <= {CLUSTER_SIZE{1'b0}};
+            stage1_nonce_q <= {CLUSTER_SIZE*32{1'b0}};
+            stage1_hash_q <= {CLUSTER_SIZE*256{1'b0}};
+            stage1_overflow_q <= 1'b0;
+            stage2_valid_q <= 1'b0;
+            stage2_engine_id_q <= 32'h0;
+            stage2_nonce_q <= 32'h0;
+            stage2_hash_q <= 256'h0;
+            stage2_overflow_q <= 1'b0;
             for (i = 0; i < FIFO_DEPTH; i = i + 1) begin
                 engine_id_mem[i] <= 32'h0;
                 nonce_mem[i] <= 32'h0;
@@ -87,18 +95,43 @@ module bitcoin_result_cluster_fifo #(
                 rd_ptr_q <= {PTR_WIDTH{1'b0}};
                 count_q <= {(PTR_WIDTH+1){1'b0}};
                 overflow_o <= 1'b0;
+                stage1_valid_q <= {CLUSTER_SIZE{1'b0}};
+                stage1_nonce_q <= {CLUSTER_SIZE*32{1'b0}};
+                stage1_hash_q <= {CLUSTER_SIZE*256{1'b0}};
+                stage1_overflow_q <= 1'b0;
+                stage2_valid_q <= 1'b0;
+                stage2_engine_id_q <= 32'h0;
+                stage2_nonce_q <= 32'h0;
+                stage2_hash_q <= 256'h0;
+                stage2_overflow_q <= 1'b0;
             end else begin
-                if (push_valid && !do_push) begin
+                stage1_valid_q <= engine_valid_i;
+                stage1_nonce_q <= engine_nonce_i;
+                stage1_hash_q <= engine_hash_i;
+                stage1_overflow_q <= (input_valid_count > 1);
+
+                stage2_valid_q <= (hit_idx >= 0);
+                stage2_engine_id_q <= 32'h0;
+                stage2_nonce_q <= 32'h0;
+                stage2_hash_q <= 256'h0;
+                stage2_overflow_q <= stage1_overflow_q || (stage1_valid_count > 1);
+                if (hit_idx >= 0) begin
+                    stage2_engine_id_q <= CLUSTER_BASE_ID + hit_idx[31:0];
+                    stage2_nonce_q <= stage1_nonce_q[hit_idx*32 +: 32];
+                    stage2_hash_q <= stage1_hash_q[hit_idx*256 +: 256];
+                end
+
+                if (stage2_valid_q && !do_push) begin
                     overflow_o <= 1'b1;
                 end
-                if (valid_count > 1) begin
+                if (stage2_overflow_q) begin
                     overflow_o <= 1'b1;
                 end
 
                 if (do_push) begin
-                    engine_id_mem[wr_ptr_q] <= push_engine_id;
-                    nonce_mem[wr_ptr_q] <= push_nonce;
-                    hash_mem[wr_ptr_q] <= push_hash;
+                    engine_id_mem[wr_ptr_q] <= stage2_engine_id_q;
+                    nonce_mem[wr_ptr_q] <= stage2_nonce_q;
+                    hash_mem[wr_ptr_q] <= stage2_hash_q;
                     if (wr_ptr_q == FIFO_DEPTH[PTR_WIDTH-1:0] - {{(PTR_WIDTH-1){1'b0}}, 1'b1}) begin
                         wr_ptr_q <= {PTR_WIDTH{1'b0}};
                     end else begin
