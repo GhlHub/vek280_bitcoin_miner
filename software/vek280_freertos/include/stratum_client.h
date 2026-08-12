@@ -24,6 +24,14 @@ typedef struct {
     uint32_t authorize_ok;
     uint32_t job_dispatch_ok;
     uint32_t job_dispatch_fail;
+    uint32_t share_candidates;
+    uint32_t share_submits;
+    uint32_t share_accepted;
+    uint32_t share_rejected;
+    uint32_t share_send_failures;
+    uint32_t last_job_tick;
+    uint32_t last_share_tick;
+    uint32_t target_word0;
     int32_t last_recv_status;
     int32_t last_send_status;
     char last_event[96];

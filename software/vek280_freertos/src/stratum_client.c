@@ -687,6 +687,10 @@ static bool dispatch_notify_work(const stratum_notify_t *notify, stratum_state_t
 
     miner_service_submit_job(&job);
     stratum_debug_inc(&g_debug.job_dispatch_ok);
+    if (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) == pdTRUE) {
+        g_debug.last_job_tick = (uint32_t)xTaskGetTickCount();
+        xSemaphoreGive(g_debug_lock);
+    }
     stratum_debug_set_event("job dispatched id=%s", job.job_id);
     return true;
 }
@@ -747,7 +751,14 @@ static void send_subscribe_authorize(Socket_t sock, const stratum_config_t *conf
 
     (void)snprintf(line, sizeof(line),
                    "{\"id\":1,\"method\":\"mining.subscribe\",\"params\":[\"vek280_bitcoin_miner/0.1\"]}\n");
-    (void)send_line(sock, line);
+    stratum_debug_inc(&g_debug.share_submits);
+    if (send_line(sock, line) <= 0) {
+        stratum_debug_inc(&g_debug.share_send_failures);
+    }
+    if (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) == pdTRUE) {
+        g_debug.last_share_tick = (uint32_t)xTaskGetTickCount();
+        xSemaphoreGive(g_debug_lock);
+    }
     stratum_debug_set_event("tx subscribe");
 
     (void)snprintf(line, sizeof(line),
@@ -803,6 +814,10 @@ static void handle_stratum_line(const char *line, stratum_state_t *state)
             stratum_debug_inc(&g_debug.difficulty_count);
             compact_target_for_difficulty(difficulty, state->target);
             state->have_target = true;
+            if (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) == pdTRUE) {
+                g_debug.target_word0 = state->target[0];
+                xSemaphoreGive(g_debug_lock);
+            }
             stratum_debug_set_event("rx difficulty");
             try_dispatch_pending_notify(state);
         } else {
@@ -812,12 +827,26 @@ static void handle_stratum_line(const char *line, stratum_state_t *state)
         if (parse_target(line, state->target)) {
             stratum_debug_inc(&g_debug.target_count);
             state->have_target = true;
+            if (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) == pdTRUE) {
+                g_debug.target_word0 = state->target[0];
+                xSemaphoreGive(g_debug_lock);
+            }
             stratum_debug_set_event("rx target");
             try_dispatch_pending_notify(state);
         } else {
             stratum_debug_set_event("target parse failed");
         }
     } else {
+        if (json_has_id(line, 4U)) {
+            if (strstr(line, "\"result\":true") != NULL) {
+                stratum_debug_inc(&g_debug.share_accepted);
+                stratum_debug_set_event("share accepted");
+            } else if ((strstr(line, "\"result\":false") != NULL) ||
+                       (strstr(line, "\"error\":") != NULL)) {
+                stratum_debug_inc(&g_debug.share_rejected);
+                stratum_debug_set_event("share rejected");
+            }
+        }
         if (parse_subscribe_response(line, state)) {
             stratum_debug_inc(&g_debug.subscribe_ok);
             stratum_debug_set_event("rx subscribe ok extranonce2=%lu",
@@ -882,8 +911,10 @@ static void drain_share_results(Socket_t sock, const stratum_config_t *config, T
     miner_job_t job;
 
     if (miner_service_take_result(&result, &job, timeout)) {
+        stratum_debug_inc(&g_debug.share_candidates);
         submit_share(sock, config, &result, &job);
         while (miner_service_take_result(&result, &job, 0) == true) {
+            stratum_debug_inc(&g_debug.share_candidates);
             submit_share(sock, config, &result, &job);
         }
     }

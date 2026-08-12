@@ -19,6 +19,7 @@ static miner_job_t g_last_result_job;
 static miner_job_t g_active_job;
 static volatile bool g_have_result;
 static volatile bool g_have_active_job;
+static miner_service_stats_t g_stats;
 
 typedef struct {
     miner_result_t result;
@@ -36,6 +37,7 @@ static void miner_irq_handler(void *arg)
     BaseType_t higher_priority_task_woken = pdFALSE;
 
     (void)arg;
+    ++g_stats.irq_count;
     xSemaphoreGiveFromISR(g_irq_sem, &higher_priority_task_woken);
     portYIELD_FROM_ISR(higher_priority_task_woken);
 }
@@ -64,6 +66,11 @@ static void miner_task(void *arg)
             g_have_active_job = true;
             miner_program_job(job.midstate, job.header_tail, job.target);
             miner_start_range(job.nonce_start, job.nonce_count);
+            ++g_stats.jobs_started;
+            g_stats.nonce_candidates_issued += job.nonce_count;
+            g_stats.active_nonce_start = job.nonce_start;
+            g_stats.active_nonce_count = job.nonce_count;
+            g_stats.active_job_tick = (uint32_t)xTaskGetTickCount();
         }
 
         (void)xSemaphoreTake(g_irq_sem, pdMS_TO_TICKS(100));
@@ -85,7 +92,11 @@ static void miner_task(void *arg)
                 xSemaphoreGive(g_result_lock);
             }
 
-            (void)xQueueSend(g_result_queue, &event, 0);
+            ++g_stats.result_count;
+            g_stats.last_result_tick = (uint32_t)xTaskGetTickCount();
+            if (xQueueSend(g_result_queue, &event, 0) != pdTRUE) {
+                ++g_stats.result_queue_drops;
+            }
         }
     }
 }
@@ -105,6 +116,7 @@ void miner_service_start(void)
 
 void miner_service_submit_job(const miner_job_t *job)
 {
+    ++g_stats.jobs_queued;
     (void)xQueueOverwrite(g_job_queue, job);
 }
 
@@ -126,7 +138,19 @@ void miner_service_clear(void)
 
 uint32_t miner_service_status(void)
 {
-    return miner_status();
+    uint32_t status = miner_status();
+
+    if ((status & MINER_STATUS_OVERFLOW) != 0U) {
+        ++g_stats.overflow_polls;
+    }
+    return status;
+}
+
+void miner_service_get_stats(miner_service_stats_t *stats)
+{
+    if (stats != NULL) {
+        *stats = g_stats;
+    }
 }
 
 bool miner_service_get_last_result(miner_result_t *result)

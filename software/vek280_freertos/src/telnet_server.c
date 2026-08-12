@@ -15,6 +15,7 @@
 #include "miner_regs.h"
 #include "miner_service.h"
 #include "stratum_client.h"
+#include "telemetry.h"
 
 static void sock_printf(Socket_t sock, const char *fmt, ...)
 {
@@ -71,6 +72,66 @@ static void print_hash(Socket_t sock, const uint32_t hash[8])
     }
 }
 
+static void print_stats(Socket_t sock)
+{
+    miner_service_stats_t miner;
+    stratum_debug_t stratum;
+    uint32_t uptime = (uint32_t)xTaskGetTickCount();
+
+    memset(&miner, 0, sizeof(miner));
+    memset(&stratum, 0, sizeof(stratum));
+    miner_service_get_stats(&miner);
+    stratum_client_get_debug(&stratum);
+
+    sock_printf(sock,
+                "performance nominal_hashrate=%lu H/s engines=%lu uptime_ticks=%lu active_job_age_ticks=%lu issued=%llu jobs=%lu/%lu\r\n",
+                (unsigned long)MINER_HASHRATE_HS,
+                (unsigned long)miner_num_engines(),
+                (unsigned long)uptime,
+                (unsigned long)(uptime - miner.active_job_tick),
+                (unsigned long long)miner.nonce_candidates_issued,
+                (unsigned long)miner.jobs_started,
+                (unsigned long)miner.jobs_queued);
+    sock_printf(sock,
+                "results candidates=%lu submits=%lu accepted=%lu rejected=%lu send_fail=%lu irq=%lu queue_drop=%lu overflow_polls=%lu last_result_age_ticks=%lu\r\n",
+                (unsigned long)stratum.share_candidates,
+                (unsigned long)stratum.share_submits,
+                (unsigned long)stratum.share_accepted,
+                (unsigned long)stratum.share_rejected,
+                (unsigned long)stratum.share_send_failures,
+                (unsigned long)miner.irq_count,
+                (unsigned long)miner.result_queue_drops,
+                (unsigned long)miner.overflow_polls,
+                (unsigned long)(uptime - miner.last_result_tick));
+    sock_printf(sock,
+                "work notify=%lu dispatched=%lu failed=%lu target_word0=%08lx last_job_age_ticks=%lu\r\n",
+                (unsigned long)stratum.notify_count,
+                (unsigned long)stratum.job_dispatch_ok,
+                (unsigned long)stratum.job_dispatch_fail,
+                (unsigned long)stratum.target_word0,
+                (unsigned long)(uptime - stratum.last_job_tick));
+}
+
+static void print_health(Socket_t sock)
+{
+    telemetry_health_t health;
+
+    if (!telemetry_get_health(&health) || !health.available) {
+        sock_printf(sock, "health sysmon=unavailable\r\n");
+        return;
+    }
+
+    sock_printf(sock,
+                "health sysmon=ok temp=%ld.%02ldC min=%ld.%02ldC max=%ld.%02ldC alarms=0x%08lx\r\n",
+                (long)(health.temperature_centi_c / 100),
+                (long)labs(health.temperature_centi_c % 100),
+                (long)(health.temperature_min_centi_c / 100),
+                (long)labs(health.temperature_min_centi_c % 100),
+                (long)(health.temperature_max_centi_c / 100),
+                (long)labs(health.temperature_max_centi_c % 100),
+                (unsigned long)health.alarm_status);
+}
+
 static void handle_command(Socket_t sock, char *line)
 {
     char *cursor = line;
@@ -85,6 +146,8 @@ static void handle_command(Socket_t sock, char *line)
                     "commands:\r\n"
                     "  help\r\n"
                     "  status\r\n"
+                    "  stats\r\n"
+                    "  health\r\n"
                     "  stratum\r\n"
                     "  regs\r\n"
                     "  start <nonce_start_hex> <nonce_count_hex>\r\n"
@@ -137,6 +200,10 @@ static void handle_command(Socket_t sock, char *line)
         sock_printf(sock, "event: %s\r\n", dbg.last_event);
         sock_printf(sock, "last_tx: %s\r\n", dbg.last_tx);
         sock_printf(sock, "last_rx: %s\r\n", dbg.last_rx);
+    } else if (strcmp(cmd, "stats") == 0) {
+        print_stats(sock);
+    } else if (strcmp(cmd, "health") == 0) {
+        print_health(sock);
     } else if (strcmp(cmd, "regs") == 0) {
         sock_printf(sock, "aggregate STATUS=0x%08lx NUM_ENGINES=%lu\r\n",
                     (unsigned long)miner_status(),

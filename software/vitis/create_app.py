@@ -62,6 +62,7 @@ ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/miner_service.c
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/sha256_sw.c
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/stratum_client.c
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/telnet_server.c
+${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/telemetry.c
 ${CMAKE_SOURCE_DIR}/../../../FreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/FreeRTOS_ARP.c
 ${CMAKE_SOURCE_DIR}/../../../FreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/FreeRTOS_BitConfig.c
 ${CMAKE_SOURCE_DIR}/../../../FreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/FreeRTOS_DHCP.c
