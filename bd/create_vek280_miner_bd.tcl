@@ -40,7 +40,8 @@ set_property default_lib work [current_project]
 
 set rtl_files [list \
     [file join $repo_dir rtl irq_or4.v] \
-    [file join $repo_dir rtl axi_lite_cdc_bridge.sv]]
+    [file join $repo_dir rtl axi_lite_cdc_bridge.sv] \
+    [file join $repo_dir rtl bitcoin_sha256_core.sv]]
 if {$use_ooc_miner32} {
     lappend rtl_files [file join $repo_dir rtl bitcoin_miner_axi_32_stub.sv]
 } else {

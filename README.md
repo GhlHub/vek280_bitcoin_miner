@@ -17,12 +17,13 @@ route and physical optimization:
 
 | Metric | Result |
 | --- | ---: |
-| Setup slack (WNS) | +0.117 ns |
+| Setup slack (WNS) | +0.101 ns |
 | Setup violations (TNS) | 0.000 ns |
-| Hold slack (WHS) | +0.005 ns |
+| Hold slack (WHS) | +0.009 ns |
 | Hold violations (THS) | 0.000 ns |
-| LUTs | 351,459 (67.5%) |
-| Registers | 496,748 (47.7%) |
+| LUTs | 309,774 (59.5%) |
+| Registers | 356,240 (34.2%) |
+| Slices | 58,255 (89.5%) |
 | Routing errors | 0 |
 
 Detailed operation, register semantics, architecture, and runtime control are

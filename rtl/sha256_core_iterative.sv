@@ -143,42 +143,12 @@ module sha256_core_iterative (
     integer i;
     always @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
-            for (i = 0; i < 16; i = i + 1) begin
-                w_mem[i] <= 32'h00000000;
-            end
-            h0_q <= 32'h00000000;
-            h1_q <= 32'h00000000;
-            h2_q <= 32'h00000000;
-            h3_q <= 32'h00000000;
-            h4_q <= 32'h00000000;
-            h5_q <= 32'h00000000;
-            h6_q <= 32'h00000000;
-            h7_q <= 32'h00000000;
-            a_q <= 32'h00000000;
-            b_q <= 32'h00000000;
-            c_q <= 32'h00000000;
-            d_q <= 32'h00000000;
-            e_q <= 32'h00000000;
-            f_q <= 32'h00000000;
-            g_q <= 32'h00000000;
-            h_q <= 32'h00000000;
+            // Datapath state is fully initialized by start_i before busy_q
+            // permits it to be consumed; avoid a high-fanout reset tree.
             round_q <= 7'd0;
             phase_q <= 3'd0;
             busy_q <= 1'b0;
-            t1_a_q <= 32'h00000000;
-            t1_b_q <= 32'h00000000;
-            t1_c_q <= 32'h00000000;
-            t1_q <= 32'h00000000;
-            t2_q <= 32'h00000000;
-            w_new_q <= 32'h00000000;
-            w_s0_q <= 32'h00000000;
-            w_s1_q <= 32'h00000000;
-            w_m7_q <= 32'h00000000;
-            w_m16_q <= 32'h00000000;
-            w_ab_q <= 32'h00000000;
-            w_cd_q <= 32'h00000000;
             done_o <= 1'b0;
-            digest_o <= 256'h0;
         end else begin
             done_o <= 1'b0;
 

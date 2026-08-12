@@ -15,6 +15,8 @@ file mkdir $reports_dir
 read_verilog -sv [list \
     [file join $repo_dir rtl sha256_core_iterative.sv] \
     [file join $repo_dir rtl sha256_core_fabric.sv] \
+    [file join $repo_dir rtl sha256_core_dsp.sv] \
+    [file join $repo_dir rtl bitcoin_sha256_core.sv] \
     [file join $repo_dir rtl bitcoin_hash_engine.sv] \
     [file join $repo_dir rtl bitcoin_result_cluster_fifo.sv] \
     [file join $repo_dir rtl bitcoin_miner_axi.sv] \

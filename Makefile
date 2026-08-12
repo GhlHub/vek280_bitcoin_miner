@@ -1,5 +1,5 @@
 SHA_RTL := rtl/sha256_core_iterative.sv rtl/sha256_core_fabric.sv rtl/sha256_core_dsp.sv
-MINER_RTL := $(SHA_RTL) rtl/bitcoin_hash_engine.sv rtl/bitcoin_result_cluster_fifo.sv rtl/bitcoin_miner_axi.sv rtl/irq_or4.v
+MINER_RTL := $(SHA_RTL) rtl/bitcoin_sha256_core.sv rtl/bitcoin_hash_engine.sv rtl/bitcoin_result_cluster_fifo.sv rtl/bitcoin_miner_axi.sv rtl/irq_or4.v
 SHA_TB  := tb/tb_sha256_cores.sv
 MINER_TB := tb/tb_bitcoin_miner_axi.sv
 SHA_OUT := sim/tb_sha256_cores.out

@@ -19,7 +19,6 @@ module tb_bitcoin_miner_axi;
     localparam [11:0] ADDR_RESULT_NONCE  = 12'h090;
     localparam [11:0] ADDR_RESULT_ENGINE = 12'h094;
     localparam [11:0] ADDR_RESULT_STATUS = 12'h098;
-    localparam [11:0] ADDR_RESULT_HASH   = 12'h0a0;
 
     reg         clk;
     reg         rst_n;
@@ -271,25 +270,10 @@ module tb_bitcoin_miner_axi;
         end
     endtask
 
-    task automatic read_hash256(input [11:0] base_addr, output [255:0] value);
-        integer i;
-        reg [31:0] word;
-        begin
-            value = 256'h0;
-            for (i = 0; i < 8; i = i + 1) begin
-                axi_read(base_addr + 12'(i * 4), word);
-                value[255 - (i * 32) -: 32] = word;
-            end
-        end
-    endtask
-
     initial begin
         reg [511:0] header_block0;
         reg [127:0] tail;
         reg [255:0] midstate;
-        reg [255:0] first_digest;
-        reg [255:0] expected_hashes [0:NUM_ENGINES-1];
-        reg [255:0] got_hash;
         reg [31:0] word;
         reg [31:0] result_nonce;
         reg [31:0] result_engine;
@@ -313,8 +297,6 @@ module tb_bitcoin_miner_axi;
         tail = 128'h404142434445464748494a4b4c4d4e4f;
         midstate = compress_ref(header_block0, SHA256_IV);
         for (result_idx = 0; result_idx < NUM_ENGINES; result_idx = result_idx + 1) begin
-            first_digest = compress_ref(make_first_pass_block(tail, result_idx[31:0]), midstate);
-            expected_hashes[result_idx] = compress_ref(make_second_pass_block(first_digest), SHA256_IV);
         end
 
         repeat (8) @(posedge clk);
@@ -353,7 +335,6 @@ module tb_bitcoin_miner_axi;
 
                 axi_read(ADDR_RESULT_NONCE, result_nonce);
                 axi_read(ADDR_RESULT_ENGINE, result_engine);
-                read_hash256(ADDR_RESULT_HASH, got_hash);
 
                 if (result_nonce != result_idx[31:0]) begin
                     $display("FAIL result %0d nonce got %08h expected %08h",
@@ -363,11 +344,6 @@ module tb_bitcoin_miner_axi;
                 if (result_engine != result_idx[31:0]) begin
                     $display("FAIL result %0d engine got %0d expected %0d",
                              result_idx, result_engine, result_idx);
-                    failures = failures + 1;
-                end
-                if (got_hash != expected_hashes[result_idx]) begin
-                    $display("FAIL result %0d hash got %064h expected %064h",
-                             result_idx, got_hash, expected_hashes[result_idx]);
                     failures = failures + 1;
                 end
             end

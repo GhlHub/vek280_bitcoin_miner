@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 --------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version      : Vivado v.2026.1 (lin64) Build 6511674 Tue Jun 16 11:01:26 MDT 2026
-| Date              : Tue Aug 11 22:33:46 2026
+| Date              : Wed Aug 12 03:46:11 2026
 | Host              : NiuBi running 64-bit Ubuntu 24.04.4 LTS
 | Command           : report_timing_summary -file /raid/work/vek280_bitcoin_miner/reports/impl_vek280_4x32_ooc/timing_summary_impl.rpt
 | Design            : miner_system_wrapper
@@ -139,7 +139,7 @@ Table of Contents
 
     WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
     -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      0.117        0.000                      0              1483174        0.005        0.000                      0              1483174        0.016        0.000                       0                496797  
+      0.101        0.000                      0               888200        0.009        0.000                      0               888200        0.016        0.000                       0                356289  
 
 
 All user specified timing constraints are met.
@@ -170,15 +170,15 @@ s_axi_aclk                 {0.000 2.000}          4.000           250.000
 
 Clock                          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
 -----                          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-clk_pl_0                         0.117        0.000                      0               737855        0.005        0.000                      0               737855        1.394        0.000                       0                371462  
-clk_pl_1                         3.836        0.000                      0                 3585        0.038        0.000                      0                 3585        2.571        0.000                       0                  1646  
+clk_pl_0                         0.101        0.000                      0               553593        0.009        0.000                      0               553593        1.394        0.000                       0                265982  
+clk_pl_1                         2.467        0.000                      0                 3585        0.024        0.000                      0                 3585        2.571        0.000                       0                  1646  
 lpddr4_clk1_clk_p                                                                                                                                                            2.109        0.000                       0                     1  
   bank1_clkout0                                                                                                                                                              0.064        0.000                       0                     2  
     pll_clktoxphy[0]                                                                                                                                                         0.016        0.000                       0                    10  
   bank1_xpll0_fifo_rd_clk                                                                                                                                                    0.064        0.000                       0                    19  
   mc_clk_xpll                                                                                                                                                                0.064        0.000                       0                     1  
   pll_clk_xpll                                                                                                                                                               0.016        0.000                       0                    10  
-s_axi_aclk                       0.139        0.000                      0               245740        0.006        0.000                      0               245740        1.725        0.000                       0                123646  
+s_axi_aclk                       0.132        0.000                      0               184434        0.010        0.000                      0               184434        1.725        0.000                       0                 88618  
 
 
 ------------------------------------------------------------------------------------------------
@@ -188,10 +188,10 @@ s_axi_aclk                       0.139        0.000                      0      
 
 From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
 ----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
-clk_pl_1      clk_pl_0            0.726        0.000                      0                  248        0.025        0.000                      0                  248  
-s_axi_aclk    clk_pl_0            2.185        0.000                      0                   77        0.051        0.000                      0                   77  
-clk_pl_0      clk_pl_1            1.977        0.000                      0                  152        0.043        0.000                      0                  152  
-clk_pl_0      s_axi_aclk          1.350        0.000                      0                  125        0.036        0.000                      0                  125  
+clk_pl_1      clk_pl_0            2.347        0.000                      0                  248        0.026        0.000                      0                  248  
+s_axi_aclk    clk_pl_0            1.837        0.000                      0                   77        0.036        0.000                      0                   77  
+clk_pl_0      clk_pl_1            1.916        0.000                      0                  152        0.027        0.000                      0                  152  
+clk_pl_0      s_axi_aclk          0.384        0.000                      0                60409        0.061        0.000                      0                60409  
 
 
 ------------------------------------------------------------------------------------------------
@@ -201,9 +201,9 @@ clk_pl_0      s_axi_aclk          1.350        0.000                      0     
 
 Path Group         From Clock         To Clock               WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
 ----------         ----------         --------               -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
-**async_default**  clk_pl_0           clk_pl_0                 1.276        0.000                      0               371425        0.918        0.000                      0               371425  
-**async_default**  clk_pl_1           clk_pl_1                 4.286        0.000                      0                  432        0.365        0.000                      0                  432  
-**async_default**  clk_pl_0           s_axi_aclk               1.387        0.000                      0               123646        0.910        0.000                      0               123646  
+**async_default**  clk_pl_0           clk_pl_0                 1.278        0.000                      0               109273        0.912        0.000                      0               109273  
+**async_default**  clk_pl_1           clk_pl_1                 0.723        0.000                      0                  432        0.177        0.000                      0                  432  
+**async_default**  clk_pl_0           s_axi_aclk               1.398        0.000                      0                36394        0.917        0.000                      0                36394  
 
 
 ------------------------------------------------------------------------------------------------
@@ -216,34 +216,34 @@ Path Group         From Clock         To Clock               WNS(ns)      TNS(ns
 From Clock:  clk_pl_0
   To Clock:  clk_pl_0
 
-Setup :            0  Failing Endpoints,  Worst Slack        0.117ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.005ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        0.101ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.009ns,  Total Violation        0.000ns
 PW    :            0  Failing Endpoints,  Worst Slack        1.394ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.117ns  (required time - arrival time)
-  Source:                 miner_system_i/miner_1/inst/u_miner/midstate_q_reg[226]/C
-                            (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_1/inst/u_miner/g_engines[15].u_engine/core_h_q_reg[226]/D
-                            (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+Slack (MET) :             0.101ns  (required time - arrival time)
+  Source:                 miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+                            (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            miner_system_i/miner_2/inst/u_miner/g_engines[5].u_engine/u_core/u_core/u_core/w_mem_reg[15][15]/CE
+                            (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             clk_pl_0
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            4.000ns  (clk_pl_0 rise@4.000ns - clk_pl_0 rise@0.000ns)
-  Data Path Delay:        3.803ns  (logic 0.165ns (4.338%)  route 3.638ns (95.662%))
-  Logic Levels:           1  (LUT5=1)
-  Clock Path Skew:        -0.013ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.466ns = ( 6.466 - 4.000 ) 
-    Source Clock Delay      (SCD):    2.598ns
-    Clock Pessimism Removal (CPR):    0.119ns
+  Data Path Delay:        3.724ns  (logic 0.379ns (10.178%)  route 3.345ns (89.822%))
+  Logic Levels:           2  (BUFG_FABRIC=1 LUT6=1)
+  Clock Path Skew:        -0.014ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.401ns = ( 6.401 - 4.000 ) 
+    Source Clock Delay      (SCD):    2.541ns
+    Clock Pessimism Removal (CPR):    0.126ns
   Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
     Clock Jitter             (CJ):    0.148ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.495ns (routing 0.625ns, distribution 1.870ns)
-  Clock Net Delay (Destination): 2.411ns (routing 0.557ns, distribution 1.854ns)
+  Clock Net Delay (Source):      2.438ns (routing 0.625ns, distribution 1.813ns)
+  Clock Net Delay (Destination): 2.346ns (routing 0.557ns, distribution 1.789ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
@@ -253,16 +253,19 @@ Slack (MET) :             0.117ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.103     0.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.495     2.598    miner_system_i/miner_1/inst/u_miner/s_axi_aclk
-    SLICE_X111Y277       FDCE                                         r  miner_system_i/miner_1/inst/u_miner/midstate_q_reg[226]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.438     2.541    miner_system_i/rst_pl0/U0/slowest_sync_clk
+    IRI_QUAD_X80Y593     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X111Y277       FDCE (Prop_HFF2_SLICEM_C_Q)
-                                                      0.091     2.689 r  miner_system_i/miner_1/inst/u_miner/midstate_q_reg[226]/Q
-                         net (fo=65, routed)          3.571     6.260    miner_system_i/miner_1/inst/u_miner/g_engines[15].u_engine/midstate_i[226]
-    SLICE_X29Y303        LUT5 (Prop_A6LUT_SLICEM_I1_O)
-                                                      0.074     6.334 r  miner_system_i/miner_1/inst/u_miner/g_engines[15].u_engine/core_h_q[226]_i_1/O
-                         net (fo=1, routed)           0.067     6.401    miner_system_i/miner_1/inst/u_miner/g_engines[15].u_engine/core_h_q[226]_i_1_n_0
-    SLICE_X29Y303        FDCE                                         r  miner_system_i/miner_1/inst/u_miner/g_engines[15].u_engine/core_h_q_reg[226]/D
+    IRI_QUAD_X80Y593     FDRE (Prop_IMUX4_IMR_IRI_QUAD_ODD_C_Q)
+                                                      0.233     2.774 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=1, routed)           0.304     3.078    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
+    BUFG_FABRIC_X2Y24    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
+                                                      0.015     3.093 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
+                         net (fo=148739, routed)      2.397     5.490    miner_system_i/miner_2/inst/u_miner/g_engines[5].u_engine/u_core/u_core/u_core/rst_ni
+    SLICE_X89Y17         LUT6 (Prop_D6LUT_SLICEM_I0_O)
+                                                      0.131     5.621 r  miner_system_i/miner_2/inst/u_miner/g_engines[5].u_engine/u_core/u_core/u_core/w_mem[15][9]_i_1/O
+                         net (fo=32, routed)          0.643     6.265    miner_system_i/miner_2/inst/u_miner/g_engines[5].u_engine/u_core/u_core/u_core/w_mem[15][9]_i_1_n_0
+    SLICE_X81Y12         FDRE                                         r  miner_system_i/miner_2/inst/u_miner/g_engines[5].u_engine/u_core/u_core/u_core/w_mem_reg[15][15]/CE
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_0 rise edge)
@@ -271,17 +274,17 @@ Slack (MET) :             0.117ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     4.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.055     4.055 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.411     6.466    miner_system_i/miner_1/inst/u_miner/g_engines[15].u_engine/clk_i
-    SLICE_X29Y303        FDCE                                         r  miner_system_i/miner_1/inst/u_miner/g_engines[15].u_engine/core_h_q_reg[226]/C
-                         clock pessimism              0.119     6.585    <hidden>
-                         clock uncertainty           -0.074     6.511    <hidden>
-    SLICE_X29Y303        FDCE (Setup_AFF2_SLICEM_C_D)
-                                                      0.007     6.518    miner_system_i/miner_1/inst/u_miner/g_engines[15].u_engine/core_h_q_reg[226]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.346     6.401    miner_system_i/miner_2/inst/u_miner/g_engines[5].u_engine/u_core/u_core/u_core/clk_i
+    SLICE_X81Y12         FDRE                                         r  miner_system_i/miner_2/inst/u_miner/g_engines[5].u_engine/u_core/u_core/u_core/w_mem_reg[15][15]/C
+                         clock pessimism              0.126     6.527    <hidden>
+                         clock uncertainty           -0.074     6.453    <hidden>
+    SLICE_X81Y12         FDRE (Setup_AFF_SLICEM_C_CE)
+                                                     -0.087     6.366    miner_system_i/miner_2/inst/u_miner/g_engines[5].u_engine/u_core/u_core/u_core/w_mem_reg[15][15]
   -------------------------------------------------------------------
-                         required time                          6.518    <hidden>
-                         arrival time                          -6.401    <hidden>
+                         required time                          6.366    <hidden>
+                         arrival time                          -6.265    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.117    <hidden>
+                         slack                                  0.101    <hidden>
 
 
 
@@ -289,22 +292,22 @@ Slack (MET) :             0.117ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.005ns  (arrival time - required time)
-  Source:                 miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/d_q_reg[26]/C
-                            (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/digest_o_reg[122]/D
-                            (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+Slack (MET) :             0.009ns  (arrival time - required time)
+  Source:                 miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_s0_q_reg[13]/C
+                            (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_cd_q_reg[13]/D
+                            (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             clk_pl_0
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk_pl_0 rise@0.000ns - clk_pl_0 rise@0.000ns)
-  Data Path Delay:        0.328ns  (logic 0.090ns (27.418%)  route 0.238ns (72.582%))
+  Data Path Delay:        0.263ns  (logic 0.091ns (34.601%)  route 0.172ns (65.399%))
   Logic Levels:           1  (LUTCY1=1)
-  Clock Path Skew:        0.289ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    2.000ns
-    Source Clock Delay      (SCD):    1.572ns
-    Clock Pessimism Removal (CPR):    0.139ns
-  Clock Net Delay (Source):      1.530ns (routing 0.401ns, distribution 1.129ns)
-  Clock Net Delay (Destination): 1.920ns (routing 0.463ns, distribution 1.457ns)
+  Clock Path Skew:        0.219ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.906ns
+    Source Clock Delay      (SCD):    1.566ns
+    Clock Pessimism Removal (CPR):    0.121ns
+  Clock Net Delay (Source):      1.524ns (routing 0.401ns, distribution 1.123ns)
+  Clock Net Delay (Destination): 1.826ns (routing 0.463ns, distribution 1.363ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
@@ -314,16 +317,16 @@ Slack (MET) :             0.005ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.530     1.572    miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/clk_i
-    SLICE_X159Y317       FDCE                                         r  miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/d_q_reg[26]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.524     1.566    miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/clk_i
+    SLICE_X109Y285       FDRE                                         r  miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_s0_q_reg[13]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X159Y317       FDCE (Prop_HFF_SLICEM_C_Q)
-                                                      0.049     1.621 r  miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/d_q_reg[26]/Q
-                         net (fo=5, routed)           0.217     1.839    miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/digest_o_reg[122]_i_1/I1
-    SLICE_X160Y318       LUTCY1 (Prop_C5LUT_SLICEL_I1_O)
-                                                      0.041     1.880 r  miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/digest_o_reg[122]_i_1/LUTCY1_INST/O
-                         net (fo=1, routed)           0.021     1.901    miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/digest_h4[26]
-    SLICE_X160Y318       FDCE                                         r  miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/digest_o_reg[122]/D
+    SLICE_X109Y285       FDRE (Prop_EFF2_SLICEM_C_Q)
+                                                      0.048     1.614 r  miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_s0_q_reg[13]/Q
+                         net (fo=2, routed)           0.150     1.764    miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_cd_q_reg[13]_i_1/I2
+    SLICE_X109Y282       LUTCY1 (Prop_F5LUT_SLICEM_I2_O)
+                                                      0.043     1.807 r  miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_cd_q_reg[13]_i_1/LUTCY1_INST/O
+                         net (fo=1, routed)           0.022     1.829    miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_cd_q0[13]
+    SLICE_X109Y282       FDRE                                         r  miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_cd_q_reg[13]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_0 rise edge)
@@ -332,16 +335,16 @@ Slack (MET) :             0.005ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.080     0.080 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.920     2.000    miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/clk_i
-    SLICE_X160Y318       FDCE                                         r  miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/digest_o_reg[122]/C
-                         clock pessimism             -0.139     1.861    <hidden>
-    SLICE_X160Y318       FDCE (Hold_CFF_SLICEL_C_D)
-                                                      0.035     1.896    miner_system_i/miner_1/inst/u_miner/g_engines[21].u_engine/u_core/u_core/digest_o_reg[122]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.826     1.906    miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/clk_i
+    SLICE_X109Y282       FDRE                                         r  miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_cd_q_reg[13]/C
+                         clock pessimism             -0.121     1.785    <hidden>
+    SLICE_X109Y282       FDRE (Hold_FFF_SLICEM_C_D)
+                                                      0.035     1.820    miner_system_i/miner_0/inst/u_miner/g_engines[25].u_engine/u_core/u_core/u_core/w_cd_q_reg[13]
   -------------------------------------------------------------------
-                         required time                         -1.896    <hidden>
-                         arrival time                           1.901    <hidden>
+                         required time                         -1.820    <hidden>
+                         arrival time                           1.829    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.005    <hidden>
+                         slack                                  0.009    <hidden>
 
 
 
@@ -354,10 +357,10 @@ Waveform(ns):       { 0.000 2.000 }
 Period(ns):         4.000
 Sources:            { miner_system_i/cips_0/inst/pspmc_0/inst/PS9_inst/PMCRCLKCLK[0] }
 
-Check Type        Corner  Lib Pin     Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location     Pin
-Min Period        n/a     SRL16E/CLK  n/a            1.213         4.000       2.787      SLICE_X49Y0  miner_system_i/rst_pl0/U0/EXT_LPF/POR_SRL_I/CLK
-Low Pulse Width   Slow    SRL16E/CLK  n/a            0.606         2.000       1.394      SLICE_X49Y0  miner_system_i/rst_pl0/U0/EXT_LPF/POR_SRL_I/CLK
-High Pulse Width  Slow    SRL16E/CLK  n/a            0.606         2.000       1.394      SLICE_X49Y0  miner_system_i/rst_pl0/U0/EXT_LPF/POR_SRL_I/CLK
+Check Type        Corner  Lib Pin     Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location      Pin
+Min Period        n/a     SRL16E/CLK  n/a            1.213         4.000       2.787      SLICE_X233Y0  miner_system_i/rst_pl0/U0/EXT_LPF/POR_SRL_I/CLK
+Low Pulse Width   Slow    SRL16E/CLK  n/a            0.606         2.000       1.394      SLICE_X233Y0  miner_system_i/rst_pl0/U0/EXT_LPF/POR_SRL_I/CLK
+High Pulse Width  Slow    SRL16E/CLK  n/a            0.606         2.000       1.394      SLICE_X233Y0  miner_system_i/rst_pl0/U0/EXT_LPF/POR_SRL_I/CLK
 
 
 
@@ -365,34 +368,34 @@ High Pulse Width  Slow    SRL16E/CLK  n/a            0.606         2.000       1
 From Clock:  clk_pl_1
   To Clock:  clk_pl_1
 
-Setup :            0  Failing Endpoints,  Worst Slack        3.836ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.038ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        2.467ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.024ns,  Total Violation        0.000ns
 PW    :            0  Failing Endpoints,  Worst Slack        2.571ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             3.836ns  (required time - arrival time)
-  Source:                 miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.arctrl_mux/dout_i1_reg[18]/C
-                            (rising edge-triggered cell FDRE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.rdata_mux/dout_i1_reg[5]/D
-                            (rising edge-triggered cell FDRE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
+Slack (MET) :             2.467ns  (required time - arrival time)
+  Source:                 miner_system_i/axi_cdc_miner_1/inst/write_busy_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            miner_system_i/axi_cdc_miner_1/inst/write_data_q_reg[6]/CE
+                            (rising edge-triggered cell FDCE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
   Path Group:             clk_pl_1
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            8.000ns  (clk_pl_1 rise@8.000ns - clk_pl_1 rise@0.000ns)
-  Data Path Delay:        3.942ns  (logic 0.697ns (17.682%)  route 3.245ns (82.318%))
-  Logic Levels:           6  (LUT3=1 LUT4=1 LUT5=1 LUT6=3)
-  Clock Path Skew:        -0.124ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.099ns = ( 10.099 - 8.000 ) 
-    Source Clock Delay      (SCD):    2.346ns
-    Clock Pessimism Removal (CPR):    0.123ns
-  Clock Uncertainty:      0.104ns  (CJ)/2 + PE + PJ
-    Clock Jitter             (CJ):    0.209ns
+  Data Path Delay:        5.111ns  (logic 0.208ns (4.070%)  route 4.903ns (95.930%))
+  Logic Levels:           1  (LUT6=1)
+  Clock Path Skew:        -0.232ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.482ns = ( 10.482 - 8.000 ) 
+    Source Clock Delay      (SCD):    2.833ns
+    Clock Pessimism Removal (CPR):    0.119ns
+  Clock Uncertainty:      0.103ns  (CJ)/2 + PE + PJ
+    Clock Jitter             (CJ):    0.206ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.243ns (routing 0.389ns, distribution 1.854ns)
-  Clock Net Delay (Destination): 2.044ns (routing 0.347ns, distribution 1.697ns)
+  Clock Net Delay (Source):      2.730ns (routing 0.661ns, distribution 2.069ns)
+  Clock Net Delay (Destination): 2.427ns (routing 0.590ns, distribution 1.837ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
@@ -402,31 +405,16 @@ Slack (MET) :             3.836ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.103     0.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.243     2.346    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.arctrl_mux/aclk
-    SLICE_X48Y10         FDRE                                         r  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.arctrl_mux/dout_i1_reg[18]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.730     2.833    miner_system_i/axi_cdc_miner_1/inst/s_axi_aclk
+    SLICE_X52Y20         FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/write_busy_q_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X48Y10         FDRE (Prop_CFF2_SLICEL_C_Q)
-                                                      0.092     2.438 f  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.arctrl_mux/dout_i1_reg[18]/Q
-                         net (fo=19, routed)          0.454     2.891    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.arctrl_mux/s_arctrl[18]
-    SLICE_X48Y9          LUT3 (Prop_H6LUT_SLICEL_I2_O)
-                                                      0.128     3.019 f  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.arctrl_mux/gen_read.ar_addr[3]_i_5/O
-                         net (fo=5, routed)           0.420     3.439    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.arctrl_mux/gen_read.ar_addr[3]_i_5_n_0
-    SLICE_X50Y16         LUT6 (Prop_C6LUT_SLICEL_I2_O)
-                                                      0.127     3.566 r  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.arctrl_mux/dout0_i_8/O
-                         net (fo=2, routed)           0.507     4.074    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.araddr_mux/dout_i1_reg[31]_2
-    SLICE_X49Y27         LUT6 (Prop_C6LUT_SLICEM_I0_O)
-                                                      0.049     4.123 f  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.araddr_mux/dout0_i_9/O
-                         net (fo=2, routed)           0.420     4.543    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.araddr_mux/dout0_i_9_n_0
-    SLICE_X48Y31         LUT5 (Prop_C5LUT_SLICEL_I4_O)
-                                                      0.053     4.596 r  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.araddr_mux/dout0_i_4/O
-                         net (fo=38, routed)          1.110     5.706    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.rdata_mux/dout_i1_reg[0]_1
-    SLICE_X50Y97         LUT6 (Prop_F6LUT_SLICEL_I4_O)
-                                                      0.121     5.827 r  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.rdata_mux/dout_i1[5]_i_2/O
-                         net (fo=1, routed)           0.287     6.114    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.araddr_mux/dout_i1_reg[5]_1
-    SLICE_X51Y97         LUT4 (Prop_C5LUT_SLICEM_I2_O)
-                                                      0.127     6.241 r  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.araddr_mux/dout_i1[5]_i_1/O
-                         net (fo=1, routed)           0.047     6.288    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.rdata_mux/dout_i1_reg[31]_6[5]
-    SLICE_X51Y97         FDRE                                         r  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.rdata_mux/dout_i1_reg[5]/D
+    SLICE_X52Y20         FDCE (Prop_AFF_SLICEL_C_Q)
+                                                      0.091     2.924 f  miner_system_i/axi_cdc_miner_1/inst/write_busy_q_reg/Q
+                         net (fo=9, routed)           0.625     3.549    miner_system_i/axi_cdc_miner_1/inst/write_busy_q_reg_n_0
+    SLICE_X54Y19         LUT6 (Prop_D6LUT_SLICEL_I4_O)
+                                                      0.117     3.666 r  miner_system_i/axi_cdc_miner_1/inst/write_req_toggle_q_i_1/O
+                         net (fo=50, routed)          4.278     7.944    miner_system_i/axi_cdc_miner_1/inst/write_req_toggle_q0
+    SLICE_X173Y192       FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/write_data_q_reg[6]/CE
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_1 rise edge)
@@ -435,17 +423,17 @@ Slack (MET) :             3.836ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     8.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.055     8.055 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.044    10.099    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.rdata_mux/aclk
-    SLICE_X51Y97         FDRE                                         r  miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.rdata_mux/dout_i1_reg[5]/C
-                         clock pessimism              0.123    10.222    <hidden>
-                         clock uncertainty           -0.104    10.118    <hidden>
-    SLICE_X51Y97         FDRE (Setup_CFF_SLICEM_C_D)
-                                                      0.006    10.124    miner_system_i/axi_smc/inst/sc_ul/inst/gen_axi_full_nxm.sasd_inst/gen_read.rdata_mux/dout_i1_reg[5]
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.427    10.482    miner_system_i/axi_cdc_miner_1/inst/s_axi_aclk
+    SLICE_X173Y192       FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/write_data_q_reg[6]/C
+                         clock pessimism              0.119    10.601    <hidden>
+                         clock uncertainty           -0.103    10.498    <hidden>
+    SLICE_X173Y192       FDCE (Setup_AFF_SLICEM_C_CE)
+                                                     -0.087    10.411    miner_system_i/axi_cdc_miner_1/inst/write_data_q_reg[6]
   -------------------------------------------------------------------
-                         required time                         10.124    <hidden>
-                         arrival time                          -6.288    <hidden>
+                         required time                         10.411    <hidden>
+                         arrival time                          -7.944    <hidden>
   -------------------------------------------------------------------
-                         slack                                  3.836    <hidden>
+                         slack                                  2.467    <hidden>
 
 
 
@@ -453,22 +441,22 @@ Slack (MET) :             3.836ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.038ns  (arrival time - required time)
-  Source:                 miner_system_i/rst_pl1/U0/EXT_LPF/POR_SRL_I/CLK
-                            (rising edge-triggered cell SRL16E clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            miner_system_i/rst_pl1/U0/EXT_LPF/lpf_int_reg_bret/D
+Slack (MET) :             0.024ns  (arrival time - required time)
+  Source:                 miner_system_i/axi_cdc_miner_3/inst/s_axi_rdata_reg[8]/C
+                            (rising edge-triggered cell FDCE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
+  Destination:            miner_system_i/axi_regslice_miner_3/inst/r.r_pipe/m_payload_i_reg[8]/D
                             (rising edge-triggered cell FDRE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
   Path Group:             clk_pl_1
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk_pl_1 rise@0.000ns - clk_pl_1 rise@0.000ns)
-  Data Path Delay:        0.130ns  (logic 0.114ns (87.692%)  route 0.016ns (12.308%))
+  Data Path Delay:        0.156ns  (logic 0.049ns (31.410%)  route 0.107ns (68.590%))
   Logic Levels:           0  
-  Clock Path Skew:        0.057ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    1.698ns
-    Source Clock Delay      (SCD):    1.423ns
-    Clock Pessimism Removal (CPR):    0.218ns
-  Clock Net Delay (Source):      1.381ns (routing 0.245ns, distribution 1.136ns)
-  Clock Net Delay (Destination): 1.618ns (routing 0.285ns, distribution 1.333ns)
+  Clock Path Skew:        0.097ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.937ns
+    Source Clock Delay      (SCD):    1.651ns
+    Clock Pessimism Removal (CPR):    0.189ns
+  Clock Net Delay (Source):      1.609ns (routing 0.425ns, distribution 1.184ns)
+  Clock Net Delay (Destination): 1.857ns (routing 0.489ns, distribution 1.368ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
@@ -478,13 +466,13 @@ Slack (MET) :             0.038ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.381     1.423    miner_system_i/rst_pl1/U0/EXT_LPF/slowest_sync_clk
-    SLICE_X49Y2          SRL16E                                       r  miner_system_i/rst_pl1/U0/EXT_LPF/POR_SRL_I/CLK
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.609     1.651    miner_system_i/axi_cdc_miner_3/inst/s_axi_aclk
+    SLICE_X108Y77        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/s_axi_rdata_reg[8]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X49Y2          SRL16E (Prop_A6LUT_SLICEM_CLK_Q)
-                                                      0.114     1.537 r  miner_system_i/rst_pl1/U0/EXT_LPF/POR_SRL_I/Q
-                         net (fo=1, routed)           0.016     1.553    miner_system_i/rst_pl1/U0/EXT_LPF/Q
-    SLICE_X49Y2          FDRE                                         r  miner_system_i/rst_pl1/U0/EXT_LPF/lpf_int_reg_bret/D
+    SLICE_X108Y77        FDCE (Prop_CFF_SLICEL_C_Q)
+                                                      0.049     1.700 r  miner_system_i/axi_cdc_miner_3/inst/s_axi_rdata_reg[8]/Q
+                         net (fo=1, routed)           0.107     1.807    miner_system_i/axi_regslice_miner_3/inst/r.r_pipe/D[8]
+    SLICE_X106Y77        FDRE                                         r  miner_system_i/axi_regslice_miner_3/inst/r.r_pipe/m_payload_i_reg[8]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_1 rise edge)
@@ -493,16 +481,16 @@ Slack (MET) :             0.038ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.080     0.080 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.618     1.698    miner_system_i/rst_pl1/U0/EXT_LPF/slowest_sync_clk
-    SLICE_X49Y2          FDRE                                         r  miner_system_i/rst_pl1/U0/EXT_LPF/lpf_int_reg_bret/C
-                         clock pessimism             -0.218     1.480    <hidden>
-    SLICE_X49Y2          FDRE (Hold_AFF2_SLICEM_C_D)
-                                                      0.035     1.515    miner_system_i/rst_pl1/U0/EXT_LPF/lpf_int_reg_bret
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.857     1.937    miner_system_i/axi_regslice_miner_3/inst/r.r_pipe/aclk
+    SLICE_X106Y77        FDRE                                         r  miner_system_i/axi_regslice_miner_3/inst/r.r_pipe/m_payload_i_reg[8]/C
+                         clock pessimism             -0.189     1.748    <hidden>
+    SLICE_X106Y77        FDRE (Hold_AFF2_SLICEL_C_D)
+                                                      0.035     1.783    miner_system_i/axi_regslice_miner_3/inst/r.r_pipe/m_payload_i_reg[8]
   -------------------------------------------------------------------
-                         required time                         -1.515    <hidden>
-                         arrival time                           1.553    <hidden>
+                         required time                         -1.783    <hidden>
+                         arrival time                           1.807    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.038    <hidden>
+                         slack                                  0.024    <hidden>
 
 
 
@@ -670,63 +658,63 @@ High Pulse Width  Slow    XPHY/PLL_CLK  n/a            0.102         0.135      
 From Clock:  s_axi_aclk
   To Clock:  s_axi_aclk
 
-Setup :            0  Failing Endpoints,  Worst Slack        0.139ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.006ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        0.132ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.010ns,  Total Violation        0.000ns
 PW    :            0  Failing Endpoints,  Worst Slack        1.725ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.139ns  (required time - arrival time)
-  Source:                 miner_system_i/miner_3/inst/u_miner/target_q_reg[63]/C
+Slack (MET) :             0.132ns  (required time - arrival time)
+  Source:                 miner_system_i/miner_3/inst/u_miner/target_q_reg[157]/C
                             (rising edge-triggered cell FDPE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_3/inst/u_miner/g_engines[25].u_engine/target_q_reg[63]/D
+  Destination:            miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/target_q_reg[157]/D
                             (rising edge-triggered cell FDCE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             s_axi_aclk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            4.000ns  (s_axi_aclk rise@4.000ns - s_axi_aclk rise@0.000ns)
-  Data Path Delay:        3.642ns  (logic 0.091ns (2.499%)  route 3.551ns (97.501%))
+  Data Path Delay:        3.739ns  (logic 0.091ns (2.434%)  route 3.648ns (97.566%))
   Logic Levels:           0  
-  Clock Path Skew:        -0.153ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.222ns = ( 6.222 - 4.000 ) 
-    Source Clock Delay      (SCD):    2.511ns
-    Clock Pessimism Removal (CPR):    0.136ns
+  Clock Path Skew:        -0.063ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.258ns = ( 6.258 - 4.000 ) 
+    Source Clock Delay      (SCD):    2.488ns
+    Clock Pessimism Removal (CPR):    0.167ns
   Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
     Clock Jitter             (CJ):    0.148ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.511ns (routing 0.625ns, distribution 1.886ns)
-  Clock Net Delay (Destination): 2.222ns (routing 0.557ns, distribution 1.665ns)
+  Clock Net Delay (Source):      2.488ns (routing 0.625ns, distribution 1.863ns)
+  Clock Net Delay (Destination): 2.258ns (routing 0.557ns, distribution 1.701ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
                          (clock s_axi_aclk rise edge)
                                                       0.000     0.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.511     2.511    miner_system_i/miner_3/inst/u_miner/s_axi_aclk
-    SLICE_X106Y150       FDPE                                         r  miner_system_i/miner_3/inst/u_miner/target_q_reg[63]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.488     2.488    miner_system_i/miner_3/inst/u_miner/s_axi_aclk
+    SLICE_X111Y140       FDPE                                         r  miner_system_i/miner_3/inst/u_miner/target_q_reg[157]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X106Y150       FDPE (Prop_FFF2_SLICEL_C_Q)
-                                                      0.091     2.602 r  miner_system_i/miner_3/inst/u_miner/target_q_reg[63]/Q
-                         net (fo=33, routed)          3.551     6.153    miner_system_i/miner_3/inst/u_miner/g_engines[25].u_engine/target_i[63]
-    SLICE_X139Y163       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[25].u_engine/target_q_reg[63]/D
+    SLICE_X111Y140       FDPE (Prop_AFF2_SLICEM_C_Q)
+                                                      0.091     2.579 r  miner_system_i/miner_3/inst/u_miner/target_q_reg[157]/Q
+                         net (fo=33, routed)          3.648     6.226    miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/target_i[157]
+    SLICE_X105Y186       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/target_q_reg[157]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock s_axi_aclk rise edge)
                                                       4.000     4.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     4.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.222     6.222    miner_system_i/miner_3/inst/u_miner/g_engines[25].u_engine/clk_i
-    SLICE_X139Y163       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[25].u_engine/target_q_reg[63]/C
-                         clock pessimism              0.136     6.358    <hidden>
-                         clock uncertainty           -0.074     6.284    <hidden>
-    SLICE_X139Y163       FDCE (Setup_HFF_SLICEM_C_D)
-                                                      0.007     6.291    miner_system_i/miner_3/inst/u_miner/g_engines[25].u_engine/target_q_reg[63]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.258     6.258    miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/clk_i
+    SLICE_X105Y186       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/target_q_reg[157]/C
+                         clock pessimism              0.167     6.425    <hidden>
+                         clock uncertainty           -0.074     6.351    <hidden>
+    SLICE_X105Y186       FDCE (Setup_BFF2_SLICEM_C_D)
+                                                      0.007     6.358    miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/target_q_reg[157]
   -------------------------------------------------------------------
-                         required time                          6.291    <hidden>
-                         arrival time                          -6.153    <hidden>
+                         required time                          6.358    <hidden>
+                         arrival time                          -6.226    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.139    <hidden>
+                         slack                                  0.132    <hidden>
 
 
 
@@ -734,53 +722,53 @@ Slack (MET) :             0.139ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.006ns  (arrival time - required time)
-  Source:                 miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/e_q_reg[24]/C
-                            (rising edge-triggered cell FDCE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/t1_a_q_reg[31]/D
-                            (rising edge-triggered cell FDCE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
+Slack (MET) :             0.010ns  (arrival time - required time)
+  Source:                 miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/h_q_reg[6]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/t1_a_q_reg[6]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             s_axi_aclk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
-  Data Path Delay:        0.319ns  (logic 0.096ns (30.092%)  route 0.223ns (69.908%))
+  Data Path Delay:        0.222ns  (logic 0.094ns (42.342%)  route 0.128ns (57.658%))
   Logic Levels:           1  (LUTCY1=1)
-  Clock Path Skew:        0.278ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    1.953ns
-    Source Clock Delay      (SCD):    1.569ns
-    Clock Pessimism Removal (CPR):    0.106ns
-  Clock Net Delay (Source):      1.569ns (routing 0.401ns, distribution 1.168ns)
-  Clock Net Delay (Destination): 1.953ns (routing 0.463ns, distribution 1.490ns)
+  Clock Path Skew:        0.177ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.844ns
+    Source Clock Delay      (SCD):    1.580ns
+    Clock Pessimism Removal (CPR):    0.088ns
+  Clock Net Delay (Source):      1.580ns (routing 0.401ns, distribution 1.179ns)
+  Clock Net Delay (Destination): 1.844ns (routing 0.463ns, distribution 1.381ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
                          (clock s_axi_aclk rise edge)
                                                       0.000     0.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.569     1.569    miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/clk_i
-    SLICE_X159Y200       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/e_q_reg[24]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.580     1.580    miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/clk_i
+    SLICE_X134Y91        FDRE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/h_q_reg[6]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X159Y200       FDCE (Prop_FFF_SLICEM_C_Q)
-                                                      0.049     1.618 r  miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/e_q_reg[24]/Q
-                         net (fo=10, routed)          0.201     1.819    miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/t1_a_q_reg[31]_i_1/I1
-    SLICE_X163Y204       LUTCY1 (Prop_H5LUT_SLICEM_I1_O)
-                                                      0.047     1.866 r  miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/t1_a_q_reg[31]_i_1/LUTCY1_INST/O
-                         net (fo=1, routed)           0.022     1.888    miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/t1_a_q0[31]
-    SLICE_X163Y204       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/t1_a_q_reg[31]/D
+    SLICE_X134Y91        FDRE (Prop_AFF2_SLICEL_C_Q)
+                                                      0.050     1.630 r  miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/h_q_reg[6]/Q
+                         net (fo=2, routed)           0.105     1.735    miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/t1_a_q_reg[6]_i_1/I0
+    SLICE_X134Y93        LUTCY1 (Prop_G5LUT_SLICEL_I0_O)
+                                                      0.044     1.779 r  miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/t1_a_q_reg[6]_i_1/LUTCY1_INST/O
+                         net (fo=1, routed)           0.023     1.802    miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/t1_a_q0[6]
+    SLICE_X134Y93        FDRE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/t1_a_q_reg[6]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock s_axi_aclk rise edge)
                                                       0.000     0.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.953     1.953    miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/clk_i
-    SLICE_X163Y204       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/t1_a_q_reg[31]/C
-                         clock pessimism             -0.106     1.847    <hidden>
-    SLICE_X163Y204       FDCE (Hold_HFF_SLICEM_C_D)
-                                                      0.035     1.882    miner_system_i/miner_3/inst/u_miner/g_engines[15].u_engine/u_core/u_core/t1_a_q_reg[31]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.844     1.844    miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/clk_i
+    SLICE_X134Y93        FDRE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/t1_a_q_reg[6]/C
+                         clock pessimism             -0.088     1.757    <hidden>
+    SLICE_X134Y93        FDRE (Hold_GFF_SLICEL_C_D)
+                                                      0.035     1.792    miner_system_i/miner_3/inst/u_miner/g_engines[0].u_engine/u_core/u_core/u_core/t1_a_q_reg[6]
   -------------------------------------------------------------------
-                         required time                         -1.882    <hidden>
-                         arrival time                           1.888    <hidden>
+                         required time                         -1.792    <hidden>
+                         arrival time                           1.802    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.006    <hidden>
+                         slack                                  0.010    <hidden>
 
 
 
@@ -794,9 +782,9 @@ Period(ns):         4.000
 Sources:            { miner_system_i/miner_3/inst/s_axi_aclk }
 
 Check Type        Corner  Lib Pin  Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location        Pin
-Min Period        n/a     FDPE/C   n/a            0.550         4.000       3.450      SLICE_X102Y145  miner_system_i/miner_3/inst/u_miner/FSM_onehot_load_state_q_reg[0]/C
-Low Pulse Width   Slow    FDPE/C   n/a            0.275         2.000       1.725      SLICE_X102Y145  miner_system_i/miner_3/inst/u_miner/FSM_onehot_load_state_q_reg[0]/C
-High Pulse Width  Slow    FDPE/C   n/a            0.275         2.000       1.725      SLICE_X102Y145  miner_system_i/miner_3/inst/u_miner/FSM_onehot_load_state_q_reg[0]/C
+Min Period        n/a     FDPE/C   n/a            0.550         4.000       3.450      SLICE_X124Y144  miner_system_i/miner_3/inst/u_miner/FSM_onehot_load_state_q_reg[0]/C
+Low Pulse Width   Slow    FDPE/C   n/a            0.275         2.000       1.725      SLICE_X124Y144  miner_system_i/miner_3/inst/u_miner/FSM_onehot_load_state_q_reg[0]/C
+High Pulse Width  Slow    FDPE/C   n/a            0.275         2.000       1.725      SLICE_X124Y144  miner_system_i/miner_3/inst/u_miner/FSM_onehot_load_state_q_reg[0]/C
 
 
 
@@ -804,33 +792,33 @@ High Pulse Width  Slow    FDPE/C   n/a            0.275         2.000       1.72
 From Clock:  clk_pl_1
   To Clock:  clk_pl_0
 
-Setup :            0  Failing Endpoints,  Worst Slack        0.726ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.025ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        2.347ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.026ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.726ns  (required time - arrival time)
-  Source:                 miner_system_i/axi_cdc_miner_3/inst/read_addr_q_reg[4]/C
+Slack (MET) :             2.347ns  (required time - arrival time)
+  Source:                 miner_system_i/axi_cdc_miner_2/inst/write_data_q_reg[14]/C
                             (rising edge-triggered cell FDCE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            miner_system_i/axi_cdc_miner_3/inst/m_axi_araddr_reg[4]/D
+  Destination:            miner_system_i/axi_cdc_miner_2/inst/m_axi_wdata_reg[14]/D
                             (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             clk_pl_0
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            4.000ns  (clk_pl_0 rise@4.000ns - clk_pl_1 rise@0.000ns)
-  Data Path Delay:        3.330ns  (logic 0.147ns (4.414%)  route 3.183ns (95.586%))
-  Logic Levels:           1  (LUT1=1)
-  Clock Path Skew:        0.153ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.529ns = ( 6.529 - 4.000 ) 
-    Source Clock Delay      (SCD):    2.376ns
+  Data Path Delay:        1.204ns  (logic 0.090ns (7.475%)  route 1.114ns (92.525%))
+  Logic Levels:           0  
+  Clock Path Skew:        -0.353ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.276ns = ( 6.276 - 4.000 ) 
+    Source Clock Delay      (SCD):    2.629ns
     Clock Pessimism Removal (CPR):    0.000ns
-  Clock Uncertainty:      0.104ns  (CJ)/2 + PE + PJ
-    Clock Jitter             (CJ):    0.209ns
+  Clock Uncertainty:      0.103ns  (CJ)/2 + PE + PJ
+    Clock Jitter             (CJ):    0.206ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.273ns (routing 0.389ns, distribution 1.884ns)
-  Clock Net Delay (Destination): 2.474ns (routing 0.557ns, distribution 1.917ns)
+  Clock Net Delay (Source):      2.526ns (routing 0.661ns, distribution 1.865ns)
+  Clock Net Delay (Destination): 2.221ns (routing 0.557ns, distribution 1.664ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -841,16 +829,13 @@ Slack (MET) :             0.726ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.103     0.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.273     2.376    miner_system_i/axi_cdc_miner_3/inst/s_axi_aclk
-    SLICE_X52Y109        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/read_addr_q_reg[4]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.526     2.629    miner_system_i/axi_cdc_miner_2/inst/s_axi_aclk
+    SLICE_X110Y64        FDCE                                         r  miner_system_i/axi_cdc_miner_2/inst/write_data_q_reg[14]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X52Y109        FDCE (Prop_AFF_SLICEL_C_Q)
-                                                      0.091     2.467 r  miner_system_i/axi_cdc_miner_3/inst/read_addr_q_reg[4]/Q
-                         net (fo=1, routed)           0.522     2.989    miner_system_i/axi_cdc_miner_3/inst/read_addr_q[4]
-    SLICE_X52Y54         LUT1 (Prop_D5LUT_SLICEL_I0_O)
-                                                      0.056     3.045 r  miner_system_i/axi_cdc_miner_3/inst/read_addr_q[4]_hold_fix/O
-                         net (fo=1, routed)           2.661     5.706    miner_system_i/axi_cdc_miner_3/inst/read_addr_q[4]_hold_fix_1  (DELAYED_FOR_HOLD_FIX)
-    SLICE_X54Y109        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/m_axi_araddr_reg[4]/D
+    SLICE_X110Y64        FDCE (Prop_BFF_SLICEL_C_Q)
+                                                      0.090     2.719 r  miner_system_i/axi_cdc_miner_2/inst/write_data_q_reg[14]/Q
+                         net (fo=1, routed)           1.114     3.833    miner_system_i/axi_cdc_miner_2/inst/write_data_q[14]
+    SLICE_X109Y64        FDCE                                         r  miner_system_i/axi_cdc_miner_2/inst/m_axi_wdata_reg[14]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_0 rise edge)
@@ -859,17 +844,17 @@ Slack (MET) :             0.726ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     4.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.055     4.055 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.474     6.529    miner_system_i/axi_cdc_miner_3/inst/m_axi_aclk
-    SLICE_X54Y109        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/m_axi_araddr_reg[4]/C
-                         clock pessimism              0.000     6.529    <hidden>
-                         clock uncertainty           -0.104     6.424    <hidden>
-    SLICE_X54Y109        FDCE (Setup_EFF_SLICEL_C_D)
-                                                      0.008     6.432    miner_system_i/axi_cdc_miner_3/inst/m_axi_araddr_reg[4]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.221     6.276    miner_system_i/axi_cdc_miner_2/inst/m_axi_aclk
+    SLICE_X109Y64        FDCE                                         r  miner_system_i/axi_cdc_miner_2/inst/m_axi_wdata_reg[14]/C
+                         clock pessimism              0.000     6.276    <hidden>
+                         clock uncertainty           -0.103     6.173    <hidden>
+    SLICE_X109Y64        FDCE (Setup_AFF2_SLICEM_C_D)
+                                                      0.007     6.180    miner_system_i/axi_cdc_miner_2/inst/m_axi_wdata_reg[14]
   -------------------------------------------------------------------
-                         required time                          6.432    <hidden>
-                         arrival time                          -5.706    <hidden>
+                         required time                          6.180    <hidden>
+                         arrival time                          -3.833    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.726    <hidden>
+                         slack                                  2.347    <hidden>
 
 
 
@@ -877,26 +862,26 @@ Slack (MET) :             0.726ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.025ns  (arrival time - required time)
-  Source:                 miner_system_i/axi_cdc_miner_0/inst/write_addr_q_reg[2]/C
+Slack (MET) :             0.026ns  (arrival time - required time)
+  Source:                 miner_system_i/axi_cdc_miner_1/inst/read_addr_q_reg[11]/C
                             (rising edge-triggered cell FDCE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            miner_system_i/axi_cdc_miner_0/inst/m_axi_awaddr_reg[2]/D
+  Destination:            miner_system_i/axi_cdc_miner_1/inst/m_axi_araddr_reg[11]/D
                             (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             clk_pl_0
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk_pl_0 rise@0.000ns - clk_pl_1 rise@0.000ns)
-  Data Path Delay:        0.438ns  (logic 0.050ns (11.416%)  route 0.388ns (88.584%))
+  Data Path Delay:        0.447ns  (logic 0.050ns (11.186%)  route 0.397ns (88.814%))
   Logic Levels:           0  
-  Clock Path Skew:        0.274ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    2.044ns
-    Source Clock Delay      (SCD):    1.770ns
+  Clock Path Skew:        0.284ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    2.067ns
+    Source Clock Delay      (SCD):    1.783ns
     Clock Pessimism Removal (CPR):    -0.000ns
-  Clock Uncertainty:      0.104ns  (CJ)/2 + PE + PJ
-    Clock Jitter             (CJ):    0.209ns
+  Clock Uncertainty:      0.103ns  (CJ)/2 + PE + PJ
+    Clock Jitter             (CJ):    0.206ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      1.728ns (routing 0.245ns, distribution 1.483ns)
-  Clock Net Delay (Destination): 1.964ns (routing 0.463ns, distribution 1.501ns)
+  Clock Net Delay (Source):      1.741ns (routing 0.425ns, distribution 1.316ns)
+  Clock Net Delay (Destination): 1.987ns (routing 0.463ns, distribution 1.524ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -907,13 +892,13 @@ Slack (MET) :             0.025ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.728     1.770    miner_system_i/axi_cdc_miner_0/inst/s_axi_aclk
-    SLICE_X170Y141       FDCE                                         r  miner_system_i/axi_cdc_miner_0/inst/write_addr_q_reg[2]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.741     1.783    miner_system_i/axi_cdc_miner_1/inst/s_axi_aclk
+    SLICE_X176Y178       FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/read_addr_q_reg[11]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X170Y141       FDCE (Prop_BFF2_SLICEL_C_Q)
-                                                      0.050     1.820 r  miner_system_i/axi_cdc_miner_0/inst/write_addr_q_reg[2]/Q
-                         net (fo=1, routed)           0.388     2.208    miner_system_i/axi_cdc_miner_0/inst/write_addr_q[2]
-    SLICE_X174Y147       FDCE                                         r  miner_system_i/axi_cdc_miner_0/inst/m_axi_awaddr_reg[2]/D
+    SLICE_X176Y178       FDCE (Prop_AFF_SLICEL_C_Q)
+                                                      0.050     1.833 r  miner_system_i/axi_cdc_miner_1/inst/read_addr_q_reg[11]/Q
+                         net (fo=1, routed)           0.397     2.230    miner_system_i/axi_cdc_miner_1/inst/read_addr_q[11]
+    SLICE_X178Y176       FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/m_axi_araddr_reg[11]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_0 rise edge)
@@ -922,17 +907,17 @@ Slack (MET) :             0.025ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.080     0.080 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.964     2.044    miner_system_i/axi_cdc_miner_0/inst/m_axi_aclk
-    SLICE_X174Y147       FDCE                                         r  miner_system_i/axi_cdc_miner_0/inst/m_axi_awaddr_reg[2]/C
-                         clock pessimism              0.000     2.044    <hidden>
-                         clock uncertainty            0.104     2.148    <hidden>
-    SLICE_X174Y147       FDCE (Hold_BFF_SLICEL_C_D)
-                                                      0.035     2.183    miner_system_i/axi_cdc_miner_0/inst/m_axi_awaddr_reg[2]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.987     2.067    miner_system_i/axi_cdc_miner_1/inst/m_axi_aclk
+    SLICE_X178Y176       FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/m_axi_araddr_reg[11]/C
+                         clock pessimism              0.000     2.067    <hidden>
+                         clock uncertainty            0.103     2.169    <hidden>
+    SLICE_X178Y176       FDCE (Hold_DFF_SLICEL_C_D)
+                                                      0.035     2.204    miner_system_i/axi_cdc_miner_1/inst/m_axi_araddr_reg[11]
   -------------------------------------------------------------------
-                         required time                         -2.183    <hidden>
-                         arrival time                           2.208    <hidden>
+                         required time                         -2.204    <hidden>
+                         arrival time                           2.230    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.025    <hidden>
+                         slack                                  0.026    <hidden>
 
 
 
@@ -942,33 +927,33 @@ Slack (MET) :             0.025ns  (arrival time - required time)
 From Clock:  s_axi_aclk
   To Clock:  clk_pl_0
 
-Setup :            0  Failing Endpoints,  Worst Slack        2.185ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.051ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        1.837ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.036ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             2.185ns  (required time - arrival time)
+Slack (MET) :             1.837ns  (required time - arrival time)
   Source:                 miner_system_i/miner_3/inst/u_miner/s_axi_bvalid_reg/C
                             (rising edge-triggered cell FDCE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/axi_cdc_miner_3/inst/write_rsp_q_reg[0]/CE
+  Destination:            miner_system_i/axi_cdc_miner_3/inst/write_rsp_toggle_q_reg/CE
                             (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             clk_pl_0
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            4.000ns  (clk_pl_0 rise@4.000ns - s_axi_aclk rise@0.000ns)
-  Data Path Delay:        1.610ns  (logic 0.220ns (13.667%)  route 1.390ns (86.333%))
+  Data Path Delay:        2.016ns  (logic 0.224ns (11.110%)  route 1.792ns (88.890%))
   Logic Levels:           1  (LUT2=1)
-  Clock Path Skew:        -0.044ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.496ns = ( 6.496 - 4.000 ) 
-    Source Clock Delay      (SCD):    2.636ns
-    Clock Pessimism Removal (CPR):    0.095ns
+  Clock Path Skew:        0.018ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.462ns = ( 6.462 - 4.000 ) 
+    Source Clock Delay      (SCD):    2.512ns
+    Clock Pessimism Removal (CPR):    0.067ns
   Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
     Clock Jitter             (CJ):    0.148ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.636ns (routing 0.625ns, distribution 2.011ns)
-  Clock Net Delay (Destination): 2.441ns (routing 0.557ns, distribution 1.884ns)
+  Clock Net Delay (Source):      2.512ns (routing 0.625ns, distribution 1.887ns)
+  Clock Net Delay (Destination): 2.407ns (routing 0.557ns, distribution 1.850ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -976,16 +961,16 @@ Slack (MET) :             2.185ns  (required time - arrival time)
                          (clock s_axi_aclk rise edge)
                                                       0.000     0.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.636     2.636    miner_system_i/miner_3/inst/u_miner/s_axi_aclk
-    SLICE_X87Y134        FDCE                                         r  miner_system_i/miner_3/inst/u_miner/s_axi_bvalid_reg/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.512     2.512    miner_system_i/miner_3/inst/u_miner/s_axi_aclk
+    SLICE_X104Y132       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/s_axi_bvalid_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X87Y134        FDCE (Prop_EFF2_SLICEM_C_Q)
-                                                      0.089     2.725 r  miner_system_i/miner_3/inst/u_miner/s_axi_bvalid_reg/Q
-                         net (fo=8, routed)           0.686     3.410    miner_system_i/axi_cdc_miner_3/inst/m_axi_bvalid
-    SLICE_X48Y112        LUT2 (Prop_B6LUT_SLICEL_I0_O)
-                                                      0.131     3.541 r  miner_system_i/axi_cdc_miner_3/inst/write_rsp_toggle_q_i_1/O
-                         net (fo=3, routed)           0.704     4.245    miner_system_i/axi_cdc_miner_3/inst/write_rsp_toggle_q0
-    SLICE_X48Y87         FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/write_rsp_q_reg[0]/CE
+    SLICE_X104Y132       FDCE (Prop_HFF_SLICEL_C_Q)
+                                                      0.091     2.603 r  miner_system_i/miner_3/inst/u_miner/s_axi_bvalid_reg/Q
+                         net (fo=7, routed)           0.591     3.194    miner_system_i/axi_cdc_miner_3/inst/m_axi_bvalid
+    SLICE_X77Y130        LUT2 (Prop_F6LUT_SLICEM_I0_O)
+                                                      0.133     3.327 r  miner_system_i/axi_cdc_miner_3/inst/write_rsp_toggle_q_i_1/O
+                         net (fo=3, routed)           1.201     4.528    miner_system_i/axi_cdc_miner_3/inst/write_rsp_toggle_q0
+    SLICE_X55Y38         FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/write_rsp_toggle_q_reg/CE
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_0 rise edge)
@@ -994,17 +979,17 @@ Slack (MET) :             2.185ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     4.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.055     4.055 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.441     6.496    miner_system_i/axi_cdc_miner_3/inst/m_axi_aclk
-    SLICE_X48Y87         FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/write_rsp_q_reg[0]/C
-                         clock pessimism              0.095     6.591    <hidden>
-                         clock uncertainty           -0.074     6.517    <hidden>
-    SLICE_X48Y87         FDCE (Setup_AFF_SLICEL_C_CE)
-                                                     -0.087     6.430    miner_system_i/axi_cdc_miner_3/inst/write_rsp_q_reg[0]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.407     6.462    miner_system_i/axi_cdc_miner_3/inst/m_axi_aclk
+    SLICE_X55Y38         FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/write_rsp_toggle_q_reg/C
+                         clock pessimism              0.067     6.530    <hidden>
+                         clock uncertainty           -0.074     6.456    <hidden>
+    SLICE_X55Y38         FDCE (Setup_GFF2_SLICEM_C_CE)
+                                                     -0.090     6.366    miner_system_i/axi_cdc_miner_3/inst/write_rsp_toggle_q_reg
   -------------------------------------------------------------------
-                         required time                          6.430    <hidden>
-                         arrival time                          -4.245    <hidden>
+                         required time                          6.366    <hidden>
+                         arrival time                          -4.528    <hidden>
   -------------------------------------------------------------------
-                         slack                                  2.185    <hidden>
+                         slack                                  1.837    <hidden>
 
 
 
@@ -1012,26 +997,26 @@ Slack (MET) :             2.185ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.051ns  (arrival time - required time)
-  Source:                 miner_system_i/miner_3/inst/u_miner/s_axi_rdata_reg[30]/C
+Slack (MET) :             0.036ns  (arrival time - required time)
+  Source:                 miner_system_i/miner_3/inst/u_miner/s_axi_arready_reg/C
                             (rising edge-triggered cell FDCE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q_reg[30]/D
+  Destination:            miner_system_i/axi_cdc_miner_3/inst/m_axi_arvalid_reg/D
                             (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             clk_pl_0
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk_pl_0 rise@0.000ns - s_axi_aclk rise@0.000ns)
-  Data Path Delay:        0.268ns  (logic 0.049ns (18.284%)  route 0.219ns (81.716%))
-  Logic Levels:           0  
+  Data Path Delay:        0.253ns  (logic 0.086ns (33.969%)  route 0.167ns (66.031%))
+  Logic Levels:           1  (LUT6=1)
   Clock Path Skew:        0.108ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    2.109ns
-    Source Clock Delay      (SCD):    1.773ns
-    Clock Pessimism Removal (CPR):    0.228ns
+    Destination Clock Delay (DCD):    2.004ns
+    Source Clock Delay      (SCD):    1.676ns
+    Clock Pessimism Removal (CPR):    0.220ns
   Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
     Clock Jitter             (CJ):    0.148ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      1.773ns (routing 0.401ns, distribution 1.372ns)
-  Clock Net Delay (Destination): 2.029ns (routing 0.463ns, distribution 1.566ns)
+  Clock Net Delay (Source):      1.676ns (routing 0.401ns, distribution 1.275ns)
+  Clock Net Delay (Destination): 1.924ns (routing 0.463ns, distribution 1.461ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -1039,13 +1024,16 @@ Slack (MET) :             0.051ns  (arrival time - required time)
                          (clock s_axi_aclk rise edge)
                                                       0.000     0.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.773     1.773    miner_system_i/miner_3/inst/u_miner/s_axi_aclk
-    SLICE_X54Y98         FDCE                                         r  miner_system_i/miner_3/inst/u_miner/s_axi_rdata_reg[30]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.676     1.676    miner_system_i/miner_3/inst/u_miner/s_axi_aclk
+    SLICE_X75Y131        FDCE                                         r  miner_system_i/miner_3/inst/u_miner/s_axi_arready_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X54Y98         FDCE (Prop_FFF_SLICEL_C_Q)
-                                                      0.049     1.822 r  miner_system_i/miner_3/inst/u_miner/s_axi_rdata_reg[30]/Q
-                         net (fo=1, routed)           0.219     2.041    miner_system_i/axi_cdc_miner_3/inst/m_axi_rdata[30]
-    SLICE_X54Y98         FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q_reg[30]/D
+    SLICE_X75Y131        FDCE (Prop_AFF_SLICEM_C_Q)
+                                                      0.049     1.725 f  miner_system_i/miner_3/inst/u_miner/s_axi_arready_reg/Q
+                         net (fo=2, routed)           0.143     1.868    miner_system_i/axi_cdc_miner_3/inst/m_axi_arready
+    SLICE_X75Y131        LUT6 (Prop_B6LUT_SLICEM_I0_O)
+                                                      0.037     1.905 r  miner_system_i/axi_cdc_miner_3/inst/m_axi_arvalid_i_1/O
+                         net (fo=1, routed)           0.024     1.929    miner_system_i/axi_cdc_miner_3/inst/m_axi_arvalid_i_1_n_0
+    SLICE_X75Y131        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/m_axi_arvalid_reg/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_0 rise edge)
@@ -1054,17 +1042,17 @@ Slack (MET) :             0.051ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.080     0.080 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.029     2.109    miner_system_i/axi_cdc_miner_3/inst/m_axi_aclk
-    SLICE_X54Y98         FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q_reg[30]/C
-                         clock pessimism             -0.228     1.881    <hidden>
-                         clock uncertainty            0.074     1.954    <hidden>
-    SLICE_X54Y98         FDCE (Hold_HFF_SLICEL_C_D)
-                                                      0.035     1.989    miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q_reg[30]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.924     2.004    miner_system_i/axi_cdc_miner_3/inst/m_axi_aclk
+    SLICE_X75Y131        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/m_axi_arvalid_reg/C
+                         clock pessimism             -0.220     1.784    <hidden>
+                         clock uncertainty            0.074     1.858    <hidden>
+    SLICE_X75Y131        FDCE (Hold_BFF2_SLICEM_C_D)
+                                                      0.035     1.893    miner_system_i/axi_cdc_miner_3/inst/m_axi_arvalid_reg
   -------------------------------------------------------------------
-                         required time                         -1.989    <hidden>
-                         arrival time                           2.041    <hidden>
+                         required time                         -1.893    <hidden>
+                         arrival time                           1.929    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.051    <hidden>
+                         slack                                  0.036    <hidden>
 
 
 
@@ -1074,33 +1062,33 @@ Slack (MET) :             0.051ns  (arrival time - required time)
 From Clock:  clk_pl_0
   To Clock:  clk_pl_1
 
-Setup :            0  Failing Endpoints,  Worst Slack        1.977ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.043ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        1.916ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.027ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             1.977ns  (required time - arrival time)
-  Source:                 miner_system_i/axi_cdc_miner_1/inst/read_rsp_data_q_reg[17]/C
+Slack (MET) :             1.916ns  (required time - arrival time)
+  Source:                 miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q_reg[3]/C
                             (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/axi_cdc_miner_1/inst/s_axi_rdata_reg[17]/D
+  Destination:            miner_system_i/axi_cdc_miner_3/inst/s_axi_rdata_reg[3]/D
                             (rising edge-triggered cell FDCE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
   Path Group:             clk_pl_1
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            4.000ns  (clk_pl_1 rise@8.000ns - clk_pl_0 rise@4.000ns)
-  Data Path Delay:        1.180ns  (logic 0.092ns (7.797%)  route 1.088ns (92.203%))
-  Logic Levels:           0  
-  Clock Path Skew:        -0.747ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.104ns = ( 10.104 - 8.000 ) 
-    Source Clock Delay      (SCD):    2.851ns = ( 6.851 - 4.000 ) 
+  Data Path Delay:        1.739ns  (logic 0.216ns (12.421%)  route 1.523ns (87.579%))
+  Logic Levels:           1  (LUT1=1)
+  Clock Path Skew:        -0.249ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.335ns = ( 10.335 - 8.000 ) 
+    Source Clock Delay      (SCD):    2.584ns = ( 6.584 - 4.000 ) 
     Clock Pessimism Removal (CPR):    0.000ns
-  Clock Uncertainty:      0.104ns  (CJ)/2 + PE + PJ
-    Clock Jitter             (CJ):    0.209ns
+  Clock Uncertainty:      0.103ns  (CJ)/2 + PE + PJ
+    Clock Jitter             (CJ):    0.206ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.748ns (routing 0.625ns, distribution 2.123ns)
-  Clock Net Delay (Destination): 2.049ns (routing 0.347ns, distribution 1.702ns)
+  Clock Net Delay (Source):      2.481ns (routing 0.625ns, distribution 1.856ns)
+  Clock Net Delay (Destination): 2.280ns (routing 0.590ns, distribution 1.690ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -1111,13 +1099,16 @@ Slack (MET) :             1.977ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     4.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.103     4.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.748     6.851    miner_system_i/axi_cdc_miner_1/inst/m_axi_aclk
-    SLICE_X50Y165        FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/read_rsp_data_q_reg[17]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.481     6.584    miner_system_i/axi_cdc_miner_3/inst/m_axi_aclk
+    SLICE_X107Y80        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q_reg[3]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X50Y165        FDCE (Prop_GFF2_SLICEL_C_Q)
-                                                      0.092     6.943 r  miner_system_i/axi_cdc_miner_1/inst/read_rsp_data_q_reg[17]/Q
-                         net (fo=1, routed)           1.088     8.031    miner_system_i/axi_cdc_miner_1/inst/read_rsp_data_q[17]
-    SLICE_X50Y100        FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/s_axi_rdata_reg[17]/D
+    SLICE_X107Y80        FDCE (Prop_BFF_SLICEM_C_Q)
+                                                      0.090     6.674 r  miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q_reg[3]/Q
+                         net (fo=1, routed)           0.694     7.368    miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q[3]
+    SLICE_X107Y81        LUT1 (Prop_H5LUT_SLICEM_I0_O)
+                                                      0.126     7.494 r  miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q[3]_hold_fix/O
+                         net (fo=1, routed)           0.829     8.323    miner_system_i/axi_cdc_miner_3/inst/read_rsp_data_q[3]_hold_fix_1
+    SLICE_X106Y76        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/s_axi_rdata_reg[3]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_1 rise edge)
@@ -1126,17 +1117,17 @@ Slack (MET) :             1.977ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     8.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.055     8.055 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.049    10.104    miner_system_i/axi_cdc_miner_1/inst/s_axi_aclk
-    SLICE_X50Y100        FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/s_axi_rdata_reg[17]/C
-                         clock pessimism              0.000    10.104    <hidden>
-                         clock uncertainty           -0.104    10.000    <hidden>
-    SLICE_X50Y100        FDCE (Setup_AFF_SLICEL_C_D)
-                                                      0.008    10.008    miner_system_i/axi_cdc_miner_1/inst/s_axi_rdata_reg[17]
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.280    10.335    miner_system_i/axi_cdc_miner_3/inst/s_axi_aclk
+    SLICE_X106Y76        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/s_axi_rdata_reg[3]/C
+                         clock pessimism              0.000    10.335    <hidden>
+                         clock uncertainty           -0.103    10.232    <hidden>
+    SLICE_X106Y76        FDCE (Setup_HFF2_SLICEL_C_D)
+                                                      0.007    10.239    miner_system_i/axi_cdc_miner_3/inst/s_axi_rdata_reg[3]
   -------------------------------------------------------------------
-                         required time                         10.008    <hidden>
-                         arrival time                          -8.031    <hidden>
+                         required time                         10.239    <hidden>
+                         arrival time                          -8.323    <hidden>
   -------------------------------------------------------------------
-                         slack                                  1.977    <hidden>
+                         slack                                  1.916    <hidden>
 
 
 
@@ -1144,26 +1135,26 @@ Slack (MET) :             1.977ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.043ns  (arrival time - required time)
-  Source:                 miner_system_i/axi_cdc_miner_0/inst/read_rsp_data_q_reg[19]/C
+Slack (MET) :             0.027ns  (arrival time - required time)
+  Source:                 miner_system_i/axi_cdc_miner_2/inst/read_rsp_data_q_reg[2]/C
                             (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/axi_cdc_miner_0/inst/s_axi_rdata_reg[19]/D
+  Destination:            miner_system_i/axi_cdc_miner_2/inst/s_axi_rdata_reg[2]/D
                             (rising edge-triggered cell FDCE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
   Path Group:             clk_pl_1
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk_pl_1 rise@0.000ns - clk_pl_0 rise@0.000ns)
-  Data Path Delay:        0.417ns  (logic 0.049ns (11.751%)  route 0.368ns (88.249%))
+  Data Path Delay:        0.475ns  (logic 0.048ns (10.105%)  route 0.427ns (89.895%))
   Logic Levels:           0  
-  Clock Path Skew:        0.235ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    1.884ns
-    Source Clock Delay      (SCD):    1.649ns
+  Clock Path Skew:        0.310ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.935ns
+    Source Clock Delay      (SCD):    1.624ns
     Clock Pessimism Removal (CPR):    -0.000ns
-  Clock Uncertainty:      0.104ns  (CJ)/2 + PE + PJ
-    Clock Jitter             (CJ):    0.209ns
+  Clock Uncertainty:      0.103ns  (CJ)/2 + PE + PJ
+    Clock Jitter             (CJ):    0.206ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      1.607ns (routing 0.401ns, distribution 1.206ns)
-  Clock Net Delay (Destination): 1.804ns (routing 0.285ns, distribution 1.519ns)
+  Clock Net Delay (Source):      1.582ns (routing 0.401ns, distribution 1.181ns)
+  Clock Net Delay (Destination): 1.855ns (routing 0.489ns, distribution 1.366ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -1174,13 +1165,13 @@ Slack (MET) :             0.043ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.607     1.649    miner_system_i/axi_cdc_miner_0/inst/m_axi_aclk
-    SLICE_X107Y97        FDCE                                         r  miner_system_i/axi_cdc_miner_0/inst/read_rsp_data_q_reg[19]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.582     1.624    miner_system_i/axi_cdc_miner_2/inst/m_axi_aclk
+    SLICE_X107Y65        FDCE                                         r  miner_system_i/axi_cdc_miner_2/inst/read_rsp_data_q_reg[2]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X107Y97        FDCE (Prop_GFF_SLICEM_C_Q)
-                                                      0.049     1.698 r  miner_system_i/axi_cdc_miner_0/inst/read_rsp_data_q_reg[19]/Q
-                         net (fo=1, routed)           0.368     2.066    miner_system_i/axi_cdc_miner_0/inst/read_rsp_data_q[19]
-    SLICE_X104Y97        FDCE                                         r  miner_system_i/axi_cdc_miner_0/inst/s_axi_rdata_reg[19]/D
+    SLICE_X107Y65        FDCE (Prop_FFF2_SLICEM_C_Q)
+                                                      0.048     1.672 r  miner_system_i/axi_cdc_miner_2/inst/read_rsp_data_q_reg[2]/Q
+                         net (fo=1, routed)           0.427     2.099    miner_system_i/axi_cdc_miner_2/inst/read_rsp_data_q[2]
+    SLICE_X106Y75        FDCE                                         r  miner_system_i/axi_cdc_miner_2/inst/s_axi_rdata_reg[2]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_1 rise edge)
@@ -1189,17 +1180,17 @@ Slack (MET) :             0.043ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.080     0.080 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.804     1.884    miner_system_i/axi_cdc_miner_0/inst/s_axi_aclk
-    SLICE_X104Y97        FDCE                                         r  miner_system_i/axi_cdc_miner_0/inst/s_axi_rdata_reg[19]/C
-                         clock pessimism              0.000     1.884    <hidden>
-                         clock uncertainty            0.104     1.988    <hidden>
-    SLICE_X104Y97        FDCE (Hold_BFF_SLICEL_C_D)
-                                                      0.035     2.023    miner_system_i/axi_cdc_miner_0/inst/s_axi_rdata_reg[19]
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.855     1.935    miner_system_i/axi_cdc_miner_2/inst/s_axi_aclk
+    SLICE_X106Y75        FDCE                                         r  miner_system_i/axi_cdc_miner_2/inst/s_axi_rdata_reg[2]/C
+                         clock pessimism              0.000     1.935    <hidden>
+                         clock uncertainty            0.103     2.038    <hidden>
+    SLICE_X106Y75        FDCE (Hold_HFF_SLICEL_C_D)
+                                                      0.035     2.073    miner_system_i/axi_cdc_miner_2/inst/s_axi_rdata_reg[2]
   -------------------------------------------------------------------
-                         required time                         -2.023    <hidden>
-                         arrival time                           2.066    <hidden>
+                         required time                         -2.073    <hidden>
+                         arrival time                           2.099    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.043    <hidden>
+                         slack                                  0.027    <hidden>
 
 
 
@@ -1209,33 +1200,33 @@ Slack (MET) :             0.043ns  (arrival time - required time)
 From Clock:  clk_pl_0
   To Clock:  s_axi_aclk
 
-Setup :            0  Failing Endpoints,  Worst Slack        1.350ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.036ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        0.384ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.061ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             1.350ns  (required time - arrival time)
-  Source:                 miner_system_i/axi_cdc_miner_3/inst/m_axi_awvalid_reg/C
-                            (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_3/inst/u_miner/wr_stage1_data_q_reg[0]/CE
-                            (rising edge-triggered cell FDCE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
+Slack (MET) :             0.384ns  (required time - arrival time)
+  Source:                 miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+                            (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
+  Destination:            miner_system_i/miner_3/inst/u_miner/g_engines[10].u_engine/u_core/u_core/u_core/w_mem_reg[10][20]/CE
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             s_axi_aclk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            4.000ns  (s_axi_aclk rise@4.000ns - clk_pl_0 rise@0.000ns)
-  Data Path Delay:        2.294ns  (logic 0.225ns (9.807%)  route 2.069ns (90.193%))
-  Logic Levels:           1  (LUT5=1)
-  Clock Path Skew:        -0.193ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.474ns = ( 6.474 - 4.000 ) 
-    Source Clock Delay      (SCD):    2.855ns
-    Clock Pessimism Removal (CPR):    0.187ns
+  Data Path Delay:        3.292ns  (logic 0.333ns (10.117%)  route 2.959ns (89.883%))
+  Logic Levels:           2  (BUFG_FABRIC=1 LUT6=1)
+  Clock Path Skew:        -0.163ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.242ns = ( 6.242 - 4.000 ) 
+    Source Clock Delay      (SCD):    2.541ns
+    Clock Pessimism Removal (CPR):    0.136ns
   Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
     Clock Jitter             (CJ):    0.148ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.752ns (routing 0.625ns, distribution 2.127ns)
-  Clock Net Delay (Destination): 2.474ns (routing 0.557ns, distribution 1.917ns)
+  Clock Net Delay (Source):      2.438ns (routing 0.625ns, distribution 1.813ns)
+  Clock Net Delay (Destination): 2.242ns (routing 0.557ns, distribution 1.685ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -1246,32 +1237,35 @@ Slack (MET) :             1.350ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.103     0.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.752     2.855    miner_system_i/axi_cdc_miner_3/inst/m_axi_aclk
-    SLICE_X48Y112        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/m_axi_awvalid_reg/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.438     2.541    miner_system_i/rst_pl0/U0/slowest_sync_clk
+    IRI_QUAD_X80Y593     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X48Y112        FDCE (Prop_DFF2_SLICEL_C_Q)
-                                                      0.093     2.948 r  miner_system_i/axi_cdc_miner_3/inst/m_axi_awvalid_reg/Q
-                         net (fo=4, routed)           0.705     3.653    miner_system_i/miner_3/inst/u_miner/s_axi_awvalid
-    SLICE_X87Y134        LUT5 (Prop_A6LUT_SLICEM_I4_O)
-                                                      0.132     3.785 r  miner_system_i/miner_3/inst/u_miner/s_axi_awready_i_1/O
-                         net (fo=48, routed)          1.364     5.149    miner_system_i/miner_3/inst/u_miner/write_fire
-    SLICE_X52Y111        FDCE                                         r  miner_system_i/miner_3/inst/u_miner/wr_stage1_data_q_reg[0]/CE
+    IRI_QUAD_X80Y593     FDRE (Prop_IMUX4_IMR_IRI_QUAD_ODD_C_Q)
+                                                      0.233     2.774 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=1, routed)           0.304     3.078    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
+    BUFG_FABRIC_X2Y24    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
+                                                      0.015     3.093 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
+                         net (fo=148739, routed)      1.962     5.055    miner_system_i/miner_3/inst/u_miner/g_engines[10].u_engine/u_core/u_core/u_core/rst_ni
+    SLICE_X140Y145       LUT6 (Prop_A6LUT_SLICEL_I0_O)
+                                                      0.085     5.140 r  miner_system_i/miner_3/inst/u_miner/g_engines[10].u_engine/u_core/u_core/u_core/w_mem[10][31]_i_1/O
+                         net (fo=32, routed)          0.692     5.833    miner_system_i/miner_3/inst/u_miner/g_engines[10].u_engine/u_core/u_core/u_core/w_mem[10][31]_i_1_n_0
+    SLICE_X148Y156       FDRE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[10].u_engine/u_core/u_core/u_core/w_mem_reg[10][20]/CE
   -------------------------------------------------------------------    -------------------
 
                          (clock s_axi_aclk rise edge)
                                                       4.000     4.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     4.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.474     6.474    miner_system_i/miner_3/inst/u_miner/s_axi_aclk
-    SLICE_X52Y111        FDCE                                         r  miner_system_i/miner_3/inst/u_miner/wr_stage1_data_q_reg[0]/C
-                         clock pessimism              0.187     6.661    <hidden>
-                         clock uncertainty           -0.074     6.587    <hidden>
-    SLICE_X52Y111        FDCE (Setup_CFF2_SLICEL_C_CE)
-                                                     -0.089     6.498    miner_system_i/miner_3/inst/u_miner/wr_stage1_data_q_reg[0]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.242     6.242    miner_system_i/miner_3/inst/u_miner/g_engines[10].u_engine/u_core/u_core/u_core/clk_i
+    SLICE_X148Y156       FDRE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[10].u_engine/u_core/u_core/u_core/w_mem_reg[10][20]/C
+                         clock pessimism              0.136     6.378    <hidden>
+                         clock uncertainty           -0.074     6.304    <hidden>
+    SLICE_X148Y156       FDRE (Setup_AFF_SLICEL_C_CE)
+                                                     -0.087     6.217    miner_system_i/miner_3/inst/u_miner/g_engines[10].u_engine/u_core/u_core/u_core/w_mem_reg[10][20]
   -------------------------------------------------------------------
-                         required time                          6.498    <hidden>
-                         arrival time                          -5.149    <hidden>
+                         required time                          6.217    <hidden>
+                         arrival time                          -5.833    <hidden>
   -------------------------------------------------------------------
-                         slack                                  1.350    <hidden>
+                         slack                                  0.384    <hidden>
 
 
 
@@ -1279,26 +1273,26 @@ Slack (MET) :             1.350ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.036ns  (arrival time - required time)
-  Source:                 miner_system_i/axi_cdc_miner_3/inst/m_axi_araddr_reg[11]/C
+Slack (MET) :             0.061ns  (arrival time - required time)
+  Source:                 miner_system_i/axi_cdc_miner_3/inst/m_axi_wdata_reg[29]/C
                             (rising edge-triggered cell FDCE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_3/inst/u_miner/rd_stage1_addr_q_reg[11]/D
+  Destination:            miner_system_i/miner_3/inst/u_miner/wr_stage1_data_q_reg[29]/D
                             (rising edge-triggered cell FDCE clocked by s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             s_axi_aclk
   Path Type:              Hold (Min at Fast Process Corner)
   Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - clk_pl_0 rise@0.000ns)
-  Data Path Delay:        0.167ns  (logic 0.050ns (29.940%)  route 0.117ns (70.060%))
+  Data Path Delay:        0.156ns  (logic 0.050ns (32.051%)  route 0.106ns (67.949%))
   Logic Levels:           0  
-  Clock Path Skew:        0.022ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    2.023ns
-    Source Clock Delay      (SCD):    1.807ns
-    Clock Pessimism Removal (CPR):    0.194ns
+  Clock Path Skew:        -0.014ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.832ns
+    Source Clock Delay      (SCD):    1.638ns
+    Clock Pessimism Removal (CPR):    0.208ns
   Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
     Clock Jitter             (CJ):    0.148ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      1.765ns (routing 0.401ns, distribution 1.364ns)
-  Clock Net Delay (Destination): 2.023ns (routing 0.463ns, distribution 1.560ns)
+  Clock Net Delay (Source):      1.596ns (routing 0.401ns, distribution 1.195ns)
+  Clock Net Delay (Destination): 1.832ns (routing 0.463ns, distribution 1.369ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -1309,29 +1303,29 @@ Slack (MET) :             0.036ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.765     1.807    miner_system_i/axi_cdc_miner_3/inst/m_axi_aclk
-    SLICE_X54Y109        FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/m_axi_araddr_reg[11]/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.596     1.638    miner_system_i/axi_cdc_miner_3/inst/m_axi_aclk
+    SLICE_X110Y132       FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/m_axi_wdata_reg[29]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X54Y109        FDCE (Prop_HFF2_SLICEL_C_Q)
-                                                      0.050     1.857 r  miner_system_i/axi_cdc_miner_3/inst/m_axi_araddr_reg[11]/Q
-                         net (fo=1, routed)           0.117     1.974    miner_system_i/miner_3/inst/u_miner/s_axi_araddr[11]
-    SLICE_X54Y110        FDCE                                         r  miner_system_i/miner_3/inst/u_miner/rd_stage1_addr_q_reg[11]/D
+    SLICE_X110Y132       FDCE (Prop_BFF_SLICEL_C_Q)
+                                                      0.050     1.688 r  miner_system_i/axi_cdc_miner_3/inst/m_axi_wdata_reg[29]/Q
+                         net (fo=1, routed)           0.106     1.794    miner_system_i/miner_3/inst/u_miner/s_axi_wdata[29]
+    SLICE_X110Y132       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/wr_stage1_data_q_reg[29]/D
   -------------------------------------------------------------------    -------------------
 
                          (clock s_axi_aclk rise edge)
                                                       0.000     0.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.023     2.023    miner_system_i/miner_3/inst/u_miner/s_axi_aclk
-    SLICE_X54Y110        FDCE                                         r  miner_system_i/miner_3/inst/u_miner/rd_stage1_addr_q_reg[11]/C
-                         clock pessimism             -0.194     1.829    <hidden>
-                         clock uncertainty            0.074     1.903    <hidden>
-    SLICE_X54Y110        FDCE (Hold_EFF_SLICEL_C_D)
-                                                      0.035     1.938    miner_system_i/miner_3/inst/u_miner/rd_stage1_addr_q_reg[11]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.832     1.832    miner_system_i/miner_3/inst/u_miner/s_axi_aclk
+    SLICE_X110Y132       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/wr_stage1_data_q_reg[29]/C
+                         clock pessimism             -0.208     1.624    <hidden>
+                         clock uncertainty            0.074     1.698    <hidden>
+    SLICE_X110Y132       FDCE (Hold_DFF_SLICEL_C_D)
+                                                      0.035     1.733    miner_system_i/miner_3/inst/u_miner/wr_stage1_data_q_reg[29]
   -------------------------------------------------------------------
-                         required time                         -1.938    <hidden>
-                         arrival time                           1.974    <hidden>
+                         required time                         -1.733    <hidden>
+                         arrival time                           1.794    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.036    <hidden>
+                         slack                                  0.061    <hidden>
 
 
 
@@ -1342,33 +1336,33 @@ Path Group:  **async_default**
 From Clock:  clk_pl_0
   To Clock:  clk_pl_0
 
-Setup :            0  Failing Endpoints,  Worst Slack        1.276ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.918ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        1.278ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.912ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             1.276ns  (required time - arrival time)
+Slack (MET) :             1.278ns  (required time - arrival time)
   Source:                 miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
                             (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_1/inst/u_miner/g_engines[12].u_engine/result_hash_o_reg[63]/CLR
+  Destination:            miner_system_i/miner_1/inst/u_miner/g_engines[13].u_engine/header_tail_q_reg[41]/CLR
                             (recovery check against rising-edge clock clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             **async_default**
   Path Type:              Recovery (Max at Slow Process Corner)
   Requirement:            4.000ns  (clk_pl_0 rise@4.000ns - clk_pl_0 rise@0.000ns)
-  Data Path Delay:        2.648ns  (logic 0.248ns (9.365%)  route 2.400ns (90.635%))
+  Data Path Delay:        2.636ns  (logic 0.248ns (9.407%)  route 2.388ns (90.593%))
   Logic Levels:           1  (BUFG_FABRIC=1)
-  Clock Path Skew:        0.106ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.574ns = ( 6.574 - 4.000 ) 
-    Source Clock Delay      (SCD):    2.540ns
-    Clock Pessimism Removal (CPR):    0.072ns
+  Clock Path Skew:        0.096ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.564ns = ( 6.564 - 4.000 ) 
+    Source Clock Delay      (SCD):    2.541ns
+    Clock Pessimism Removal (CPR):    0.073ns
   Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
     Clock Jitter             (CJ):    0.148ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.437ns (routing 0.625ns, distribution 1.812ns)
-  Clock Net Delay (Destination): 2.519ns (routing 0.557ns, distribution 1.962ns)
+  Clock Net Delay (Source):      2.438ns (routing 0.625ns, distribution 1.813ns)
+  Clock Net Delay (Destination): 2.509ns (routing 0.557ns, distribution 1.952ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
@@ -1378,16 +1372,16 @@ Slack (MET) :             1.276ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.103     0.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.437     2.540    miner_system_i/rst_pl0/U0/slowest_sync_clk
-    IRI_QUAD_X80Y592     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.438     2.541    miner_system_i/rst_pl0/U0/slowest_sync_clk
+    IRI_QUAD_X80Y593     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
   -------------------------------------------------------------------    -------------------
-    IRI_QUAD_X80Y592     FDRE (Prop_IMUX21_IMR_IRI_QUAD_EVEN_C_Q)
-                                                      0.233     2.773 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
-                         net (fo=1, routed)           0.304     3.077    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
-    BUFG_FABRIC_X2Y35    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
-                                                      0.015     3.092 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
-                         net (fo=495071, routed)      2.096     5.188    miner_system_i/miner_1/inst/u_miner/g_engines[12].u_engine/rst_ni
-    SLICE_X21Y319        FDCE                                         f  miner_system_i/miner_1/inst/u_miner/g_engines[12].u_engine/result_hash_o_reg[63]/CLR  (IS_INVERTED)
+    IRI_QUAD_X80Y593     FDRE (Prop_IMUX4_IMR_IRI_QUAD_ODD_C_Q)
+                                                      0.233     2.774 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=1, routed)           0.304     3.078    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
+    BUFG_FABRIC_X2Y24    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
+                                                      0.015     3.093 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
+                         net (fo=148739, routed)      2.084     5.177    miner_system_i/miner_1/inst/u_miner/g_engines[13].u_engine/rst_ni
+    SLICE_X213Y306       FDCE                                         f  miner_system_i/miner_1/inst/u_miner/g_engines[13].u_engine/header_tail_q_reg[41]/CLR  (IS_INVERTED)
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_0 rise edge)
@@ -1396,17 +1390,17 @@ Slack (MET) :             1.276ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     4.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.055     4.055 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.519     6.574    miner_system_i/miner_1/inst/u_miner/g_engines[12].u_engine/clk_i
-    SLICE_X21Y319        FDCE                                         r  miner_system_i/miner_1/inst/u_miner/g_engines[12].u_engine/result_hash_o_reg[63]/C
-                         clock pessimism              0.072     6.646    <hidden>
-                         clock uncertainty           -0.074     6.572    <hidden>
-    SLICE_X21Y319        FDCE (Recov_BFF_SLICEM_C_CLR)
-                                                     -0.108     6.464    miner_system_i/miner_1/inst/u_miner/g_engines[12].u_engine/result_hash_o_reg[63]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.509     6.564    miner_system_i/miner_1/inst/u_miner/g_engines[13].u_engine/clk_i
+    SLICE_X213Y306       FDCE                                         r  miner_system_i/miner_1/inst/u_miner/g_engines[13].u_engine/header_tail_q_reg[41]/C
+                         clock pessimism              0.073     6.637    <hidden>
+                         clock uncertainty           -0.074     6.564    <hidden>
+    SLICE_X213Y306       FDCE (Recov_BFF_SLICEM_C_CLR)
+                                                     -0.108     6.456    miner_system_i/miner_1/inst/u_miner/g_engines[13].u_engine/header_tail_q_reg[41]
   -------------------------------------------------------------------
-                         required time                          6.464    <hidden>
-                         arrival time                          -5.188    <hidden>
+                         required time                          6.456    <hidden>
+                         arrival time                          -5.177    <hidden>
   -------------------------------------------------------------------
-                         slack                                  1.276    <hidden>
+                         slack                                  1.278    <hidden>
 
 
 
@@ -1414,22 +1408,22 @@ Slack (MET) :             1.276ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.918ns  (arrival time - required time)
+Slack (MET) :             0.912ns  (arrival time - required time)
   Source:                 miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
                             (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_0/inst/u_miner/g_engines[7].u_engine/u_core/u_core/t1_c_q_reg[4]/CLR
+  Destination:            miner_system_i/miner_1/inst/u_miner/g_clusters[0].u_result_fifo/stage1_nonce_q_reg[314]/CLR
                             (removal check against rising-edge clock clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             **async_default**
   Path Type:              Removal (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk_pl_0 rise@0.000ns - clk_pl_0 rise@0.000ns)
-  Data Path Delay:        1.463ns  (logic 0.104ns (7.111%)  route 1.359ns (92.889%))
+  Data Path Delay:        1.460ns  (logic 0.104ns (7.123%)  route 1.356ns (92.877%))
   Logic Levels:           1  (BUFG_FABRIC=1)
-  Clock Path Skew:        0.538ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    2.195ns
-    Source Clock Delay      (SCD):    1.607ns
+  Clock Path Skew:        0.541ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    2.200ns
+    Source Clock Delay      (SCD):    1.608ns
     Clock Pessimism Removal (CPR):    0.051ns
-  Clock Net Delay (Source):      1.565ns (routing 0.401ns, distribution 1.164ns)
-  Clock Net Delay (Destination): 2.115ns (routing 0.463ns, distribution 1.652ns)
+  Clock Net Delay (Source):      1.566ns (routing 0.401ns, distribution 1.165ns)
+  Clock Net Delay (Destination): 2.120ns (routing 0.463ns, distribution 1.657ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
@@ -1439,16 +1433,16 @@ Slack (MET) :             0.918ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.565     1.607    miner_system_i/rst_pl0/U0/slowest_sync_clk
-    IRI_QUAD_X80Y592     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.566     1.608    miner_system_i/rst_pl0/U0/slowest_sync_clk
+    IRI_QUAD_X80Y593     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
   -------------------------------------------------------------------    -------------------
-    IRI_QUAD_X80Y592     FDRE (Prop_IMUX21_IMR_IRI_QUAD_EVEN_C_Q)
-                                                      0.093     1.700 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
-                         net (fo=1, routed)           0.086     1.786    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
-    BUFG_FABRIC_X2Y35    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
-                                                      0.011     1.797 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
-                         net (fo=495071, routed)      1.273     3.070    miner_system_i/miner_0/inst/u_miner/g_engines[7].u_engine/u_core/u_core/rst_ni
-    SLICE_X222Y265       FDCE                                         f  miner_system_i/miner_0/inst/u_miner/g_engines[7].u_engine/u_core/u_core/t1_c_q_reg[4]/CLR  (IS_INVERTED)
+    IRI_QUAD_X80Y593     FDRE (Prop_IMUX4_IMR_IRI_QUAD_ODD_C_Q)
+                                                      0.093     1.701 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=1, routed)           0.086     1.787    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
+    BUFG_FABRIC_X2Y24    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
+                                                      0.011     1.798 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
+                         net (fo=148739, routed)      1.270     3.068    miner_system_i/miner_1/inst/u_miner/g_clusters[0].u_result_fifo/rst_ni
+    SLICE_X220Y195       FDCE                                         f  miner_system_i/miner_1/inst/u_miner/g_clusters[0].u_result_fifo/stage1_nonce_q_reg[314]/CLR  (IS_INVERTED)
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_0 rise edge)
@@ -1457,16 +1451,16 @@ Slack (MET) :             0.918ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.080     0.080 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.115     2.195    miner_system_i/miner_0/inst/u_miner/g_engines[7].u_engine/u_core/u_core/clk_i
-    SLICE_X222Y265       FDCE                                         r  miner_system_i/miner_0/inst/u_miner/g_engines[7].u_engine/u_core/u_core/t1_c_q_reg[4]/C
-                         clock pessimism             -0.051     2.145    <hidden>
-    SLICE_X222Y265       FDCE (Remov_BFF2_SLICEL_C_CLR)
-                                                      0.007     2.152    miner_system_i/miner_0/inst/u_miner/g_engines[7].u_engine/u_core/u_core/t1_c_q_reg[4]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.120     2.200    miner_system_i/miner_1/inst/u_miner/g_clusters[0].u_result_fifo/clk_i
+    SLICE_X220Y195       FDCE                                         r  miner_system_i/miner_1/inst/u_miner/g_clusters[0].u_result_fifo/stage1_nonce_q_reg[314]/C
+                         clock pessimism             -0.051     2.149    <hidden>
+    SLICE_X220Y195       FDCE (Remov_FFF_SLICEL_C_CLR)
+                                                      0.007     2.156    miner_system_i/miner_1/inst/u_miner/g_clusters[0].u_result_fifo/stage1_nonce_q_reg[314]
   -------------------------------------------------------------------
-                         required time                         -2.152    <hidden>
-                         arrival time                           3.070    <hidden>
+                         required time                         -2.156    <hidden>
+                         arrival time                           3.068    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.918    <hidden>
+                         slack                                  0.912    <hidden>
 
 
 
@@ -1477,33 +1471,33 @@ Path Group:  **async_default**
 From Clock:  clk_pl_1
   To Clock:  clk_pl_1
 
-Setup :            0  Failing Endpoints,  Worst Slack        4.286ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.365ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        0.723ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.177ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             4.286ns  (required time - arrival time)
+Slack (MET) :             0.723ns  (required time - arrival time)
   Source:                 miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
                             (rising edge-triggered cell FDRE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            miner_system_i/axi_cdc_miner_0/inst/write_data_q_reg[17]/CLR
+  Destination:            miner_system_i/axi_cdc_miner_1/inst/write_data_q_reg[24]/CLR
                             (recovery check against rising-edge clock clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
   Path Group:             **async_default**
   Path Type:              Recovery (Max at Slow Process Corner)
   Requirement:            8.000ns  (clk_pl_1 rise@8.000ns - clk_pl_1 rise@0.000ns)
-  Data Path Delay:        3.712ns  (logic 0.091ns (2.451%)  route 3.621ns (97.549%))
+  Data Path Delay:        6.883ns  (logic 0.090ns (1.308%)  route 6.793ns (98.692%))
   Logic Levels:           0  
-  Clock Path Skew:        0.210ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.499ns = ( 10.499 - 8.000 ) 
-    Source Clock Delay      (SCD):    2.346ns
-    Clock Pessimism Removal (CPR):    0.057ns
-  Clock Uncertainty:      0.104ns  (CJ)/2 + PE + PJ
-    Clock Jitter             (CJ):    0.209ns
+  Clock Path Skew:        -0.184ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.492ns = ( 10.492 - 8.000 ) 
+    Source Clock Delay      (SCD):    2.826ns
+    Clock Pessimism Removal (CPR):    0.150ns
+  Clock Uncertainty:      0.103ns  (CJ)/2 + PE + PJ
+    Clock Jitter             (CJ):    0.206ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.243ns (routing 0.389ns, distribution 1.854ns)
-  Clock Net Delay (Destination): 2.444ns (routing 0.347ns, distribution 2.097ns)
+  Clock Net Delay (Source):      2.723ns (routing 0.661ns, distribution 2.062ns)
+  Clock Net Delay (Destination): 2.437ns (routing 0.590ns, distribution 1.847ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
@@ -1513,13 +1507,13 @@ Slack (MET) :             4.286ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.103     0.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.243     2.346    miner_system_i/rst_pl1/U0/slowest_sync_clk
-    SLICE_X48Y3          FDRE                                         r  miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.723     2.826    miner_system_i/rst_pl1/U0/slowest_sync_clk
+    SLICE_X53Y1          FDRE                                         r  miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X48Y3          FDRE (Prop_AFF_SLICEL_C_Q)
-                                                      0.091     2.437 r  miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
-                         net (fo=441, routed)         3.621     6.058    miner_system_i/axi_cdc_miner_0/inst/s_axi_aresetn
-    SLICE_X175Y165       FDCE                                         f  miner_system_i/axi_cdc_miner_0/inst/write_data_q_reg[17]/CLR  (IS_INVERTED)
+    SLICE_X53Y1          FDRE (Prop_AFF_SLICEM_C_Q)
+                                                      0.090     2.916 r  miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=441, routed)         6.793     9.710    miner_system_i/axi_cdc_miner_1/inst/s_axi_aresetn
+    SLICE_X182Y158       FDCE                                         f  miner_system_i/axi_cdc_miner_1/inst/write_data_q_reg[24]/CLR  (IS_INVERTED)
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_1 rise edge)
@@ -1528,17 +1522,17 @@ Slack (MET) :             4.286ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     8.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.055     8.055 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.444    10.499    miner_system_i/axi_cdc_miner_0/inst/s_axi_aclk
-    SLICE_X175Y165       FDCE                                         r  miner_system_i/axi_cdc_miner_0/inst/write_data_q_reg[17]/C
-                         clock pessimism              0.057    10.556    <hidden>
-                         clock uncertainty           -0.104    10.452    <hidden>
-    SLICE_X175Y165       FDCE (Recov_GFF_SLICEM_C_CLR)
-                                                     -0.108    10.344    miner_system_i/axi_cdc_miner_0/inst/write_data_q_reg[17]
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        2.437    10.492    miner_system_i/axi_cdc_miner_1/inst/s_axi_aclk
+    SLICE_X182Y158       FDCE                                         r  miner_system_i/axi_cdc_miner_1/inst/write_data_q_reg[24]/C
+                         clock pessimism              0.150    10.642    <hidden>
+                         clock uncertainty           -0.103    10.539    <hidden>
+    SLICE_X182Y158       FDCE (Recov_AFF_SLICEL_C_CLR)
+                                                     -0.107    10.432    miner_system_i/axi_cdc_miner_1/inst/write_data_q_reg[24]
   -------------------------------------------------------------------
-                         required time                         10.344    <hidden>
-                         arrival time                          -6.058    <hidden>
+                         required time                         10.432    <hidden>
+                         arrival time                          -9.710    <hidden>
   -------------------------------------------------------------------
-                         slack                                  4.286    <hidden>
+                         slack                                  0.723    <hidden>
 
 
 
@@ -1546,22 +1540,22 @@ Slack (MET) :             4.286ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.365ns  (arrival time - required time)
+Slack (MET) :             0.177ns  (arrival time - required time)
   Source:                 miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
                             (rising edge-triggered cell FDRE clocked by clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
-  Destination:            miner_system_i/axi_cdc_miner_2/inst/s_axi_rdata_reg[11]/CLR
+  Destination:            miner_system_i/axi_cdc_miner_3/inst/write_rsp_sync1_q_reg/CLR
                             (removal check against rising-edge clock clk_pl_1  {rise@0.000ns fall@4.000ns period=8.000ns})
   Path Group:             **async_default**
   Path Type:              Removal (Min at Fast Process Corner)
   Requirement:            0.000ns  (clk_pl_1 rise@0.000ns - clk_pl_1 rise@0.000ns)
-  Data Path Delay:        0.426ns  (logic 0.050ns (11.724%)  route 0.376ns (88.276%))
+  Data Path Delay:        0.238ns  (logic 0.049ns (20.553%)  route 0.189ns (79.447%))
   Logic Levels:           0  
-  Clock Path Skew:        0.055ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    1.683ns
-    Source Clock Delay      (SCD):    1.456ns
-    Clock Pessimism Removal (CPR):    0.172ns
-  Clock Net Delay (Source):      1.414ns (routing 0.245ns, distribution 1.169ns)
-  Clock Net Delay (Destination): 1.603ns (routing 0.285ns, distribution 1.318ns)
+  Clock Path Skew:        0.054ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    2.079ns
+    Source Clock Delay      (SCD):    1.793ns
+    Clock Pessimism Removal (CPR):    0.232ns
+  Clock Net Delay (Source):      1.751ns (routing 0.425ns, distribution 1.326ns)
+  Clock Net Delay (Destination): 1.999ns (routing 0.489ns, distribution 1.510ns)
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
@@ -1571,13 +1565,13 @@ Slack (MET) :             0.365ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.414     1.456    miner_system_i/rst_pl1/U0/slowest_sync_clk
-    SLICE_X48Y3          FDRE                                         r  miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.751     1.793    miner_system_i/rst_pl1/U0/slowest_sync_clk
+    SLICE_X53Y1          FDRE                                         r  miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X48Y3          FDRE (Prop_AFF_SLICEL_C_Q)
-                                                      0.050     1.506 r  miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
-                         net (fo=441, routed)         0.376     1.883    miner_system_i/axi_cdc_miner_2/inst/s_axi_aresetn
-    SLICE_X52Y45         FDCE                                         f  miner_system_i/axi_cdc_miner_2/inst/s_axi_rdata_reg[11]/CLR  (IS_INVERTED)
+    SLICE_X53Y1          FDRE (Prop_AFF_SLICEM_C_Q)
+                                                      0.049     1.842 r  miner_system_i/rst_pl1/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=441, routed)         0.189     2.031    miner_system_i/axi_cdc_miner_3/inst/s_axi_aresetn
+    SLICE_X54Y3          FDCE                                         f  miner_system_i/axi_cdc_miner_3/inst/write_rsp_sync1_q_reg/CLR  (IS_INVERTED)
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pl_1 rise edge)
@@ -1586,16 +1580,16 @@ Slack (MET) :             0.365ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]
     BUFG_PS_X0Y7         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.080     0.080 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG/O
-    X1Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.603     1.683    miner_system_i/axi_cdc_miner_2/inst/s_axi_aclk
-    SLICE_X52Y45         FDCE                                         r  miner_system_i/axi_cdc_miner_2/inst/s_axi_rdata_reg[11]/C
-                         clock pessimism             -0.172     1.511    <hidden>
-    SLICE_X52Y45         FDCE (Remov_CFF_SLICEL_C_CLR)
-                                                      0.007     1.518    miner_system_i/axi_cdc_miner_2/inst/s_axi_rdata_reg[11]
+    X3Y2 (CLOCK_ROOT)    net (fo=1645, routed)        1.999     2.079    miner_system_i/axi_cdc_miner_3/inst/s_axi_aclk
+    SLICE_X54Y3          FDCE                                         r  miner_system_i/axi_cdc_miner_3/inst/write_rsp_sync1_q_reg/C
+                         clock pessimism             -0.232     1.847    <hidden>
+    SLICE_X54Y3          FDCE (Remov_BFF_SLICEL_C_CLR)
+                                                      0.007     1.854    miner_system_i/axi_cdc_miner_3/inst/write_rsp_sync1_q_reg
   -------------------------------------------------------------------
-                         required time                         -1.518    <hidden>
-                         arrival time                           1.883    <hidden>
+                         required time                         -1.854    <hidden>
+                         arrival time                           2.031    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.365    <hidden>
+                         slack                                  0.177    <hidden>
 
 
 
@@ -1606,33 +1600,33 @@ Path Group:  **async_default**
 From Clock:  clk_pl_0
   To Clock:  s_axi_aclk
 
-Setup :            0  Failing Endpoints,  Worst Slack        1.387ns,  Total Violation        0.000ns
-Hold  :            0  Failing Endpoints,  Worst Slack        0.910ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        1.398ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.917ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             1.387ns  (required time - arrival time)
+Slack (MET) :             1.398ns  (required time - arrival time)
   Source:                 miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
                             (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/u_core/u_core/t1_a_q_reg[24]/CLR
+  Destination:            miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/midstate_q_reg[136]/CLR
                             (recovery check against rising-edge clock s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             **async_default**
   Path Type:              Recovery (Max at Slow Process Corner)
   Requirement:            4.000ns  (s_axi_aclk rise@4.000ns - clk_pl_0 rise@0.000ns)
-  Data Path Delay:        2.382ns  (logic 0.248ns (10.410%)  route 2.134ns (89.590%))
+  Data Path Delay:        2.286ns  (logic 0.248ns (10.847%)  route 2.038ns (89.153%))
   Logic Levels:           1  (BUFG_FABRIC=1)
-  Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.456ns = ( 6.456 - 4.000 ) 
-    Source Clock Delay      (SCD):    2.540ns
-    Clock Pessimism Removal (CPR):    0.035ns
+  Clock Path Skew:        -0.134ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.361ns = ( 6.361 - 4.000 ) 
+    Source Clock Delay      (SCD):    2.541ns
+    Clock Pessimism Removal (CPR):    0.046ns
   Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
     Clock Jitter             (CJ):    0.148ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      2.437ns (routing 0.625ns, distribution 1.812ns)
-  Clock Net Delay (Destination): 2.456ns (routing 0.557ns, distribution 1.899ns)
+  Clock Net Delay (Source):      2.438ns (routing 0.625ns, distribution 1.813ns)
+  Clock Net Delay (Destination): 2.361ns (routing 0.557ns, distribution 1.804ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -1643,32 +1637,32 @@ Slack (MET) :             1.387ns  (required time - arrival time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.103     0.103 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.437     2.540    miner_system_i/rst_pl0/U0/slowest_sync_clk
-    IRI_QUAD_X80Y592     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.438     2.541    miner_system_i/rst_pl0/U0/slowest_sync_clk
+    IRI_QUAD_X80Y593     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
   -------------------------------------------------------------------    -------------------
-    IRI_QUAD_X80Y592     FDRE (Prop_IMUX21_IMR_IRI_QUAD_EVEN_C_Q)
-                                                      0.233     2.773 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
-                         net (fo=1, routed)           0.304     3.077    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
-    BUFG_FABRIC_X2Y35    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
-                                                      0.015     3.092 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
-                         net (fo=495071, routed)      1.830     4.922    miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/u_core/u_core/rst_ni
-    SLICE_X57Y195        FDCE                                         f  miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/u_core/u_core/t1_a_q_reg[24]/CLR  (IS_INVERTED)
+    IRI_QUAD_X80Y593     FDRE (Prop_IMUX4_IMR_IRI_QUAD_ODD_C_Q)
+                                                      0.233     2.774 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=1, routed)           0.304     3.078    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
+    BUFG_FABRIC_X2Y24    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
+                                                      0.015     3.093 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
+                         net (fo=148739, routed)      1.734     4.827    miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/rst_ni
+    SLICE_X97Y190        FDCE                                         f  miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/midstate_q_reg[136]/CLR  (IS_INVERTED)
   -------------------------------------------------------------------    -------------------
 
                          (clock s_axi_aclk rise edge)
                                                       4.000     4.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     4.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.456     6.456    miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/u_core/u_core/clk_i
-    SLICE_X57Y195        FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/u_core/u_core/t1_a_q_reg[24]/C
-                         clock pessimism              0.035     6.491    <hidden>
-                         clock uncertainty           -0.074     6.417    <hidden>
-    SLICE_X57Y195        FDCE (Recov_AFF_SLICEM_C_CLR)
-                                                     -0.108     6.309    miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/u_core/u_core/t1_a_q_reg[24]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      2.361     6.361    miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/clk_i
+    SLICE_X97Y190        FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/midstate_q_reg[136]/C
+                         clock pessimism              0.046     6.407    <hidden>
+                         clock uncertainty           -0.074     6.333    <hidden>
+    SLICE_X97Y190        FDCE (Recov_AFF_SLICEM_C_CLR)
+                                                     -0.108     6.225    miner_system_i/miner_3/inst/u_miner/g_engines[2].u_engine/midstate_q_reg[136]
   -------------------------------------------------------------------
-                         required time                          6.309    <hidden>
-                         arrival time                          -4.922    <hidden>
+                         required time                          6.225    <hidden>
+                         arrival time                          -4.827    <hidden>
   -------------------------------------------------------------------
-                         slack                                  1.387    <hidden>
+                         slack                                  1.398    <hidden>
 
 
 
@@ -1676,26 +1670,26 @@ Slack (MET) :             1.387ns  (required time - arrival time)
 
 Min Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.910ns  (arrival time - required time)
+Slack (MET) :             0.917ns  (arrival time - required time)
   Source:                 miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
                             (rising edge-triggered cell FDRE clocked by clk_pl_0  {rise@0.000ns fall@2.000ns period=4.000ns})
-  Destination:            miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/core_h_q_reg[63]/CLR
+  Destination:            miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/midstate_q_reg[113]/CLR
                             (removal check against rising-edge clock s_axi_aclk  {rise@0.000ns fall@2.000ns period=4.000ns})
   Path Group:             **async_default**
   Path Type:              Removal (Min at Fast Process Corner)
   Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - clk_pl_0 rise@0.000ns)
-  Data Path Delay:        1.375ns  (logic 0.104ns (7.566%)  route 1.271ns (92.434%))
+  Data Path Delay:        1.329ns  (logic 0.104ns (7.825%)  route 1.225ns (92.175%))
   Logic Levels:           1  (BUFG_FABRIC=1)
-  Clock Path Skew:        0.384ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    2.022ns
-    Source Clock Delay      (SCD):    1.607ns
-    Clock Pessimism Removal (CPR):    0.032ns
+  Clock Path Skew:        0.331ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.980ns
+    Source Clock Delay      (SCD):    1.608ns
+    Clock Pessimism Removal (CPR):    0.042ns
   Clock Uncertainty:      0.074ns  (CJ)/2 + PE + PJ
     Clock Jitter             (CJ):    0.148ns
     Phase Error              (PE):    0.000ns
     Phase Jitter             (PJ):    0.000ns
-  Clock Net Delay (Source):      1.565ns (routing 0.401ns, distribution 1.164ns)
-  Clock Net Delay (Destination): 2.022ns (routing 0.463ns, distribution 1.559ns)
+  Clock Net Delay (Source):      1.566ns (routing 0.401ns, distribution 1.165ns)
+  Clock Net Delay (Destination): 1.980ns (routing 0.463ns, distribution 1.517ns)
   Clock Domain Crossing:  Inter clock paths are considered valid unless explicitly excluded by timing constraints such as set_clock_groups or set_false_path.
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
@@ -1706,32 +1700,32 @@ Slack (MET) :             0.910ns  (arrival time - required time)
                          net (fo=1, routed)           0.000     0.000    miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]
     BUFG_PS_X0Y6         BUFG_PS (Prop_BUFG_PS_I_O)
                                                       0.042     0.042 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      1.565     1.607    miner_system_i/rst_pl0/U0/slowest_sync_clk
-    IRI_QUAD_X80Y592     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.566     1.608    miner_system_i/rst_pl0/U0/slowest_sync_clk
+    IRI_QUAD_X80Y593     FDRE                                         r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/C
   -------------------------------------------------------------------    -------------------
-    IRI_QUAD_X80Y592     FDRE (Prop_IMUX21_IMR_IRI_QUAD_EVEN_C_Q)
-                                                      0.093     1.700 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
-                         net (fo=1, routed)           0.086     1.786    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
-    BUFG_FABRIC_X2Y35    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
-                                                      0.011     1.797 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
-                         net (fo=495071, routed)      1.185     2.982    miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/rst_ni
-    SLICE_X54Y195        FDCE                                         f  miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/core_h_q_reg[63]/CLR  (IS_INVERTED)
+    IRI_QUAD_X80Y593     FDRE (Prop_IMUX4_IMR_IRI_QUAD_ODD_C_Q)
+                                                      0.093     1.701 r  miner_system_i/rst_pl0/U0/ACTIVE_LOW_PR_OUT_DFF[0].FDRE_PER_N/Q
+                         net (fo=1, routed)           0.086     1.787    miner_system_i/rst_pl0/U0/peripheral_aresetn[0]
+    BUFG_FABRIC_X2Y24    BUFG_FABRIC (Prop_BUFG_FABRIC_I_O)
+                                                      0.011     1.798 r  miner_system_i/rst_pl0/U0/peripheral_aresetn[0]_BUFG_inst/O
+                         net (fo=148739, routed)      1.139     2.937    miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/rst_ni
+    SLICE_X162Y195       FDCE                                         f  miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/midstate_q_reg[113]/CLR  (IS_INVERTED)
   -------------------------------------------------------------------    -------------------
 
                          (clock s_axi_aclk rise edge)
                                                       0.000     0.000 r  <hidden>
     BUFG_PS_X0Y6         BUFG_PS                      0.000     0.000 r  miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG/O
-    X3Y2 (CLOCK_ROOT)    net (fo=495107, routed)      2.022     2.022    miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/clk_i
-    SLICE_X54Y195        FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/core_h_q_reg[63]/C
-                         clock pessimism             -0.032     1.991    <hidden>
-                         clock uncertainty            0.074     2.065    <hidden>
-    SLICE_X54Y195        FDCE (Remov_EFF2_SLICEL_C_CLR)
-                                                      0.007     2.072    miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/core_h_q_reg[63]
+    X3Y2 (CLOCK_ROOT)    net (fo=354599, routed)      1.980     1.980    miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/clk_i
+    SLICE_X162Y195       FDCE                                         r  miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/midstate_q_reg[113]/C
+                         clock pessimism             -0.042     1.939    <hidden>
+                         clock uncertainty            0.074     2.013    <hidden>
+    SLICE_X162Y195       FDCE (Remov_FFF_SLICEL_C_CLR)
+                                                      0.007     2.020    miner_system_i/miner_3/inst/u_miner/g_engines[6].u_engine/midstate_q_reg[113]
   -------------------------------------------------------------------
-                         required time                         -2.072    <hidden>
-                         arrival time                           2.982    <hidden>
+                         required time                         -2.020    <hidden>
+                         arrival time                           2.937    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.910    <hidden>
+                         slack                                  0.917    <hidden>
 
 
 

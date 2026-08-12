@@ -15,7 +15,6 @@
 #define MINER_REG_RESULT_NONCE  0x090U
 #define MINER_REG_RESULT_ENGINE 0x094U
 #define MINER_REG_RESULT_STATUS 0x098U
-#define MINER_REG_RESULT_HASH0  0x0a0U
 
 #define MINER_CONTROL_START     (1U << 0)
 #define MINER_CONTROL_STOP      (1U << 1)
@@ -33,7 +32,6 @@ typedef struct {
     uint32_t nonce;
     uint32_t engine;
     uint32_t status;
-    uint32_t hash[8];
 } miner_result_t;
 
 void miner_init(uintptr_t base_addr);

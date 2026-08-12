@@ -174,10 +174,6 @@ bool miner_read_result(miner_result_t *result)
                          (inst * MINER_ENGINES_PER_INSTANCE);
         result->status = result_status;
 
-        for (uint32_t i = 0; i < 8U; ++i) {
-            result->hash[i] = miner_read_reg_instance(inst, MINER_REG_RESULT_HASH0 + (i * 4U));
-        }
-
         miner_write_reg_instance(inst, MINER_REG_RESULT_STATUS, MINER_RESULT_STATUS_RESULT);
         return true;
     }
