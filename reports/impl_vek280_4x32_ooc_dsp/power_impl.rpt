@@ -1,0 +1,237 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version     : Vivado v.2026.1 (lin64) Build 6511674 Tue Jun 16 11:01:26 MDT 2026
+| Date             : Wed Aug 12 07:04:03 2026
+| Host             : NiuBi running 64-bit Ubuntu 24.04.4 LTS
+| Command          : report_power -file /raid/work/vek280_bitcoin_miner/reports/impl_vek280_4x32_ooc_dsp/power_impl.rpt
+| Design           : miner_system_wrapper
+| Device           : xcve2802-vsvh1760-2MP-e-S
+| Design State     : routed
+| Grade            : extended
+| Process          : typical
+| Characterization : Production
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Power Report
+
+Table of Contents
+-----------------
+1. Summary
+1.1 On-Chip Components
+1.2 Power Supply Summary
+1.3 Confidence Level
+2. Settings
+2.1 Environment
+2.2 Clock Constraints
+3. Detailed Reports
+3.1 By Hierarchy
+3.2 By Clock Domain
+
+1. Summary
+----------
+
++--------------------------+--------------+
+| Total On-Chip Power (W)  | 15.105       |
+| Design Power Budget (W)  | Unspecified* |
+| Power Budget Margin (W)  | NA           |
+| Dynamic (W)              | 5.852        |
+| Device Static (W)        | 9.253**      |
+| Effective TJA (C/W)      | 5.0          |
+| Max Ambient (C)          | 25.0         |
+| Junction Temperature (C) | 100.0**      |
+| Confidence Level         | Low          |
+| Setting File             | ---          |
+| Simulation Activity File | ---          |
+| Design Nets Matched      | NA           |
++--------------------------+--------------+
+* Specify Design Power Budget using, set_operating_conditions -design_power_budget <value in Watts>
+** No environmental constraints detected, worst case junction temperature (Tj) will be used, this will not impact the dynamic power estimate but will impact the static power shown.
+To more accurately reflect the environmental and thermal operating condition of the application the following constraints should be applied, to reflect the applications specifications:
+   set_operating_conditions -ambient_temp 25
+   set_operating_conditions -thetaja 1.0
+
+Where Ambient Temperature is defined as degrees Celsius and Theta Ja is the effectiveness of the thermal solution described as C/W to represent the rise in junction temperature for every watt dissipated
+To set the junction temperature to a specific value the following constraint should be used:
+   set_operating_conditions -junction_temp 25
+
+For the Versal architecture, a default junction temperature of 100C is assumed when no environmental conditions are set (Ta/Tj/TJA).
+
+
+1.1 On-Chip Components
+----------------------
+
++-------------------------+-----------+----------+-----------+-----------------+
+| On-Chip                 | Power (W) | Used     | Available | Utilization (%) |
++-------------------------+-----------+----------+-----------+-----------------+
+| Clocks                  |     1.590 |       11 |       --- |             --- |
+| Logic                   |     0.679 |   843526 |       --- |             --- |
+|   LUT as Logic          |     0.633 |   297335 |    520704 |           57.10 |
+|   CLE FF Register       |     0.025 |   356041 |   1041408 |           34.19 |
+|   LOOKAHEAD8            |     0.021 |     8498 |     65088 |           13.06 |
+|   BUFG                  |    <0.001 |        1 |        56 |            1.79 |
+|   IRI IMUX Register     |    <0.001 |        1 |   1219392 |           <0.01 |
+|   Others                |     0.000 |     1436 |       --- |             --- |
+|   LUT as Shift Register |     0.000 |        2 |    260352 |           <0.01 |
+| Signals                 |     0.564 |   600892 |       --- |             --- |
+| XPLL                    |     0.163 |        2 |        18 |           11.11 |
+| DSPs                    |     0.000 |      384 |       --- |             --- |
+| I/O                     |     1.141 |      112 |       --- |             --- |
+| NoC-DDRMC               |     0.536 |        2 |       --- |             --- |
+|   DDRMC                 |     0.293 |        1 |         3 |           33.33 |
+|   NoC                   |     0.242 |        1 |       --- |             --- |
+| PS9                     |     1.179 |        1 |       --- |             --- |
+| Static Power            |     9.253 |          |           |                 |
+|   PS Static             |     0.233 |          |           |                 |
+|   PL Static             |     9.021 |          |           |                 |
+| Total                   |    15.105 |          |           |                 |
++-------------------------+-----------+----------+-----------+-----------------+
+
+
+1.2 Power Supply Summary
+------------------------
+
++---------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
+| Source        | Voltage (V) | Total (A) | Dynamic (A) | Static (A) | Powerup (A) | Budget (A)  | Margin (A) |
++---------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
+| Vccint        |       0.800 |    13.087 |       3.513 |      9.574 |       NA    | Unspecified | NA         |
+| VCC_SOC       |       0.800 |     2.187 |       0.678 |      1.510 |       NA    | Unspecified | NA         |
+| VCC_IO        |       0.800 |     0.860 |       0.659 |      0.201 |       NA    | Unspecified | NA         |
+| VCC_RAM       |       0.800 |     0.073 |       0.021 |      0.053 |       NA    | Unspecified | NA         |
+| Vccaux        |       1.500 |     0.612 |       0.196 |      0.416 |       NA    | Unspecified | NA         |
+| VCCO_503      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCCO_500      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCCO_501      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCCO_502      |       1.800 |     0.006 |       0.006 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_FUSE      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_BATT      |       1.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco33        |       3.300 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco25        |       2.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco18        |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco15        |       1.500 |     0.045 |       0.038 |      0.007 |       NA    | Unspecified | NA         |
+| Vcco135       |       1.350 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco12        |       1.200 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| Vcco11        |       1.100 |     0.399 |       0.388 |      0.011 |       NA    | Unspecified | NA         |
+| Vcco10        |       1.000 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_PMC       |       0.800 |     0.300 |       0.248 |      0.051 |       NA    | Unspecified | NA         |
+| VCCAUX_PMC    |       1.500 |     0.069 |       0.068 |      0.001 |       NA    | Unspecified | NA         |
+| VCCAUX_SMON   |       1.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VCC_PSLP      |       0.800 |     0.335 |       0.220 |      0.116 |       NA    | Unspecified | NA         |
+| VCC_PSFP      |       0.800 |     1.018 |       0.865 |      0.153 |       NA    | Unspecified | NA         |
+| VCC_CPM5      |       0.800 |     0.383 |       0.000 |      0.383 |       NA    | Unspecified | NA         |
+| VGTYP_AVCC    |       0.920 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VGTYP_AVTT    |       1.200 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
+| VGTYP_AVCCAUX |       1.500 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
++---------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
+
+
+1.3 Confidence Level
+--------------------
+
++-----------------------------+------------+--------------------------------------------------------+------------------------------------------------------------------------------------------------------------+
+| User Input Data             | Confidence | Details                                                | Action                                                                                                     |
++-----------------------------+------------+--------------------------------------------------------+------------------------------------------------------------------------------------------------------------+
+| Design implementation state | High       | Design is routed                                       |                                                                                                            |
+| Clock nodes activity        | High       | User specified more than 95% of clocks                 |                                                                                                            |
+| I/O nodes activity          | Low        | More than 75% of inputs are missing user specification | Provide missing input activity with simulation results or by editing the "By Resource Type -> I/Os" view   |
+| Internal nodes activity     | Medium     | User specified less than 25% of internal nodes         | Provide missing internal nodes activity with simulation results or by editing the "By Resource Type" views |
+| Device models               | High       | Device models are Production                           |                                                                                                            |
+|                             |            |                                                        |                                                                                                            |
+| Overall confidence level    | Low        |                                                        |                                                                                                            |
++-----------------------------+------------+--------------------------------------------------------+------------------------------------------------------------------------------------------------------------+
+
+
+2. Settings
+-----------
+
+2.1 Environment
+---------------
+
++------------------+------+
+| Ambient Temp (C) | 25.0 |
+| ThetaJA (C/W)    | 5.0  |
++------------------+------+
+
+
+2.2 Clock Constraints
+---------------------
+
++-------------------------+-------------------------------------------------------------------------------------+-----------------+
+| Clock                   | Domain                                                                              | Constraint (ns) |
++-------------------------+-------------------------------------------------------------------------------------+-----------------+
+| bank1_clkout0           | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_clkout0           |             1.1 |
+| bank1_xpll0_fifo_rd_clk | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_xpll0_fifo_rd_clk |             1.1 |
+| clk_pl_0                | miner_system_i/cips_0/inst/pspmc_0/inst/pl0_ref_clk                                 |             4.0 |
+| clk_pl_0                | miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]                           |             4.0 |
+| clk_pl_1                | miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[1]                           |             8.0 |
+| lpddr4_clk1_clk_p       | lpddr4_clk1_clk_p                                                                   |             5.0 |
+| mc_clk_xpll             | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/mc_clk_xpll             |             1.1 |
+| pll_clk_xpll            | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clk_xpll            |             0.3 |
+| pll_clktoxphy[0]        | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clktoxphy[0]        |             0.3 |
++-------------------------+-------------------------------------------------------------------------------------+-----------------+
+
+
+3. Detailed Reports
+-------------------
+
+3.1 By Hierarchy
+----------------
+
++--------------------------+-----------+
+| Name                     | Power (W) |
++--------------------------+-----------+
+| miner_system_wrapper     |     5.852 |
+|   miner_system_i         |     5.852 |
+|     axi_cdc_miner_0      |     0.002 |
+|       inst               |     0.002 |
+|     axi_cdc_miner_1      |     0.002 |
+|       inst               |     0.002 |
+|     axi_cdc_miner_2      |     0.002 |
+|       inst               |     0.002 |
+|     axi_cdc_miner_3      |     0.002 |
+|       inst               |     0.002 |
+|     axi_regslice_miner_0 |     0.002 |
+|       inst               |     0.002 |
+|     axi_regslice_miner_1 |     0.001 |
+|       inst               |     0.001 |
+|     axi_regslice_miner_2 |     0.002 |
+|       inst               |     0.002 |
+|     axi_regslice_miner_3 |     0.002 |
+|       inst               |     0.002 |
+|     axi_smc              |     0.013 |
+|       inst               |     0.013 |
+|     cips_0               |     1.231 |
+|       inst               |     1.231 |
+|     ddr_noc              |     1.615 |
+|       inst               |     1.615 |
+|     miner_0              |     0.681 |
+|       inst               |     0.681 |
+|     miner_1              |     0.672 |
+|       inst               |     0.672 |
+|     miner_2              |     0.690 |
+|       inst               |     0.690 |
+|     miner_3              |     0.667 |
+|       inst               |     0.667 |
+|     ps_ddr_noc           |     0.265 |
+|       inst               |     0.265 |
+|     rst_pl0              |     0.004 |
+|       U0                 |     0.004 |
++--------------------------+-----------+
+
+
+3.2 By Clock Domain
+-------------------
+
++-------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
+| Name                                                                                | Power (W) | Frequency (MHz) | Buffer | Clock Buffer Enable (%) | Clock Enable | Fanout   | Sites    | Fanout/Site |
++-------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
+| miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG               |     1.565 |          250.00 | BUFG   |                     N/A | None         |   354401 |    54957 |        6.45 |
+| miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_1.PL_CLK_1_BUFG               |     0.021 |          125.00 | BUFG   |                     N/A | None         |     1646 |      326 |        5.05 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clktoxphy[0]        |     0.001 |         3700.00 | N/A    |                     N/A | None         |        9 |        9 |        1.00 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clk_xpll            |     0.001 |         3700.00 | N/A    |                     N/A | None         |        9 |        9 |        1.00 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_xpll0_fifo_rd_clk |    <0.001 |          925.00 | N/A    |                     N/A | None         |       18 |       18 |        1.00 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/mc_clk_xpll             |    <0.001 |          925.00 | N/A    |                     N/A | None         |        1 |        1 |        1.00 |
+| miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_clkout0           |    <0.001 |          925.00 | N/A    |                     N/A | None         |        1 |        1 |        1.00 |
+| lpddr4_clk1_clk_p                                                                   |    <0.001 |          200.00 | N/A    |                     N/A | None         |        2 |        2 |        1.00 |
++-------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
+
+

@@ -1,6 +1,8 @@
 `timescale 1ns/1ps
 
-module sha256_core_iterative (
+module sha256_core_iterative #(
+    parameter bit EXPLICIT_DSP_SCHEDULE = 1'b0
+) (
     input  wire         clk_i,
     input  wire         rst_ni,
     input  wire         start_i,
@@ -60,6 +62,9 @@ module sha256_core_iterative (
     wire [31:0] digest_h5;
     wire [31:0] digest_h6;
     wire [31:0] digest_h7;
+    wire [31:0] w_ab_add;
+    wire [31:0] w_cd_add;
+    wire [31:0] w_new_add;
 
     assign busy_o = busy_q;
 
@@ -140,6 +145,18 @@ module sha256_core_iterative (
     assign digest_h6 = h6_q + f_q;
     assign digest_h7 = h7_q + g_q;
 
+    generate
+        if (EXPLICIT_DSP_SCHEDULE) begin : g_explicit_dsp_schedule
+            dsp58_add32 u_w_ab (.a_i(w_s1_q), .b_i(w_m7_q), .sum_o(w_ab_add));
+            dsp58_add32 u_w_cd (.a_i(w_s0_q), .b_i(w_m16_q), .sum_o(w_cd_add));
+            dsp58_add32 u_w_new (.a_i(w_ab_q), .b_i(w_cd_q), .sum_o(w_new_add));
+        end else begin : g_fabric_schedule
+            assign w_ab_add = w_s1_q + w_m7_q;
+            assign w_cd_add = w_s0_q + w_m16_q;
+            assign w_new_add = w_ab_q + w_cd_q;
+        end
+    endgenerate
+
     integer i;
     always @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
@@ -187,11 +204,11 @@ module sha256_core_iterative (
                     w_m16_q <= w_mem[w_idx_m16];
                     phase_q <= 3'd1;
                 end else if (phase_q == 3'd1) begin
-                    w_ab_q <= w_s1_q + w_m7_q;
-                    w_cd_q <= w_s0_q + w_m16_q;
+                    w_ab_q <= w_ab_add;
+                    w_cd_q <= w_cd_add;
                     phase_q <= 3'd2;
                 end else if (phase_q == 3'd2) begin
-                    w_new_q <= w_ab_q + w_cd_q;
+                    w_new_q <= w_new_add;
                     phase_q <= 3'd3;
                 end else if (phase_q == 3'd3) begin
                     t1_q <= t1_a_q + t1_b_q + ((round_q < 16) ? t1_c_q : w_new_q);

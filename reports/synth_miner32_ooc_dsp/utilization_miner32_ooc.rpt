@@ -1,0 +1,256 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (lin64) Build 6511674 Tue Jun 16 11:01:26 MDT 2026
+| Date         : Wed Aug 12 06:11:34 2026
+| Host         : NiuBi running 64-bit Ubuntu 24.04.4 LTS
+| Command      : report_utilization -file /raid/work/vek280_bitcoin_miner/reports/synth_miner32_ooc_dsp/utilization_miner32_ooc.rpt -hierarchical
+| Design       : bitcoin_miner_axi_32
+| Device       : xcve2802-vsvh1760-2MP-e-S
+| Speed File   : -2MP
+| Design State : Synthesized
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++---------------------------------+--------------------------------------+------------+------------+---------+------+-------+--------+--------+------+------------+
+|             Instance            |                Module                | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs  | RAMB36 | RAMB18 | URAM | DSP Blocks |
++---------------------------------+--------------------------------------+------------+------------+---------+------+-------+--------+--------+------+------------+
+| bitcoin_miner_axi_32            |                                (top) |      78491 |      78491 |       0 |    0 | 88480 |      0 |      0 |    0 |         96 |
+|   (bitcoin_miner_axi_32)        |                                (top) |          0 |          0 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|   u_miner                       |                    bitcoin_miner_axi |      78491 |      78491 |       0 |    0 | 88480 |      0 |      0 |    0 |         96 |
+|     (u_miner)                   |                    bitcoin_miner_axi |        719 |        719 |       0 |    0 |  2967 |      0 |      0 |    0 |          0 |
+|     g_clusters[0].u_result_fifo |          bitcoin_result_cluster_fifo |        620 |        620 |       0 |    0 |  1289 |      0 |      0 |    0 |          0 |
+|     g_engines[0].u_engine       |               bitcoin_hash_engine__1 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[0].u_engine)   |               bitcoin_hash_engine__1 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |  bitcoin_sha256_core_dsp_explicit__1 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |  bitcoin_sha256_core_dsp_explicit__1 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |          sha256_core_dsp_explicit__1 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |             sha256_core_iterative__1 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |             sha256_core_iterative__1 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[10].u_engine      |              bitcoin_hash_engine__11 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[10].u_engine)  |              bitcoin_hash_engine__11 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__11 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__11 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__11 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__11 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__11 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[11].u_engine      |              bitcoin_hash_engine__12 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[11].u_engine)  |              bitcoin_hash_engine__12 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__12 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__12 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__12 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__12 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__12 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[12].u_engine      |              bitcoin_hash_engine__13 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[12].u_engine)  |              bitcoin_hash_engine__13 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__13 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__13 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__13 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__13 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__13 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[13].u_engine      |              bitcoin_hash_engine__14 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[13].u_engine)  |              bitcoin_hash_engine__14 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__14 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__14 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__14 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__14 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__14 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[14].u_engine      |              bitcoin_hash_engine__15 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[14].u_engine)  |              bitcoin_hash_engine__15 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__15 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__15 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__15 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__15 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__15 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[15].u_engine      |              bitcoin_hash_engine__16 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[15].u_engine)  |              bitcoin_hash_engine__16 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__16 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__16 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__16 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__16 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__16 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[16].u_engine      |              bitcoin_hash_engine__17 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[16].u_engine)  |              bitcoin_hash_engine__17 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__17 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__17 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__17 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__17 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__17 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[17].u_engine      |              bitcoin_hash_engine__18 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[17].u_engine)  |              bitcoin_hash_engine__18 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__18 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__18 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__18 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__18 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__18 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[18].u_engine      |              bitcoin_hash_engine__19 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[18].u_engine)  |              bitcoin_hash_engine__19 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__19 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__19 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__19 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__19 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__19 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[19].u_engine      |              bitcoin_hash_engine__20 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[19].u_engine)  |              bitcoin_hash_engine__20 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__20 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__20 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__20 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__20 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__20 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[1].u_engine       |               bitcoin_hash_engine__2 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[1].u_engine)   |               bitcoin_hash_engine__2 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |  bitcoin_sha256_core_dsp_explicit__2 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |  bitcoin_sha256_core_dsp_explicit__2 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |          sha256_core_dsp_explicit__2 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |             sha256_core_iterative__2 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |             sha256_core_iterative__2 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[20].u_engine      |              bitcoin_hash_engine__21 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[20].u_engine)  |              bitcoin_hash_engine__21 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__21 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__21 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__21 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__21 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__21 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[21].u_engine      |              bitcoin_hash_engine__22 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[21].u_engine)  |              bitcoin_hash_engine__22 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__22 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__22 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__22 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__22 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__22 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[22].u_engine      |              bitcoin_hash_engine__23 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[22].u_engine)  |              bitcoin_hash_engine__23 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__23 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__23 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__23 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__23 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__23 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[23].u_engine      |              bitcoin_hash_engine__24 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[23].u_engine)  |              bitcoin_hash_engine__24 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__24 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__24 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__24 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__24 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__24 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[24].u_engine      |              bitcoin_hash_engine__25 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[24].u_engine)  |              bitcoin_hash_engine__25 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__25 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__25 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__25 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__25 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__25 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[25].u_engine      |              bitcoin_hash_engine__26 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[25].u_engine)  |              bitcoin_hash_engine__26 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__26 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__26 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__26 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__26 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__26 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[26].u_engine      |              bitcoin_hash_engine__27 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[26].u_engine)  |              bitcoin_hash_engine__27 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__27 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__27 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__27 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__27 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__27 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[27].u_engine      |              bitcoin_hash_engine__28 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[27].u_engine)  |              bitcoin_hash_engine__28 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__28 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__28 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__28 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__28 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__28 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[28].u_engine      |              bitcoin_hash_engine__29 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[28].u_engine)  |              bitcoin_hash_engine__29 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__29 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__29 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__29 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__29 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__29 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[29].u_engine      |              bitcoin_hash_engine__30 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[29].u_engine)  |              bitcoin_hash_engine__30 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__30 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__30 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__30 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__30 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__30 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[2].u_engine       |               bitcoin_hash_engine__3 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[2].u_engine)   |               bitcoin_hash_engine__3 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |  bitcoin_sha256_core_dsp_explicit__3 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |  bitcoin_sha256_core_dsp_explicit__3 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |          sha256_core_dsp_explicit__3 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |             sha256_core_iterative__3 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |             sha256_core_iterative__3 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[30].u_engine      |              bitcoin_hash_engine__31 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[30].u_engine)  |              bitcoin_hash_engine__31 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__31 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__31 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__31 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__31 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__31 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[31].u_engine      |                  bitcoin_hash_engine |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[31].u_engine)  |                  bitcoin_hash_engine |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |     bitcoin_sha256_core_dsp_explicit |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |     bitcoin_sha256_core_dsp_explicit |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |             sha256_core_dsp_explicit |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |                sha256_core_iterative |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |                sha256_core_iterative |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[3].u_engine       |               bitcoin_hash_engine__4 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[3].u_engine)   |               bitcoin_hash_engine__4 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |  bitcoin_sha256_core_dsp_explicit__4 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |  bitcoin_sha256_core_dsp_explicit__4 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |          sha256_core_dsp_explicit__4 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |             sha256_core_iterative__4 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |             sha256_core_iterative__4 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[4].u_engine       |               bitcoin_hash_engine__5 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[4].u_engine)   |               bitcoin_hash_engine__5 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |  bitcoin_sha256_core_dsp_explicit__5 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |  bitcoin_sha256_core_dsp_explicit__5 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |          sha256_core_dsp_explicit__5 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |             sha256_core_iterative__5 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |             sha256_core_iterative__5 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[5].u_engine       |               bitcoin_hash_engine__6 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[5].u_engine)   |               bitcoin_hash_engine__6 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |  bitcoin_sha256_core_dsp_explicit__6 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |  bitcoin_sha256_core_dsp_explicit__6 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |          sha256_core_dsp_explicit__6 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |             sha256_core_iterative__6 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |             sha256_core_iterative__6 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[6].u_engine       |               bitcoin_hash_engine__7 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[6].u_engine)   |               bitcoin_hash_engine__7 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |  bitcoin_sha256_core_dsp_explicit__7 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |  bitcoin_sha256_core_dsp_explicit__7 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |          sha256_core_dsp_explicit__7 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |             sha256_core_iterative__7 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |             sha256_core_iterative__7 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[7].u_engine       |               bitcoin_hash_engine__8 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[7].u_engine)   |               bitcoin_hash_engine__8 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |  bitcoin_sha256_core_dsp_explicit__8 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |  bitcoin_sha256_core_dsp_explicit__8 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |          sha256_core_dsp_explicit__8 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |             sha256_core_iterative__8 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |             sha256_core_iterative__8 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[8].u_engine       |               bitcoin_hash_engine__9 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[8].u_engine)   |               bitcoin_hash_engine__9 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     |  bitcoin_sha256_core_dsp_explicit__9 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) |  bitcoin_sha256_core_dsp_explicit__9 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |          sha256_core_dsp_explicit__9 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |             sha256_core_iterative__9 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |             sha256_core_iterative__9 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
+|     g_engines[9].u_engine       |              bitcoin_hash_engine__10 |       2411 |       2411 |       0 |    0 |  2632 |      0 |      0 |    0 |          3 |
+|       (g_engines[9].u_engine)   |              bitcoin_hash_engine__10 |        673 |        673 |       0 |    0 |   979 |      0 |      0 |    0 |          0 |
+|       g_explicit_dsp.u_core     | bitcoin_sha256_core_dsp_explicit__10 |       1738 |       1738 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|         (g_explicit_dsp.u_core) | bitcoin_sha256_core_dsp_explicit__10 |        257 |        257 |       0 |    0 |     0 |      0 |      0 |    0 |          0 |
+|         u_core                  |         sha256_core_dsp_explicit__10 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|           u_core                |            sha256_core_iterative__10 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          3 |
+|             (u_core)            |            sha256_core_iterative__10 |       1481 |       1481 |       0 |    0 |  1653 |      0 |      0 |    0 |          0 |
++---------------------------------+--------------------------------------+------------+------------+---------+------+-------+--------+--------+------+------------+
+
+

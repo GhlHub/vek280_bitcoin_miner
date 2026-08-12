@@ -1,12 +1,16 @@
 """Program the current 4x32 PDI and launch the matching R5 application."""
 
+import os
 from pathlib import Path
 
 import xsdb
 
 
 root = Path(__file__).resolve().parents[2]
-pdi = root / "bd/out_vek280_miner_4x32_ooc/miner_system_wrapper.pdi"
+pdi = Path(os.environ.get(
+    "MINER_PDI",
+    root / "bd/out_vek280_miner_4x32_ooc/miner_system_wrapper.pdi",
+))
 elf = root / "vitis_ws/vek280_miner_app/build/vek280_miner_app.elf"
 
 for artifact in (pdi, elf):
