@@ -5,7 +5,9 @@
 This design is a Stratum v1 Bitcoin-mining demonstrator for the AMD Versal
 Premium VEK280. The implemented configuration has four AXI4-Lite miner
 instances, each with 32 nonce-scanning engines, for 128 engines in total. The
-PL clock is 250 MHz.
+miner datapath runs at 250 MHz and the R5 AXI4-Lite control plane runs at
+125 MHz. A dedicated AXI clock-domain bridge isolates each miner clock domain
+from the control plane.
 
 The current programming image is
 `bd/out_vek280_miner_4x32_ooc/miner_system_wrapper.pdi`. The R5 FreeRTOS ELF is
@@ -21,7 +23,9 @@ programs the PL with the remaining header data and target.
 The PL evaluates nonce candidates. It performs the remaining first SHA-256
 compression for bytes 64 through 79 plus padding, then the one-block second
 SHA-256 compression. Results that are less than or equal to the target are
-captured for the R5, which submits them to the pool.
+captured as nonce and engine ID only for the R5, which submits them to the
+pool. The digest is not returned over AXI because share submission needs the
+nonce and job metadata, not the full hardware digest.
 
 ## Hardware architecture
 
@@ -43,22 +47,26 @@ flowchart LR
             cips --- uart
         end
 
-        subgraph pl["Programmable logic, 250 MHz"]
-            smc["AXI SmartConnect"]
+        subgraph pl["Programmable logic"]
+            smc["AXI SmartConnect\n125 MHz"]
             rs0["AXI register slice"]
             rs1["AXI register slice"]
             rs2["AXI register slice"]
             rs3["AXI register slice"]
-            m0["miner_0\n32 hash engines\n0xA4000000"]
-            m1["miner_1\n32 hash engines\n0xA4001000"]
-            m2["miner_2\n32 hash engines\n0xA4002000"]
-            m3["miner_3\n32 hash engines\n0xA4003000"]
+            cdc0["AXI CDC"]
+            cdc1["AXI CDC"]
+            cdc2["AXI CDC"]
+            cdc3["AXI CDC"]
+            m0["miner_0, 250 MHz\n32 hash engines\n0xA4000000"]
+            m1["miner_1, 250 MHz\n32 hash engines\n0xA4001000"]
+            m2["miner_2, 250 MHz\n32 hash engines\n0xA4002000"]
+            m3["miner_3, 250 MHz\n32 hash engines\n0xA4003000"]
             irq["Interrupt OR\npl_ps_irq0"]
 
-            smc --> rs0 --> m0
-            smc --> rs1 --> m1
-            smc --> rs2 --> m2
-            smc --> rs3 --> m3
+            smc --> rs0 --> cdc0 --> m0
+            smc --> rs1 --> cdc1 --> m1
+            smc --> rs2 --> cdc2 --> m2
+            smc --> rs3 --> cdc3 --> m3
             m0 --> irq
             m1 --> irq
             m2 --> irq
@@ -78,7 +86,7 @@ R5 FreeRTOS
     |  coinbase, merkle root, header, midstate, target
     v
 Four AXI4-Lite miner instances (32 engines each)
-    |  candidate nonce + double-SHA-256 digest
+    |  candidate nonce + engine ID
     v
 R5 result queue -> mining.submit -> Stratum pool
 ```

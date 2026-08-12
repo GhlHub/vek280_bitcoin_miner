@@ -62,7 +62,6 @@ module bitcoin_miner_axi #(
     localparam [11:0] ADDR_RESULT_NONCE  = 12'h090;
     localparam [11:0] ADDR_RESULT_ENGINE = 12'h094;
     localparam [11:0] ADDR_RESULT_STATUS = 12'h098;
-    localparam [11:0] ADDR_RESULT_HASH   = 12'h0a0;
     localparam int unsigned NUM_CLUSTERS = (NUM_ENGINES + CLUSTER_SIZE - 1) / CLUSTER_SIZE;
     localparam int unsigned ENGINE_INDEX_WIDTH = (NUM_ENGINES <= 1) ? 1 : $clog2(NUM_ENGINES);
     localparam [1:0] LOAD_IDLE   = 2'd0;
@@ -81,7 +80,6 @@ module bitcoin_miner_axi #(
     reg         result_valid_q;
     reg [31:0]  result_nonce_q;
     reg [31:0]  result_engine_q;
-    reg [255:0] result_hash_q;
 
     reg start_pulse_q;
     reg stop_pulse_q;
@@ -119,13 +117,11 @@ module bitcoin_miner_axi #(
     wire [NUM_ENGINES-1:0] engine_done;
     wire [NUM_ENGINES-1:0] engine_result_valid;
     wire [NUM_ENGINES*32-1:0] engine_result_nonce;
-    wire [NUM_ENGINES*256-1:0] engine_result_hash;
     wire [NUM_CLUSTERS-1:0] cluster_valid;
     wire [NUM_CLUSTERS-1:0] cluster_overflow;
     wire [NUM_CLUSTERS-1:0] cluster_pop;
     wire [NUM_CLUSTERS*32-1:0] cluster_engine_id;
     wire [NUM_CLUSTERS*32-1:0] cluster_nonce;
-    wire [NUM_CLUSTERS*256-1:0] cluster_hash;
 
     integer i;
     integer cluster_hit_idx_next;
@@ -167,9 +163,6 @@ module bitcoin_miner_axi #(
             end else if ((addr >= ADDR_TARGET_BASE) && (addr < ADDR_TARGET_BASE + 12'h020)) begin
                 idx = ({20'h0, addr} - {20'h0, ADDR_TARGET_BASE}) >> 2;
                 read_reg = target_q[255 - (idx * 32) -: 32];
-            end else if ((addr >= ADDR_RESULT_HASH) && (addr < ADDR_RESULT_HASH + 12'h020)) begin
-                idx = ({20'h0, addr} - {20'h0, ADDR_RESULT_HASH}) >> 2;
-                read_reg = result_hash_q[255 - (idx * 32) -: 32];
             end else begin
                 case (addr)
                     ADDR_CONTROL:       read_reg = 32'h00000000;
@@ -229,8 +222,7 @@ module bitcoin_miner_axi #(
                 .busy_o(engine_busy[gen_idx]),
                 .done_o(engine_done[gen_idx]),
                 .result_valid_o(engine_result_valid[gen_idx]),
-                .result_nonce_o(engine_result_nonce[gen_idx*32 +: 32]),
-                .result_hash_o(engine_result_hash[gen_idx*256 +: 256])
+                .result_nonce_o(engine_result_nonce[gen_idx*32 +: 32])
             );
         end
     endgenerate
@@ -241,18 +233,15 @@ module bitcoin_miner_axi #(
         for (cluster_idx = 0; cluster_idx < NUM_CLUSTERS; cluster_idx = cluster_idx + 1) begin : g_clusters
             wire [CLUSTER_SIZE-1:0] local_valid;
             wire [CLUSTER_SIZE*32-1:0] local_nonce;
-            wire [CLUSTER_SIZE*256-1:0] local_hash;
 
             for (local_idx = 0; local_idx < CLUSTER_SIZE; local_idx = local_idx + 1) begin : g_cluster_inputs
                 localparam int unsigned ENGINE_INDEX = (cluster_idx * CLUSTER_SIZE) + local_idx;
                 if (ENGINE_INDEX < NUM_ENGINES) begin : g_active_engine
                     assign local_valid[local_idx] = engine_result_valid[ENGINE_INDEX];
                     assign local_nonce[local_idx*32 +: 32] = engine_result_nonce[ENGINE_INDEX*32 +: 32];
-                    assign local_hash[local_idx*256 +: 256] = engine_result_hash[ENGINE_INDEX*256 +: 256];
                 end else begin : g_inactive_engine
                     assign local_valid[local_idx] = 1'b0;
                     assign local_nonce[local_idx*32 +: 32] = 32'h0;
-                    assign local_hash[local_idx*256 +: 256] = 256'h0;
                 end
             end
 
@@ -267,11 +256,9 @@ module bitcoin_miner_axi #(
                 .pop_i(cluster_pop[cluster_idx]),
                 .engine_valid_i(local_valid),
                 .engine_nonce_i(local_nonce),
-                .engine_hash_i(local_hash),
                 .valid_o(cluster_valid[cluster_idx]),
                 .engine_id_o(cluster_engine_id[cluster_idx*32 +: 32]),
                 .nonce_o(cluster_nonce[cluster_idx*32 +: 32]),
-                .hash_o(cluster_hash[cluster_idx*256 +: 256]),
                 .overflow_o(cluster_overflow[cluster_idx])
             );
         end
@@ -311,7 +298,6 @@ module bitcoin_miner_axi #(
             result_valid_q <= 1'b0;
             result_nonce_q <= 32'h0;
             result_engine_q <= 32'h0;
-            result_hash_q <= 256'h0;
             start_pulse_q <= 1'b0;
             stop_pulse_q <= 1'b0;
             clear_results_q <= 1'b0;
@@ -540,7 +526,6 @@ module bitcoin_miner_axi #(
                 result_valid_q <= 1'b1;
                 result_engine_q <= cluster_engine_id[cluster_hit_idx_next*32 +: 32];
                 result_nonce_q <= cluster_nonce[cluster_hit_idx_next*32 +: 32];
-                result_hash_q <= cluster_hash[cluster_hit_idx_next*256 +: 256];
                 cluster_pop_q[cluster_hit_idx_next] <= 1'b1;
             end
 
