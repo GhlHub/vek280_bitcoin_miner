@@ -17,6 +17,9 @@ module tb_sha256_cores;
     wire        dsp_busy;
     wire        dsp_done;
     wire [255:0] dsp_digest;
+    wire        explicit_dsp_busy;
+    wire        explicit_dsp_done;
+    wire [255:0] explicit_dsp_digest;
 
     integer failures;
 
@@ -40,6 +43,17 @@ module tb_sha256_cores;
         .busy_o(dsp_busy),
         .done_o(dsp_done),
         .digest_o(dsp_digest)
+    );
+
+    sha256_core_dsp_explicit u_explicit_dsp (
+        .clk_i(clk),
+        .rst_ni(rst_n),
+        .start_i(start),
+        .block_i(block),
+        .h_i(h_in),
+        .busy_o(explicit_dsp_busy),
+        .done_o(explicit_dsp_done),
+        .digest_o(explicit_dsp_digest)
     );
 
     always #5 clk <= ~clk;
@@ -198,13 +212,13 @@ module tb_sha256_cores;
             start = 1'b1;
             @(negedge clk);
             start = 1'b0;
-            if (!(fabric_busy && dsp_busy)) begin
+            if (!(fabric_busy && dsp_busy && explicit_dsp_busy)) begin
                 $display("FAIL %0s: busy did not assert after start", name);
                 failures = failures + 1;
             end
 
             timeout = 0;
-            while (!(fabric_done && dsp_done) && timeout < 450) begin
+            while (!(fabric_done && dsp_done && explicit_dsp_done) && timeout < 450) begin
                 @(posedge clk);
                 timeout = timeout + 1;
             end
@@ -223,12 +237,23 @@ module tb_sha256_cores;
                              name, dsp_digest, expected_i);
                     failures = failures + 1;
                 end
+                if (explicit_dsp_digest !== expected_i) begin
+                    $display("FAIL %0s explicit dsp digest got %064h expected %064h",
+                             name, explicit_dsp_digest, expected_i);
+                    failures = failures + 1;
+                end
                 if (fabric_digest !== dsp_digest) begin
                     $display("FAIL %0s fabric/dsp mismatch %064h %064h",
                              name, fabric_digest, dsp_digest);
                     failures = failures + 1;
                 end
-                if (fabric_digest === expected_i && dsp_digest === expected_i) begin
+                if (fabric_digest !== explicit_dsp_digest) begin
+                    $display("FAIL %0s fabric/explicit-dsp mismatch %064h %064h",
+                             name, fabric_digest, explicit_dsp_digest);
+                    failures = failures + 1;
+                end
+                if (fabric_digest === expected_i && dsp_digest === expected_i &&
+                    explicit_dsp_digest === expected_i) begin
                     $display("PASS %0s %064h", name, expected_i);
                 end
             end

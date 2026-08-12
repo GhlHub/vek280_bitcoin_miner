@@ -9,6 +9,10 @@ set use_ooc_miner32 0
 if {[info exists ::env(MINER_USE_OOC_MINER32)] && $::env(MINER_USE_OOC_MINER32) ne ""} {
     set use_ooc_miner32 $::env(MINER_USE_OOC_MINER32)
 }
+set explicit_dsp 0
+if {[info exists ::env(MINER_EXPLICIT_DSP)] && $::env(MINER_EXPLICIT_DSP) ne ""} {
+    set explicit_dsp $::env(MINER_EXPLICIT_DSP)
+}
 set variant_suffix ""
 if {[info exists ::env(MINER_ENABLE_DDR)] && !$::env(MINER_ENABLE_DDR)} {
     set variant_suffix "_noddr"
@@ -18,6 +22,9 @@ if {$num_miner_slaves != 1} {
 }
 if {$use_ooc_miner32} {
     append variant_suffix "_ooc"
+}
+if {$explicit_dsp} {
+    append variant_suffix "_dsp"
 }
 set project_file [file join $repo_dir bd out_vek280_miner${variant_suffix} vek280_miner_bd.xpr]
 set impl_reports_dir [file join $repo_dir reports impl_vek280${variant_suffix}]
@@ -48,7 +55,11 @@ if {[get_property PROGRESS [get_runs synth_1]] ne "100%"} {
 }
 
 if {$use_ooc_miner32} {
-    set miner32_dcp [file join $repo_dir synth out_miner32_ooc bitcoin_miner_axi_32_ooc.dcp]
+    set miner32_ooc_suffix "_ooc"
+    if {$explicit_dsp} {
+        append miner32_ooc_suffix "_dsp"
+    }
+    set miner32_dcp [file join $repo_dir synth out_miner32${miner32_ooc_suffix} bitcoin_miner_axi_32_ooc.dcp]
     if {![file exists $miner32_dcp]} {
         error "Missing OOC miner checkpoint: $miner32_dcp. Run make synth-miner32-ooc first."
     }

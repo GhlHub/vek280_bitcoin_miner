@@ -4,7 +4,8 @@ module bitcoin_miner_axi #(
     parameter int unsigned NUM_ENGINES = 128,
     parameter int unsigned CLUSTER_SIZE = 16,
     parameter int unsigned CLUSTER_FIFO_DEPTH = 2,
-    parameter int unsigned AXI_ADDR_WIDTH = 12
+    parameter int unsigned AXI_ADDR_WIDTH = 12,
+    parameter bit EXPLICIT_DSP_SCHEDULE = 1'b0
 ) (
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 s_axi_aclk CLK",
        X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF S_AXI, ASSOCIATED_RESET s_axi_aresetn, FREQ_HZ 249997498" *)
@@ -208,7 +209,8 @@ module bitcoin_miner_axi #(
     generate
         for (gen_idx = 0; gen_idx < NUM_ENGINES; gen_idx = gen_idx + 1) begin : g_engines
             bitcoin_hash_engine #(
-                .NONCE_STRIDE(NUM_ENGINES)
+                .NONCE_STRIDE(NUM_ENGINES),
+                .EXPLICIT_DSP_SCHEDULE(EXPLICIT_DSP_SCHEDULE)
             ) u_engine (
                 .clk_i(s_axi_aclk),
                 .rst_ni(s_axi_aresetn),
