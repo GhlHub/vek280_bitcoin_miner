@@ -50,8 +50,16 @@ The project uses Vivado and Vitis 2026.1. The major targets are:
 make sim                 # RTL simulation; requires Icarus Verilog/vvp
 make lint                # RTL lint; requires Verilator
 make impl4x32-ooc        # Implement the four-instance, 128-engine PL design
+make impl4x32-dsp-ooc    # Implement the isolated explicit-DSP58 alternate
 make vitis-r5            # Rebuild the matching R5 BSP and application ELF
 ```
+
+`impl4x32-dsp-ooc` is an alternate hardware experiment, not the active PDI.
+It keeps the same register map and nonce-only result path, but explicitly maps
+the three SHA message-schedule additions in each engine to DSP58 resources.
+Its 32-engine OOC checkpoint uses 96 DSP58s and 78,491 LUTs, versus 0 DSP58s
+and 81,595 LUTs for the fabric checkpoint. Both meet the 250 MHz OOC clock
+constraint with +1.566 ns WNS.
 
 The current PDI and XSA are:
 

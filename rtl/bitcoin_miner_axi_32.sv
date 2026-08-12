@@ -1,7 +1,9 @@
 `timescale 1ns/1ps
 
 (* KEEP_HIERARCHY = "yes" *)
-module bitcoin_miner_axi_32 (
+module bitcoin_miner_axi_32 #(
+    parameter bit EXPLICIT_DSP_SCHEDULE = 1'b0
+) (
     (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 s_axi_aclk CLK",
        X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF S_AXI, ASSOCIATED_RESET s_axi_aresetn, FREQ_HZ 249997498" *)
     input  wire        s_axi_aclk,
@@ -51,7 +53,8 @@ module bitcoin_miner_axi_32 (
         .NUM_ENGINES(32),
         .CLUSTER_SIZE(32),
         .CLUSTER_FIFO_DEPTH(2),
-        .AXI_ADDR_WIDTH(12)
+        .AXI_ADDR_WIDTH(12),
+        .EXPLICIT_DSP_SCHEDULE(EXPLICIT_DSP_SCHEDULE)
     ) u_miner (
         .s_axi_aclk(s_axi_aclk),
         .s_axi_aresetn(s_axi_aresetn),

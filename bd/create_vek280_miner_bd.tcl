@@ -12,6 +12,10 @@ set use_ooc_miner32 0
 if {[info exists ::env(MINER_USE_OOC_MINER32)] && $::env(MINER_USE_OOC_MINER32) ne ""} {
     set use_ooc_miner32 $::env(MINER_USE_OOC_MINER32)
 }
+set explicit_dsp 0
+if {[info exists ::env(MINER_EXPLICIT_DSP)] && $::env(MINER_EXPLICIT_DSP) ne ""} {
+    set explicit_dsp $::env(MINER_EXPLICIT_DSP)
+}
 if {($num_miner_slaves < 1) || ($num_miner_slaves > 4)} {
     error "MINER_NUM_SLAVES must be in the range 1..4"
 }
@@ -24,6 +28,9 @@ if {$num_miner_slaves != 1} {
 }
 if {$use_ooc_miner32} {
     append variant_suffix "_ooc"
+}
+if {$explicit_dsp} {
+    append variant_suffix "_dsp"
 }
 set out_dir [file join $repo_dir bd out_vek280_miner${variant_suffix}]
 set reports_dir [file join $repo_dir reports]

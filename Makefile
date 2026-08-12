@@ -1,5 +1,5 @@
-SHA_RTL := rtl/sha256_core_iterative.sv rtl/sha256_core_fabric.sv rtl/sha256_core_dsp.sv
-MINER_RTL := $(SHA_RTL) rtl/bitcoin_sha256_core.sv rtl/bitcoin_hash_engine.sv rtl/bitcoin_result_cluster_fifo.sv rtl/bitcoin_miner_axi.sv rtl/irq_or4.v
+SHA_RTL := rtl/dsp58_add32.sv rtl/sha256_core_iterative.sv rtl/sha256_core_fabric.sv rtl/sha256_core_dsp.sv rtl/sha256_core_dsp_explicit.sv
+MINER_RTL := $(SHA_RTL) rtl/bitcoin_sha256_core.sv rtl/bitcoin_sha256_core_dsp_explicit.sv rtl/bitcoin_hash_engine.sv rtl/bitcoin_result_cluster_fifo.sv rtl/bitcoin_miner_axi.sv rtl/irq_or4.v
 SHA_TB  := tb/tb_sha256_cores.sv
 MINER_TB := tb/tb_bitcoin_miner_axi.sv
 SHA_OUT := sim/tb_sha256_cores.out
@@ -12,7 +12,7 @@ FREERTOS_APP_INC := \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/include \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/portable/Compiler/GCC
 
-.PHONY: sim lint sw-syntax bd bd-noddr bd4x32 synth128 synth-miner32-ooc impl impl-noddr impl4x32-ooc xsa vitis-hw vitis-bsp vitis-r5 clean
+.PHONY: sim lint sw-syntax bd bd-noddr bd4x32 bd4x32-dsp synth128 synth-miner32-ooc synth-miner32-dsp-ooc impl impl-noddr impl4x32-ooc impl4x32-dsp-ooc xsa vitis-hw vitis-bsp vitis-r5 clean
 
 sim: sim-sha sim-miner
 
@@ -46,11 +46,17 @@ bd-noddr:
 bd4x32:
 	MINER_NUM_SLAVES=4 MINER_USE_OOC_MINER32=1 vivado -mode batch -source bd/create_vek280_miner_bd.tcl
 
+bd4x32-dsp:
+	MINER_NUM_SLAVES=4 MINER_USE_OOC_MINER32=1 MINER_EXPLICIT_DSP=1 vivado -mode batch -source bd/create_vek280_miner_bd.tcl
+
 synth128:
 	vivado -mode batch -source synth/run_synth_128.tcl
 
 synth-miner32-ooc:
 	VIVADO_JOBS=1 vivado -mode batch -source synth/run_miner32_ooc.tcl
+
+synth-miner32-dsp-ooc:
+	MINER_EXPLICIT_DSP=1 VIVADO_JOBS=4 vivado -mode batch -source synth/run_miner32_ooc.tcl
 
 impl:
 	vivado -mode batch -source impl/run_vek280_impl.tcl
@@ -60,6 +66,9 @@ impl-noddr:
 
 impl4x32-ooc: synth-miner32-ooc
 	MINER_NUM_SLAVES=4 MINER_USE_OOC_MINER32=1 VIVADO_JOBS=1 vivado -mode batch -source impl/run_vek280_impl.tcl
+
+impl4x32-dsp-ooc: synth-miner32-dsp-ooc
+	MINER_NUM_SLAVES=4 MINER_USE_OOC_MINER32=1 MINER_EXPLICIT_DSP=1 VIVADO_JOBS=4 vivado -mode batch -source impl/run_vek280_impl.tcl
 
 xsa: impl
 
