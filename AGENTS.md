@@ -296,15 +296,21 @@ Current operational configuration (2026-08-12):
   58,255 of 65,088 slices (89.50%); routing has zero errors. It uses 0 DSP,
   BRAM, or URAM; the DSP synthesis-directed SHA experiment did not infer DSP58
   cells and would require explicit primitive arithmetic to do so.
-- An alternate, not-yet-implemented explicit-DSP58 variant is available through
+- The explicit-DSP58 alternate is implemented, programmed, and running through
   `make synth-miner32-dsp-ooc` and `make impl4x32-dsp-ooc`. It preserves the
   nonce-only result FIFO/arbiter, sequential target compare, AXI register map,
   and 4x32 partitioning. Each SHA engine explicitly uses three DSP58 adders for
-  the message schedule, so the 32-engine OOC checkpoint uses 96 DSP58s, 78,491
-  LUTs, and 88,480 FFs (fabric: 0 DSP58s, 81,595 LUTs, 88,480 FFs). Both OOC
-  versions meet the 250 MHz constraint with WNS `+1.566 ns` and WHS `+0.058 ns`.
-  The explicit primitive model passes the SHA regression with Vivado's UNISIM
-  `DSP58.v`; a full 4x32 implementation is still required before deployment.
+  the message schedule; phase 1 contains two parallel DSP58 adds and phase 2
+  contains the third, while all remaining round arithmetic remains in fabric.
+  See `doc/sha256_fabric_architecture.svg` and
+  `doc/sha256_dsp58_architecture.svg`. The 32-engine OOC checkpoint uses 96
+  DSP58s, 78,491 LUTs, and 88,480 FFs (fabric: 0 DSP58s, 81,595 LUTs, 88,480
+  FFs). The implemented 4x32 DSP PDI is
+  `bd/out_vek280_miner_4x32_ooc_dsp/miner_system_wrapper.pdi`; it uses 384
+  DSP58s, 297,337 LUTs, 356,041 FFs, and 57,980 slices (89.08%), with final
+  WNS `+0.003 ns` and WHS `+0.010 ns`. The explicit primitive model passes the
+  SHA regression with Vivado's UNISIM `DSP58.v`, and the deployed R5 app has
+  verified job reception and dispatch through Solo CKPool.
 - `make vitis-r5` rebuilds the matching 4-instance R5 BSP and ELF. The default
   `MINER_AXI_INSTANCES` is 4. Use `software/vitis/load_target.py` for a full PDI
   plus R5 load, or `software/vitis/reload_r5_app.py` to reset and reload only the

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Fabric SHA-256 compression-core architecture</title>
+  <desc id="desc">A five-phase SHA-256 round pipeline whose message-schedule additions and round arithmetic use LUT and carry-chain fabric.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8z" fill="#24415c"/></marker>
+    <style>
+      .h {font: 700 24px sans-serif; fill:#152b40}.s {font: 15px sans-serif; fill:#34516a}.t {font: 600 16px sans-serif; fill:#152b40}.b {font: 14px sans-serif; fill:#152b40}.n {font: 13px sans-serif; fill:#34516a}.box {stroke:#24415c; stroke-width:2; rx:10}.wire {stroke:#24415c; stroke-width:2.5; fill:none; marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="650" fill="#f7fafc"/>
+  <text x="50" y="48" class="h">Fabric SHA-256 compression core — five-phase round pipeline</text>
+  <text x="50" y="75" class="s">Default implementation: all 32-bit modular additions use programmable logic LUT/carry-chain arithmetic.</text>
+
+  <rect x="50" y="112" width="1100" height="350" rx="16" fill="#ffffff" stroke="#9bb6ca" stroke-width="2"/>
+  <text x="76" y="143" class="t">One SHA-256 round (repeated 64 times)</text>
+
+  <rect class="box" x="78" y="180" width="175" height="165" fill="#e8f2fb"/>
+  <text x="99" y="210" class="t">Phase 0</text><text x="99" y="237" class="b">Read W[t−2], W[t−7],</text><text x="99" y="258" class="b">W[t−15], W[t−16]</text><text x="99" y="290" class="b">Compute σ0, σ1</text><text x="99" y="320" class="n">register schedule operands</text>
+
+  <rect class="box" x="302" y="180" width="195" height="165" fill="#e8f2fb"/>
+  <text x="324" y="210" class="t">Phase 1</text><text x="324" y="240" class="b">σ1 + W[t−7]</text><text x="324" y="270" class="b">σ0 + W[t−16]</text><rect x="320" y="286" width="155" height="30" rx="5" fill="#c9dff1"/><text x="338" y="307" class="b">LUT + CARRY8</text>
+
+  <rect class="box" x="546" y="180" width="150" height="165" fill="#e8f2fb"/>
+  <text x="567" y="210" class="t">Phase 2</text><text x="567" y="244" class="b">W[t] =</text><text x="567" y="268" class="b">partial A + B</text><rect x="563" y="286" width="115" height="30" rx="5" fill="#c9dff1"/><text x="573" y="307" class="b">CARRY8</text>
+
+  <rect class="box" x="745" y="180" width="177" height="165" fill="#f1edf9"/>
+  <text x="766" y="210" class="t">Phase 3</text><text x="766" y="239" class="b">T1 = h + Σ1(e)</text><text x="766" y="260" class="b">+ Ch + K[t] + W[t]</text><text x="766" y="294" class="b">T2 = Σ0(a) + Maj</text><text x="766" y="320" class="n">fabric round adders</text>
+
+  <rect class="box" x="971" y="180" width="145" height="165" fill="#f1edf9"/>
+  <text x="992" y="210" class="t">Phase 4</text><text x="992" y="241" class="b">Update a…h</text><text x="992" y="268" class="b">and W ring</text><text x="992" y="320" class="n">advance round</text>
+  <path class="wire" d="M253 262 H302"/><path class="wire" d="M497 262 H546"/><path class="wire" d="M696 262 H745"/><path class="wire" d="M922 262 H971"/>
+
+  <rect x="78" y="382" width="1038" height="52" rx="9" fill="#fff4db" stroke="#ca9028" stroke-width="1.5"/>
+  <text x="98" y="414" class="b">Latency: 5 clocks/round × 64 = 320 clocks/compression. The Bitcoin nonce engine performs two compressions, then an 8-cycle sequential target compare.</text>
+
+  <rect x="50" y="500" width="1100" height="100" rx="14" fill="#eaf5ef" stroke="#5e9c75" stroke-width="2"/>
+  <text x="76" y="532" class="t">Miner integration retained in both variants</text>
+  <text x="76" y="560" class="b">Midstate + 16-byte header tail + nonce → first compression → second compression → sequential 256-bit target compare</text>
+  <text x="76" y="584" class="b">Only a qualifying nonce and engine ID enter the per-cluster result FIFO and AXI-visible result path.</text>
+</svg>
