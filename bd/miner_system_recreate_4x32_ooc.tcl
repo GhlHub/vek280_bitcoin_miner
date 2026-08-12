@@ -46,7 +46,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# bitcoin_miner_axi_32, bitcoin_miner_axi_32, bitcoin_miner_axi_32, bitcoin_miner_axi_32, irq_or4
+# bitcoin_miner_axi_32, axi_lite_cdc_bridge, bitcoin_miner_axi_32, axi_lite_cdc_bridge, bitcoin_miner_axi_32, axi_lite_cdc_bridge, bitcoin_miner_axi_32, axi_lite_cdc_bridge, irq_or4
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -168,9 +168,13 @@ set bCheckModules 1
 if { $bCheckModules == 1 } {
    set list_check_mods "\ 
 bitcoin_miner_axi_32\
+axi_lite_cdc_bridge\
 bitcoin_miner_axi_32\
+axi_lite_cdc_bridge\
 bitcoin_miner_axi_32\
+axi_lite_cdc_bridge\
 bitcoin_miner_axi_32\
+axi_lite_cdc_bridge\
 irq_or4\
 "
 
@@ -261,6 +265,8 @@ proc create_root_design { parentCell } {
       IO_CONFIG_MODE {Custom} \
       PMC_CRP_PL0_REF_CTRL_ACT_FREQMHZ {249.997498} \
       PMC_CRP_PL0_REF_CTRL_FREQMHZ {250} \
+      PMC_CRP_PL1_REF_CTRL_ACT_FREQMHZ {124.998749} \
+      PMC_CRP_PL1_REF_CTRL_FREQMHZ {125} \
       PMC_USE_PMC_NOC_AXI0 {1} \
       PS_BOARD_INTERFACE {Custom} \
       PS_ENET0_MDIO {{ENABLE 1} {IO {PS_MIO 24 .. 25}}} \
@@ -278,6 +284,7 @@ proc create_root_design { parentCell } {
       PS_USE_FPD_CCI_NOC {1} \
       PS_USE_M_AXI_FPD {1} \
       PS_USE_PMCPL_CLK0 {1} \
+      PS_USE_PMCPL_CLK1 {1} \
       PS_USE_PSPL_IRQ_FPD {1} \
       SMON_ALARMS {Set_Alarms_On} \
       SMON_ENABLE_TEMP_AVERAGING {0} \
@@ -420,6 +427,17 @@ proc create_root_design { parentCell } {
   ] $axi_regslice_miner_0
 
 
+  # Create instance: axi_cdc_miner_0, and set properties
+  set block_name axi_lite_cdc_bridge
+  set block_cell_name axi_cdc_miner_0
+  if { [catch {set axi_cdc_miner_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $axi_cdc_miner_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create instance: miner_1, and set properties
   set block_name bitcoin_miner_axi_32
   set block_cell_name miner_1
@@ -446,6 +464,17 @@ proc create_root_design { parentCell } {
   ] $axi_regslice_miner_1
 
 
+  # Create instance: axi_cdc_miner_1, and set properties
+  set block_name axi_lite_cdc_bridge
+  set block_cell_name axi_cdc_miner_1
+  if { [catch {set axi_cdc_miner_1 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $axi_cdc_miner_1 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create instance: miner_2, and set properties
   set block_name bitcoin_miner_axi_32
   set block_cell_name miner_2
@@ -472,6 +501,17 @@ proc create_root_design { parentCell } {
   ] $axi_regslice_miner_2
 
 
+  # Create instance: axi_cdc_miner_2, and set properties
+  set block_name axi_lite_cdc_bridge
+  set block_cell_name axi_cdc_miner_2
+  if { [catch {set axi_cdc_miner_2 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $axi_cdc_miner_2 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create instance: miner_3, and set properties
   set block_name bitcoin_miner_axi_32
   set block_cell_name miner_3
@@ -498,6 +538,17 @@ proc create_root_design { parentCell } {
   ] $axi_regslice_miner_3
 
 
+  # Create instance: axi_cdc_miner_3, and set properties
+  set block_name axi_lite_cdc_bridge
+  set block_cell_name axi_cdc_miner_3
+  if { [catch {set axi_cdc_miner_3 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $axi_cdc_miner_3 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create instance: axi_smc, and set properties
   set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
   set_property -dict [list \
@@ -520,11 +571,18 @@ proc create_root_design { parentCell } {
   # Create instance: rst_pl0, and set properties
   set rst_pl0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_pl0 ]
 
+  # Create instance: rst_pl1, and set properties
+  set rst_pl1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_pl1 ]
+
   # Create interface connections
-  connect_bd_intf_net -intf_net axi_regslice_miner_0_M_AXI [get_bd_intf_pins axi_regslice_miner_0/M_AXI] [get_bd_intf_pins miner_0/S_AXI]
-  connect_bd_intf_net -intf_net axi_regslice_miner_1_M_AXI [get_bd_intf_pins axi_regslice_miner_1/M_AXI] [get_bd_intf_pins miner_1/S_AXI]
-  connect_bd_intf_net -intf_net axi_regslice_miner_2_M_AXI [get_bd_intf_pins axi_regslice_miner_2/M_AXI] [get_bd_intf_pins miner_2/S_AXI]
-  connect_bd_intf_net -intf_net axi_regslice_miner_3_M_AXI [get_bd_intf_pins axi_regslice_miner_3/M_AXI] [get_bd_intf_pins miner_3/S_AXI]
+  connect_bd_intf_net -intf_net axi_cdc_miner_0_m_axi [get_bd_intf_pins axi_cdc_miner_0/m_axi] [get_bd_intf_pins miner_0/S_AXI]
+  connect_bd_intf_net -intf_net axi_cdc_miner_1_m_axi [get_bd_intf_pins axi_cdc_miner_1/m_axi] [get_bd_intf_pins miner_1/S_AXI]
+  connect_bd_intf_net -intf_net axi_cdc_miner_2_m_axi [get_bd_intf_pins axi_cdc_miner_2/m_axi] [get_bd_intf_pins miner_2/S_AXI]
+  connect_bd_intf_net -intf_net axi_cdc_miner_3_m_axi [get_bd_intf_pins axi_cdc_miner_3/m_axi] [get_bd_intf_pins miner_3/S_AXI]
+  connect_bd_intf_net -intf_net axi_regslice_miner_0_M_AXI [get_bd_intf_pins axi_regslice_miner_0/M_AXI] [get_bd_intf_pins axi_cdc_miner_0/s_axi]
+  connect_bd_intf_net -intf_net axi_regslice_miner_1_M_AXI [get_bd_intf_pins axi_regslice_miner_1/M_AXI] [get_bd_intf_pins axi_cdc_miner_1/s_axi]
+  connect_bd_intf_net -intf_net axi_regslice_miner_2_M_AXI [get_bd_intf_pins axi_regslice_miner_2/M_AXI] [get_bd_intf_pins axi_cdc_miner_2/s_axi]
+  connect_bd_intf_net -intf_net axi_regslice_miner_3_M_AXI [get_bd_intf_pins axi_regslice_miner_3/M_AXI] [get_bd_intf_pins axi_cdc_miner_3/s_axi]
   connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_pins axi_regslice_miner_0/S_AXI]
   connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_pins axi_regslice_miner_1/S_AXI]
   connect_bd_intf_net -intf_net axi_smc_M02_AXI [get_bd_intf_pins axi_smc/M02_AXI] [get_bd_intf_pins axi_regslice_miner_2/S_AXI]
@@ -557,18 +615,29 @@ proc create_root_design { parentCell } {
   [get_bd_pins ps_ddr_noc/aclk4]
   connect_bd_net -net cips_0_pl0_ref_clk  [get_bd_pins cips_0/pl0_ref_clk] \
   [get_bd_pins rst_pl0/slowest_sync_clk] \
+  [get_bd_pins miner_0/s_axi_aclk] \
+  [get_bd_pins axi_cdc_miner_0/m_axi_aclk] \
+  [get_bd_pins miner_1/s_axi_aclk] \
+  [get_bd_pins axi_cdc_miner_1/m_axi_aclk] \
+  [get_bd_pins miner_2/s_axi_aclk] \
+  [get_bd_pins axi_cdc_miner_2/m_axi_aclk] \
+  [get_bd_pins miner_3/s_axi_aclk] \
+  [get_bd_pins axi_cdc_miner_3/m_axi_aclk]
+  connect_bd_net -net cips_0_pl0_resetn  [get_bd_pins cips_0/pl0_resetn] \
+  [get_bd_pins rst_pl0/ext_reset_in] \
+  [get_bd_pins rst_pl1/ext_reset_in]
+  connect_bd_net -net cips_0_pl1_ref_clk  [get_bd_pins cips_0/pl1_ref_clk] \
+  [get_bd_pins rst_pl1/slowest_sync_clk] \
   [get_bd_pins axi_smc/aclk] \
   [get_bd_pins cips_0/m_axi_fpd_aclk] \
   [get_bd_pins axi_regslice_miner_0/aclk] \
-  [get_bd_pins miner_0/s_axi_aclk] \
+  [get_bd_pins axi_cdc_miner_0/s_axi_aclk] \
   [get_bd_pins axi_regslice_miner_1/aclk] \
-  [get_bd_pins miner_1/s_axi_aclk] \
+  [get_bd_pins axi_cdc_miner_1/s_axi_aclk] \
   [get_bd_pins axi_regslice_miner_2/aclk] \
-  [get_bd_pins miner_2/s_axi_aclk] \
+  [get_bd_pins axi_cdc_miner_2/s_axi_aclk] \
   [get_bd_pins axi_regslice_miner_3/aclk] \
-  [get_bd_pins miner_3/s_axi_aclk]
-  connect_bd_net -net cips_0_pl0_resetn  [get_bd_pins cips_0/pl0_resetn] \
-  [get_bd_pins rst_pl0/ext_reset_in]
+  [get_bd_pins axi_cdc_miner_3/s_axi_aclk]
   connect_bd_net -net cips_0_pmc_axi_noc_axi0_clk  [get_bd_pins cips_0/pmc_axi_noc_axi0_clk] \
   [get_bd_pins ps_ddr_noc/aclk5]
   connect_bd_net -net irq_or_irq_o  [get_bd_pins irq_or/irq_o] \
@@ -582,15 +651,24 @@ proc create_root_design { parentCell } {
   connect_bd_net -net miner_3_irq_o  [get_bd_pins miner_3/irq_o] \
   [get_bd_pins irq_or/irq3_i]
   connect_bd_net -net rst_pl0_peripheral_aresetn  [get_bd_pins rst_pl0/peripheral_aresetn] \
+  [get_bd_pins axi_cdc_miner_0/m_axi_aresetn] \
+  [get_bd_pins miner_0/s_axi_aresetn] \
+  [get_bd_pins axi_cdc_miner_1/m_axi_aresetn] \
+  [get_bd_pins miner_1/s_axi_aresetn] \
+  [get_bd_pins axi_cdc_miner_2/m_axi_aresetn] \
+  [get_bd_pins miner_2/s_axi_aresetn] \
+  [get_bd_pins axi_cdc_miner_3/m_axi_aresetn] \
+  [get_bd_pins miner_3/s_axi_aresetn]
+  connect_bd_net -net rst_pl1_peripheral_aresetn  [get_bd_pins rst_pl1/peripheral_aresetn] \
   [get_bd_pins axi_smc/aresetn] \
   [get_bd_pins axi_regslice_miner_0/aresetn] \
-  [get_bd_pins miner_0/s_axi_aresetn] \
+  [get_bd_pins axi_cdc_miner_0/s_axi_aresetn] \
   [get_bd_pins axi_regslice_miner_1/aresetn] \
-  [get_bd_pins miner_1/s_axi_aresetn] \
+  [get_bd_pins axi_cdc_miner_1/s_axi_aresetn] \
   [get_bd_pins axi_regslice_miner_2/aresetn] \
-  [get_bd_pins miner_2/s_axi_aresetn] \
+  [get_bd_pins axi_cdc_miner_2/s_axi_aresetn] \
   [get_bd_pins axi_regslice_miner_3/aresetn] \
-  [get_bd_pins miner_3/s_axi_aresetn]
+  [get_bd_pins axi_cdc_miner_3/s_axi_aresetn]
 
   # Create address segments
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces cips_0/FPD_CCI_NOC_0] [get_bd_addr_segs ddr_noc/S00_INI/C0_DDR_LOW0] -force
@@ -598,11 +676,15 @@ proc create_root_design { parentCell } {
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces cips_0/FPD_CCI_NOC_2] [get_bd_addr_segs ddr_noc/S02_INI/C2_DDR_LOW0] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces cips_0/FPD_CCI_NOC_3] [get_bd_addr_segs ddr_noc/S03_INI/C3_DDR_LOW0] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces cips_0/LPD_AXI_NOC_0] [get_bd_addr_segs ddr_noc/S00_INI/C0_DDR_LOW0] -force
-  assign_bd_address -offset 0xA4000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs miner_0/S_AXI/reg0] -force
-  assign_bd_address -offset 0xA4001000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs miner_1/S_AXI/reg0] -force
-  assign_bd_address -offset 0xA4002000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs miner_2/S_AXI/reg0] -force
-  assign_bd_address -offset 0xA4003000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs miner_3/S_AXI/reg0] -force
+  assign_bd_address -offset 0xA4000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs axi_cdc_miner_0/s_axi/reg0] -force
+  assign_bd_address -offset 0xA4001000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs axi_cdc_miner_1/s_axi/reg0] -force
+  assign_bd_address -offset 0xA4002000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs axi_cdc_miner_2/s_axi/reg0] -force
+  assign_bd_address -offset 0xA4003000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs axi_cdc_miner_3/s_axi/reg0] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs ddr_noc/S00_INI/C0_DDR_LOW0] -force
+  assign_bd_address -offset 0x00000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces axi_cdc_miner_0/m_axi] [get_bd_addr_segs miner_0/S_AXI/reg0] -force
+  assign_bd_address -offset 0x00000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces axi_cdc_miner_1/m_axi] [get_bd_addr_segs miner_1/S_AXI/reg0] -force
+  assign_bd_address -offset 0x00000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces axi_cdc_miner_2/m_axi] [get_bd_addr_segs miner_2/S_AXI/reg0] -force
+  assign_bd_address -offset 0x00000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces axi_cdc_miner_3/m_axi] [get_bd_addr_segs miner_3/S_AXI/reg0] -force
 
 
   # Restore current instance

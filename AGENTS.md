@@ -103,12 +103,16 @@ Block design:
 - Target part: `xcve2802-vsvh1760-2MP-e-S`.
 - The block design instantiates `versal_cips`, `smartconnect`, `proc_sys_reset`, and
   `bitcoin_miner_axi`.
-- PS-to-PL control path: `cips_0/M_AXI_FPD -> axi_smc -> miner_0/S_AXI`.
-- Miner AXI address is auto-assigned by Vivado at `0xA4000000` in the current build.
-- Current VEK280 miner sizing: one AXI4-Lite slave, `NUM_ENGINES=32`,
-  `CLUSTER_SIZE=32`, `CLUSTER_FIFO_DEPTH=2`.
-- CIPS PL0 clock is requested at 250 MHz. Vivado realizes this as 249.997498 MHz, so
-  the miner AXI metadata uses that exact `FREQ_HZ` value for BD validation.
+- PS-to-PL control path: `cips_0/M_AXI_FPD -> axi_smc -> axi_register_slice ->
+  axi_lite_cdc_bridge -> miner_N/S_AXI` for each miner instance.
+- Miner AXI base addresses in the current 4-instance build are `0xA4000000`,
+  `0xA4001000`, `0xA4002000`, and `0xA4003000`.
+- Current VEK280 miner sizing: four AXI4-Lite slaves, each with `NUM_ENGINES=32`,
+  `CLUSTER_SIZE=32`, and `CLUSTER_FIFO_DEPTH=2`, for 128 engines total.
+- CIPS PL0 is requested at 250 MHz and clocks the miner datapaths. CIPS PL1 is
+  requested at 125 MHz and clocks the PS-to-PL AXI control fabric. The custom
+  `axi_lite_cdc_bridge` provides one outstanding AXI4-Lite transaction of CDC
+  isolation between each 125 MHz control path and its 250 MHz miner.
 - CIPS config requests GEM0 Ethernet on PS MIO 0..11 with MDIO on PS MIO
   24..25, matching the VEK280 base platform routing.
 - CIPS config requests UART0 on PMC MIO 42..43 at 115200 baud, matching the
@@ -278,7 +282,7 @@ FreeRTOS software port:
   confirmed GEM initialization and 1000 Mbps link, but was stopped before DHCP
   completed or fell back.
 
-Current operational configuration (2026-08-11):
+Current operational configuration (2026-08-12):
 - The active build is the DDR-enabled 4x32 variant: four `bitcoin_miner_axi`
   instances with 32 engines each, for 128 engines total. AXI base addresses are
   `0xA4000000`, `0xA4001000`, `0xA4002000`, and `0xA4003000`.
@@ -286,8 +290,10 @@ Current operational configuration (2026-08-11):
   `bd/out_vek280_miner_4x32_ooc/miner_system_wrapper.pdi`; the matching XSA is
   `reports/impl_vek280_4x32_ooc/miner_system_wrapper.xsa`.
 - Four-thread implementation with post-route physical optimization meets timing:
-  WNS `+0.121 ns`, TNS `0.000 ns`, WHS `+0.011 ns`, and THS `0.000 ns` at
-  250 MHz. The design uses 351,435 LUTs and 495,863 FFs; routing has zero errors.
+  WNS `+0.117 ns`, TNS `0.000 ns`, WHS `+0.005 ns`, and THS `0.000 ns`.
+  `clk_pl_0` runs at 250 MHz for the miner datapaths and `clk_pl_1` runs at
+  125 MHz for AXI control. The design uses 351,459 LUTs, 496,748 FFs, and
+  62,854 of 65,088 slices (96.57%); routing has zero errors.
 - `make vitis-r5` rebuilds the matching 4-instance R5 BSP and ELF. The default
   `MINER_AXI_INSTANCES` is 4. Use `software/vitis/load_target.py` for a full PDI
   plus R5 load, or `software/vitis/reload_r5_app.py` to reset and reload only the

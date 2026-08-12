@@ -38,7 +38,9 @@ set_property board_part $board_name [current_project]
 set_property target_language Verilog [current_project]
 set_property default_lib work [current_project]
 
-set rtl_files [list [file join $repo_dir rtl irq_or4.v]]
+set rtl_files [list \
+    [file join $repo_dir rtl irq_or4.v] \
+    [file join $repo_dir rtl axi_lite_cdc_bridge.sv]]
 if {$use_ooc_miner32} {
     lappend rtl_files [file join $repo_dir rtl bitcoin_miner_axi_32_stub.sv]
 } else {
@@ -69,8 +71,11 @@ set cips_config [list \
     CONFIG.PS_PMC_CONFIG(PS_USE_PSPL_IRQ_FPD) {1} \
     CONFIG.PS_PMC_CONFIG(PS_USE_M_AXI_FPD) {1} \
     CONFIG.PS_PMC_CONFIG(PS_USE_PMCPL_CLK0) {1} \
+    CONFIG.PS_PMC_CONFIG(PS_USE_PMCPL_CLK1) {1} \
     CONFIG.PS_PMC_CONFIG(PMC_CRP_PL0_REF_CTRL_FREQMHZ) {250} \
     CONFIG.PS_PMC_CONFIG(PMC_CRP_PL0_REF_CTRL_ACT_FREQMHZ) {250} \
+    CONFIG.PS_PMC_CONFIG(PMC_CRP_PL1_REF_CTRL_FREQMHZ) {125} \
+    CONFIG.PS_PMC_CONFIG(PMC_CRP_PL1_REF_CTRL_ACT_FREQMHZ) {125} \
     CONFIG.PS_PMC_CONFIG(PS_ENET0_PERIPHERAL) {{{ENABLE 1} {IO {PS_MIO 0 .. 11}}}} \
     CONFIG.PS_PMC_CONFIG(PS_ENET0_MDIO) {{{ENABLE 1} {IO {PS_MIO 24 .. 25}}}} \
     CONFIG.PS_PMC_CONFIG(PS_GEM_TSU_VALID) {1} \
@@ -105,12 +110,15 @@ set ps_pmc_config [list \
         PS_ENET0_MDIO {{ENABLE 1} {IO {PS_MIO 24 .. 25}}} \
         PS_UART0_PERIPHERAL {{ENABLE 1} {IO {PMC_MIO 42 .. 43}}} \
         PS_USE_PMCPL_CLK0 {1} \
+        PS_USE_PMCPL_CLK1 {1} \
         PS_TTC0_PERIPHERAL_ENABLE {1} \
         PS_TTC0_REF_CTRL_FREQMHZ {100} \
         PS_TTC0_REF_CTRL_ACT_FREQMHZ {100} \
         PS_TTC_APB_CLK_TTC0_SEL {APB} \
         PMC_CRP_PL0_REF_CTRL_FREQMHZ {250} \
         PMC_CRP_PL0_REF_CTRL_ACT_FREQMHZ {250} \
+        PMC_CRP_PL1_REF_CTRL_FREQMHZ {125} \
+        PMC_CRP_PL1_REF_CTRL_ACT_FREQMHZ {125} \
         SMON_ALARMS {Set_Alarms_On} \
         SMON_INTERFACE_TO_USE {I2C} \
         SMON_PMBUS_ADDRESS {0x18} \
@@ -225,6 +233,7 @@ set miner_module bitcoin_miner_axi_32
 for {set idx 0} {$idx < $num_miner_slaves} {incr idx} {
     set miner [create_bd_cell -type module -reference $miner_module miner_$idx]
     set regslice [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice axi_regslice_miner_$idx]
+    set axi_cdc [create_bd_cell -type module -reference axi_lite_cdc_bridge axi_cdc_miner_$idx]
     set_property -dict [list \
         CONFIG.PROTOCOL {AXI4LITE} \
         CONFIG.ADDR_WIDTH {12} \
@@ -246,22 +255,30 @@ if {$num_miner_slaves > 1} {
 }
 
 set rst [create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset rst_pl0]
+set rst_axi [create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset rst_pl1]
 
 connect_bd_intf_net [get_bd_intf_pins cips_0/M_AXI_FPD] [get_bd_intf_pins axi_smc/S00_AXI]
 
 connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins rst_pl0/slowest_sync_clk]
 connect_bd_net [get_bd_pins cips_0/pl0_resetn] [get_bd_pins rst_pl0/ext_reset_in]
-connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins axi_smc/aclk]
-connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins cips_0/m_axi_fpd_aclk]
-connect_bd_net [get_bd_pins rst_pl0/peripheral_aresetn] [get_bd_pins axi_smc/aresetn]
+connect_bd_net [get_bd_pins cips_0/pl1_ref_clk] [get_bd_pins rst_pl1/slowest_sync_clk]
+connect_bd_net [get_bd_pins cips_0/pl0_resetn] [get_bd_pins rst_pl1/ext_reset_in]
+connect_bd_net [get_bd_pins cips_0/pl1_ref_clk] [get_bd_pins axi_smc/aclk]
+connect_bd_net [get_bd_pins cips_0/pl1_ref_clk] [get_bd_pins cips_0/m_axi_fpd_aclk]
+connect_bd_net [get_bd_pins rst_pl1/peripheral_aresetn] [get_bd_pins axi_smc/aresetn]
 
 for {set idx 0} {$idx < $num_miner_slaves} {incr idx} {
     set mi_pin [format "M%02d_AXI" $idx]
     connect_bd_intf_net [get_bd_intf_pins axi_smc/$mi_pin] [get_bd_intf_pins axi_regslice_miner_$idx/S_AXI]
-    connect_bd_intf_net [get_bd_intf_pins axi_regslice_miner_$idx/M_AXI] [get_bd_intf_pins miner_$idx/S_AXI]
-    connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins axi_regslice_miner_$idx/aclk]
+    connect_bd_intf_net [get_bd_intf_pins axi_regslice_miner_$idx/M_AXI] [get_bd_intf_pins axi_cdc_miner_$idx/S_AXI]
+    connect_bd_intf_net [get_bd_intf_pins axi_cdc_miner_$idx/M_AXI] [get_bd_intf_pins miner_$idx/S_AXI]
+    connect_bd_net [get_bd_pins cips_0/pl1_ref_clk] [get_bd_pins axi_regslice_miner_$idx/aclk]
+    connect_bd_net [get_bd_pins cips_0/pl1_ref_clk] [get_bd_pins axi_cdc_miner_$idx/s_axi_aclk]
     connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins miner_$idx/s_axi_aclk]
-    connect_bd_net [get_bd_pins rst_pl0/peripheral_aresetn] [get_bd_pins axi_regslice_miner_$idx/aresetn]
+    connect_bd_net [get_bd_pins rst_pl1/peripheral_aresetn] [get_bd_pins axi_regslice_miner_$idx/aresetn]
+    connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins axi_cdc_miner_$idx/m_axi_aclk]
+    connect_bd_net [get_bd_pins rst_pl1/peripheral_aresetn] [get_bd_pins axi_cdc_miner_$idx/s_axi_aresetn]
+    connect_bd_net [get_bd_pins rst_pl0/peripheral_aresetn] [get_bd_pins axi_cdc_miner_$idx/m_axi_aresetn]
     connect_bd_net [get_bd_pins rst_pl0/peripheral_aresetn] [get_bd_pins miner_$idx/s_axi_aresetn]
     if {$num_miner_slaves > 1} {
         connect_bd_net [get_bd_pins miner_$idx/irq_o] [get_bd_pins irq_or/irq${idx}_i]
@@ -308,9 +325,8 @@ puts $summary_file "Block design: $design_name"
 puts $summary_file "Part: $part_name"
 puts $summary_file "Board: $board_name"
 puts $summary_file "Miner: $num_miner_slaves AXI4-Lite slave(s), NUM_ENGINES=32 per slave, CLUSTER_SIZE=32 CLUSTER_FIFO_DEPTH=2, OOC_MINER32=$use_ooc_miner32"
-puts $summary_file "Miner AXI pipeline: one axi_register_slice per SmartConnect-to-miner AXI4-Lite link, REG_AW/W/B/AR/R=Light"
-puts $summary_file "PL0 clock request: 250 MHz; Vivado CIPS actual is expected to be about 249.997498 MHz"
-puts $summary_file "PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_N/S_AXI starting at 0xA4000000, stride 0x00001000"
+puts $summary_file "Miner clocks: PL0 250 MHz for miner cores; PL1 125 MHz for M_AXI_FPD, SmartConnect, and AXI register slices"
+puts $summary_file "PS-PL control: cips_0/M_AXI_FPD (125 MHz) -> axi_smc -> axi_lite_cdc_bridge -> miner_N/S_AXI (250 MHz), starting at 0xA4000000, stride 0x00001000"
 if {$enable_ddr} {
     puts $summary_file "PS peripherals requested in CIPS config: GEM0 RGMII/MDIO on PS_MIO0..11/24..25, UART0 on PMC_MIO42..43, TTC0, DDR via NoC mode, SysMon I2C on PMC_MIO39/40 at address 0x18"
     puts $summary_file "DDR: ddr_noc LPDDR4 DDRMC subsystem connected to ch0_lpddr4_trip1, ch1_lpddr4_trip1, and lpddr4_clk1"
