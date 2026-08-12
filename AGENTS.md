@@ -11,8 +11,8 @@ Current scope:
 - `bitcoin_miner_axi`: AXI4-Lite controlled Bitcoin nonce scanner with `NUM_ENGINES`
   parameterized. The current VEK280 block design instantiates one 32-engine AXI
   miner to keep Vivado implementation memory within this host's limits.
-- `bitcoin_hash_engine`: one nonce-scanning lane using the fabric SHA-256 compression
-  core for first-pass block 1 and second-pass block 0.
+- `bitcoin_hash_engine`: one nonce-scanning lane using a Bitcoin fixed-block SHA-256
+  wrapper for first-pass block 1 and second-pass block 0.
 - `bitcoin_result_cluster_fifo`: per-cluster result capture FIFO used to avoid a flat
   128-engine result priority mux.
 
@@ -62,7 +62,7 @@ AXI4-Lite register map:
 - `0x090 RESULT_NONCE`: captured share nonce.
 - `0x094 RESULT_ENGINE`: engine that found the captured result.
 - `0x098 RESULT_STATUS`: bit 0 result valid, bit 1 overflow. Write 1s to clear.
-- `0x0a0..0x0bc RESULT_HASH[0..7]`: captured 256-bit double-SHA result.
+- `0x0a0..0x0bc`: reserved; candidate capture is nonce and engine ID only.
 
 Verification:
 - Run `make sim` from this directory if Icarus Verilog is available.
@@ -290,10 +290,12 @@ Current operational configuration (2026-08-12):
   `bd/out_vek280_miner_4x32_ooc/miner_system_wrapper.pdi`; the matching XSA is
   `reports/impl_vek280_4x32_ooc/miner_system_wrapper.xsa`.
 - Four-thread implementation with post-route physical optimization meets timing:
-  WNS `+0.117 ns`, TNS `0.000 ns`, WHS `+0.005 ns`, and THS `0.000 ns`.
+  WNS `+0.101 ns`, TNS `0.000 ns`, WHS `+0.009 ns`, and THS `0.000 ns`.
   `clk_pl_0` runs at 250 MHz for the miner datapaths and `clk_pl_1` runs at
-  125 MHz for AXI control. The design uses 351,459 LUTs, 496,748 FFs, and
-  62,854 of 65,088 slices (96.57%); routing has zero errors.
+  125 MHz for AXI control. The design uses 309,774 LUTs, 356,240 FFs, and
+  58,255 of 65,088 slices (89.50%); routing has zero errors. It uses 0 DSP,
+  BRAM, or URAM; the DSP synthesis-directed SHA experiment did not infer DSP58
+  cells and would require explicit primitive arithmetic to do so.
 - `make vitis-r5` rebuilds the matching 4-instance R5 BSP and ELF. The default
   `MINER_AXI_INSTANCES` is 4. Use `software/vitis/load_target.py` for a full PDI
   plus R5 load, or `software/vitis/reload_r5_app.py` to reset and reload only the

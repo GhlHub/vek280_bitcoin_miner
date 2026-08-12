@@ -108,12 +108,10 @@ static void handle_command(Socket_t sock, char *line)
                     cfg.user);
 
         if (miner_service_get_last_result(&result)) {
-            sock_printf(sock, "last result nonce=%08lx engine=%lu status=0x%08lx hash=",
+            sock_printf(sock, "last result nonce=%08lx engine=%lu status=0x%08lx (nonce-only capture)\r\n",
                         (unsigned long)result.nonce,
                         (unsigned long)result.engine,
                         (unsigned long)result.status);
-            print_hash(sock, result.hash);
-            sock_printf(sock, "\r\n");
         }
     } else if (strcmp(cmd, "stratum") == 0) {
         stratum_debug_t dbg;

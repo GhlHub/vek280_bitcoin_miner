@@ -23,7 +23,9 @@ programs the PL with the remaining header data and target.
 The PL evaluates nonce candidates. It performs the remaining first SHA-256
 compression for bytes 64 through 79 plus padding, then the one-block second
 SHA-256 compression. Results that are less than or equal to the target are
-captured for the R5, which submits them to the pool.
+captured as nonce and engine ID only for the R5, which submits them to the
+pool. The digest is not returned over AXI because share submission needs the
+nonce and job metadata, not the full hardware digest.
 
 ## Hardware architecture
 
@@ -84,7 +86,7 @@ R5 FreeRTOS
     |  coinbase, merkle root, header, midstate, target
     v
 Four AXI4-Lite miner instances (32 engines each)
-    |  candidate nonce + double-SHA-256 digest
+    |  candidate nonce + engine ID
     v
 R5 result queue -> mining.submit -> Stratum pool
 ```
