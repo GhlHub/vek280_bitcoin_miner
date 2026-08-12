@@ -11,9 +11,9 @@ approximately **49 MH/s**.
 
 ## Current implementation status
 
-The active target is `xcve2802-vsvh1760-2MP-e-S` on the VEK280. The 4×32 design
-meets its 250 MHz miner-clock and 125 MHz AXI-control-clock constraints after
-route and physical optimization:
+The active target is `xcve2802-vsvh1760-2MP-e-S` on the VEK280. The fabric
+4×32 design meets its 250 MHz miner-clock and 125 MHz AXI-control-clock
+constraints after route and physical optimization:
 
 | Metric | Result |
 | --- | ---: |
@@ -39,7 +39,7 @@ documented in [doc/theory_of_operation.md](doc/theory_of_operation.md).
 | `tb/` | SystemVerilog testbenches. |
 | `software/vek280_freertos/` | R5 FreeRTOS, GEM networking, telnet, and Stratum client. |
 | `software/vitis/` | Vitis 2026.1 platform, application, and XSDB load scripts. |
-| `reports/` | Timing, utilization, routing, and implementation reports. |
+| `reports/` | Notes about locally generated, untracked implementation reports. |
 | `doc/` | Project documentation. |
 
 ## Build
@@ -54,24 +54,44 @@ make impl4x32-dsp-ooc    # Implement the isolated explicit-DSP58 alternate
 make vitis-r5            # Rebuild the matching R5 BSP and application ELF
 ```
 
-`impl4x32-dsp-ooc` is an alternate hardware experiment, not the active PDI.
+`impl4x32-dsp-ooc` is an alternate hardware experiment.
 It keeps the same register map and nonce-only result path, but explicitly maps
 the three SHA message-schedule additions in each engine to DSP58 resources.
 Its 32-engine OOC checkpoint uses 96 DSP58s and 78,491 LUTs, versus 0 DSP58s
 and 81,595 LUTs for the fabric checkpoint. Both meet the 250 MHz OOC clock
 constraint with +1.566 ns WNS.
 
-The current PDI and XSA are:
+Generated PDIs, XSAs, checkpoints, and raw implementation reports are local
+build outputs and are deliberately not tracked. Use the corresponding build
+target to regenerate them.
+
+## Runtime control
+
+After DHCP, the R5 app provides these console commands:
 
 ```text
-bd/out_vek280_miner_4x32_ooc/miner_system_wrapper.pdi
-reports/impl_vek280_4x32_ooc/miner_system_wrapper.xsa
+help
+status
+stats
+health
+stratum
+regs
+start <nonce_start_hex> <nonce_count_hex>
+stop
+clear
+pool <host> <port> <wallet-or-worker> [password]
+connect
+disconnect
 ```
+
+- `stats` reports nominal hash rate and job, result, queue, and share-path
+  counters.
+- `health` reports PS SysMon device temperature and alarm state.
 
 ## Load and operate
 
 Vitis 2026.1 uses XSDB Python APIs; legacy XSCT is disabled. With the hardware
-server reachable at the address configured in the scripts:
+server reachable at the address configured in the local scripts:
 
 ```bash
 # Program the PDI, then reset, download, and start the R5 app.
@@ -81,22 +101,15 @@ server reachable at the address configured in the scripts:
 /tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/reload_r5_app.py
 ```
 
-After DHCP, the R5 app provides an unauthenticated telnet console on TCP port
-23. It supports `status`, `regs`, `stratum`, `pool`, `connect`, `disconnect`,
-`stop`, and `clear`. It is intended only for a trusted lab network.
-
-```text
-pool <host> <port> <wallet-or-worker> [password]
-connect
-status
-stratum
-```
+Security warning: the telnet console is unauthenticated and unencrypted. It is
+for **isolated, trusted lab-network use only**. Do not expose, route, or
+port-forward TCP port 23 to an untrusted network.
 
 Do not commit wallet identifiers, passwords, pool credentials, or UART/pool
 logs to the repository.
 
 ## License
 
-This repository includes third-party FreeRTOS LTS content under its respective
-upstream license terms. Review the license information in that tree before
-redistributing it.
+Project-owned source and documentation are licensed under
+[Apache-2.0](LICENSE). The bundled FreeRTOS LTS content retains its upstream
+licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

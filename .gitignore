@@ -22,6 +22,7 @@ synth/out_*/
 reports/probe_*/
 reports/vitis_hw/
 reports/impl_vek280*/*.xsa
+reports/**/*.rpt
 vitis_ws/
 .repo.yaml
 
