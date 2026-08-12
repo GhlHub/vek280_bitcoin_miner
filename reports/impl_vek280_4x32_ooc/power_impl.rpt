@@ -1,9 +1,9 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2026.1 (lin64) Build 6511674 Tue Jun 16 11:01:26 MDT 2026
-| Date             : Tue Aug 11 19:14:25 2026
+| Date             : Tue Aug 11 20:13:15 2026
 | Host             : NiuBi running 64-bit Ubuntu 24.04.4 LTS
-| Command          : report_power -file /raid/work/vek280_bitcoin_miner/reports/impl_vek280/power_impl.rpt
+| Command          : report_power -file /raid/work/vek280_bitcoin_miner/reports/impl_vek280_4x32_ooc/power_impl.rpt
 | Design           : miner_system_wrapper
 | Device           : xcve2802-vsvh1760-2MP-e-S
 | Design State     : routed
@@ -31,12 +31,12 @@ Table of Contents
 ----------
 
 +--------------------------+--------------+
-| Total On-Chip Power (W)  | 13.281       |
+| Total On-Chip Power (W)  | 15.421       |
 | Design Power Budget (W)  | Unspecified* |
 | Power Budget Margin (W)  | NA           |
-| Dynamic (W)              | 4.039        |
-| Device Static (W)        | 9.242**      |
-| Effective TJA (C/W)      | 5.6          |
+| Dynamic (W)              | 6.165        |
+| Device Static (W)        | 9.256**      |
+| Effective TJA (C/W)      | 4.9          |
 | Max Ambient (C)          | 25.0         |
 | Junction Temperature (C) | 100.0**      |
 | Confidence Level         | Low          |
@@ -63,26 +63,26 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 +-------------------------+-----------+----------+-----------+-----------------+
 | On-Chip                 | Power (W) | Used     | Available | Utilization (%) |
 +-------------------------+-----------+----------+-----------+-----------------+
-| Clocks                  |     0.564 |        9 |       --- |             --- |
-| Logic                   |     0.207 |   256322 |       --- |             --- |
-|   LUT as Logic          |     0.187 |    84984 |    520704 |           16.32 |
-|   CLE FF Register       |     0.013 |   124170 |   1041408 |           11.92 |
-|   LOOKAHEAD8            |     0.006 |     2516 |     65088 |            3.87 |
+| Clocks                  |     1.912 |       10 |       --- |             --- |
+| Logic                   |     0.684 |  1015177 |       --- |             --- |
+|   LUT as Logic          |     0.622 |   351434 |    520704 |           67.49 |
+|   CLE FF Register       |     0.039 |   495863 |   1041408 |           47.61 |
+|   LOOKAHEAD8            |     0.023 |    10034 |     65088 |           15.42 |
 |   BUFG                  |    <0.001 |        1 |        56 |            1.79 |
 |   IRI IMUX Register     |    <0.001 |        1 |   1219392 |           <0.01 |
-|   Others                |     0.000 |      216 |       --- |             --- |
+|   Others                |     0.000 |      650 |       --- |             --- |
 |   LUT as Shift Register |     0.000 |        1 |    260352 |           <0.01 |
-| Signals                 |     0.249 |   186435 |       --- |             --- |
+| Signals                 |     0.550 |   702129 |       --- |             --- |
 | XPLL                    |     0.163 |        2 |        18 |           11.11 |
 | I/O                     |     1.141 |      112 |       --- |             --- |
 | NoC-DDRMC               |     0.536 |        2 |       --- |             --- |
 |   DDRMC                 |     0.293 |        1 |         3 |           33.33 |
 |   NoC                   |     0.242 |        1 |       --- |             --- |
 | PS9                     |     1.179 |        1 |       --- |             --- |
-| Static Power            |     9.242 |          |           |                 |
+| Static Power            |     9.256 |          |           |                 |
 |   PS Static             |     0.233 |          |           |                 |
-|   PL Static             |     9.009 |          |           |                 |
-| Total                   |    13.281 |          |           |                 |
+|   PL Static             |     9.023 |          |           |                 |
+| Total                   |    15.421 |          |           |                 |
 +-------------------------+-----------+----------+-----------+-----------------+
 
 
@@ -92,11 +92,11 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 +---------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
 | Source        | Voltage (V) | Total (A) | Dynamic (A) | Static (A) | Powerup (A) | Budget (A)  | Margin (A) |
 +---------------+-------------+-----------+-------------+------------+-------------+-------------+------------+
-| Vccint        |       0.800 |    10.834 |       1.260 |      9.574 |       NA    | Unspecified | NA         |
+| Vccint        |       0.800 |    13.484 |       3.909 |      9.574 |       NA    | Unspecified | NA         |
 | VCC_SOC       |       0.800 |     2.187 |       0.678 |      1.510 |       NA    | Unspecified | NA         |
 | VCC_IO        |       0.800 |     0.860 |       0.659 |      0.201 |       NA    | Unspecified | NA         |
-| VCC_RAM       |       0.800 |     0.060 |       0.007 |      0.053 |       NA    | Unspecified | NA         |
-| Vccaux        |       1.500 |     0.604 |       0.196 |      0.408 |       NA    | Unspecified | NA         |
+| VCC_RAM       |       0.800 |     0.068 |       0.015 |      0.053 |       NA    | Unspecified | NA         |
+| Vccaux        |       1.500 |     0.614 |       0.196 |      0.418 |       NA    | Unspecified | NA         |
 | VCCO_503      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | VCCO_500      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
 | VCCO_501      |       1.800 |     0.000 |       0.000 |      0.000 |       NA    | Unspecified | NA         |
@@ -147,7 +147,7 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 
 +------------------+------+
 | Ambient Temp (C) | 25.0 |
-| ThetaJA (C/W)    | 5.6  |
+| ThetaJA (C/W)    | 4.9  |
 +------------------+------+
 
 
@@ -159,6 +159,7 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 +-------------------------+-------------------------------------------------------------------------------------+-----------------+
 | bank1_clkout0           | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_clkout0           |             1.1 |
 | bank1_xpll0_fifo_rd_clk | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_xpll0_fifo_rd_clk |             1.1 |
+| clk_pl_0                | miner_system_i/cips_0/inst/pspmc_0/inst/pl0_ref_clk                                 |             4.0 |
 | clk_pl_0                | miner_system_i/cips_0/inst/pspmc_0/inst/pmc_pl_ref_clk[0]                           |             4.0 |
 | lpddr4_clk1_clk_p       | lpddr4_clk1_clk_p                                                                   |             5.0 |
 | mc_clk_xpll             | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/mc_clk_xpll             |             1.1 |
@@ -176,22 +177,30 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 +--------------------------+-----------+
 | Name                     | Power (W) |
 +--------------------------+-----------+
-| miner_system_wrapper     |     4.039 |
-|   miner_system_i         |     4.039 |
-|     axi_regslice_miner_0 |     0.001 |
+| miner_system_wrapper     |     6.165 |
+|   miner_system_i         |     6.165 |
+|     axi_regslice_miner_1 |     0.001 |
 |       inst               |     0.001 |
-|     axi_smc              |     0.008 |
-|       inst               |     0.008 |
+|     axi_regslice_miner_2 |     0.002 |
+|       inst               |     0.002 |
+|     axi_smc              |     0.009 |
+|       inst               |     0.009 |
 |     cips_0               |     1.232 |
 |       inst               |     1.232 |
 |     ddr_noc              |     1.615 |
 |       inst               |     1.615 |
-|     miner_0              |     0.917 |
-|       inst               |     0.917 |
+|     miner_0              |     0.745 |
+|       inst               |     0.745 |
+|     miner_1              |     0.760 |
+|       inst               |     0.760 |
+|     miner_2              |     0.778 |
+|       inst               |     0.778 |
+|     miner_3              |     0.749 |
+|       inst               |     0.749 |
 |     ps_ddr_noc           |     0.265 |
 |       inst               |     0.265 |
-|     rst_pl0              |     0.003 |
-|       U0                 |     0.003 |
+|     rst_pl0              |     0.007 |
+|       U0                 |     0.007 |
 +--------------------------+-----------+
 
 
@@ -201,7 +210,7 @@ For the Versal architecture, a default junction temperature of 100C is assumed w
 +-------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
 | Name                                                                                | Power (W) | Frequency (MHz) | Buffer | Clock Buffer Enable (%) | Clock Enable | Fanout   | Sites    | Fanout/Site |
 +-------------------------------------------------------------------------------------+-----------+-----------------+--------+-------------------------+--------------+----------+----------+-------------+
-| miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG               |     0.561 |          250.00 | BUFG   |                     N/A | None         |   124174 |    17559 |        7.07 |
+| miner_system_i/cips_0/inst/pspmc_0/inst/buffer_pl_clk_0.PL_CLK_0_BUFG               |     1.908 |          250.00 | BUFG   |                     N/A | None         |   495867 |    61892 |        8.01 |
 | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clktoxphy[0]        |     0.001 |         3700.00 | N/A    |                     N/A | None         |        9 |        9 |        1.00 |
 | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/pll_clk_xpll            |     0.001 |         3700.00 | N/A    |                     N/A | None         |        9 |        9 |        1.00 |
 | miner_system_i/ddr_noc/inst/MC0_ddrc/inst/noc_ddr4_phy/inst/bank1_xpll0_fifo_rd_clk |    <0.001 |          925.00 | N/A    |                     N/A | None         |       18 |       18 |        1.00 |

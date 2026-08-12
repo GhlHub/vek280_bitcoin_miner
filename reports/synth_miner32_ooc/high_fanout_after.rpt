@@ -1,0 +1,72 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (lin64) Build 6511674 Tue Jun 16 11:01:26 MDT 2026
+| Date         : Tue Aug 11 18:55:16 2026
+| Host         : NiuBi running 64-bit Ubuntu 24.04.4 LTS
+| Command      : report_high_fanout_nets -max_nets 50 -timing -load_types -file reports/synth_miner32_ooc/high_fanout_after.rpt
+| Design       : bitcoin_miner_axi_32
+| Device       : xcve2802
+| Design State : Synthesized
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+High Fan-out Nets Information
+
+1. Fanout Summary
+-----------------
+
++-------------------------------------------------------------+--------+-------------+-----------------+-----------------+--------------+-----------+--------------+-------+
+| Net Name                                                    | Fanout | Driver Type | Worst Slack(ns) | Worst Delay(ns) | Clock Enable | Set/Reset | Data & Other | Clock |
++-------------------------------------------------------------+--------+-------------+-----------------+-----------------+--------------+-----------+--------------+-------+
+| u_miner/g_clusters[0].u_result_fifo/overflow_o_i_2_n_0      |  10868 | LUT1        |             inf |           0.231 |            0 |     10868 |            0 |     0 |
+| u_miner/s_axi_awready_i_2_n_0                               |   3255 | LUT1        |             inf |           0.231 |            0 |      3255 |            0 |     0 |
+| u_miner/g_engines[0].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[10].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[11].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[12].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[13].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[14].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[15].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[16].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[17].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[18].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[19].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[1].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[20].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[21].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[22].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[23].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[24].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[25].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[26].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[27].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[28].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[29].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[2].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[30].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[31].u_engine/done_o_i_2_n_0               |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[3].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[4].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[5].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[6].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[7].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[8].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[9].u_engine/done_o_i_2_n_0                |   1768 | LUT1        |             inf |           0.231 |            0 |      1768 |            0 |     0 |
+| u_miner/g_engines[0].u_engine/u_core/u_core/busy_q_i_2_n_0  |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[10].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[11].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[12].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[13].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[14].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[15].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[16].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[17].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[18].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[19].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[1].u_engine/u_core/u_core/busy_q_i_2_n_0  |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[20].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[21].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[22].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
+| u_miner/g_engines[23].u_engine/u_core/u_core/busy_q_i_2_n_0 |   1653 | LUT1        |             inf |           0.231 |            0 |      1653 |            0 |     0 |
++-------------------------------------------------------------+--------+-------------+-----------------+-----------------+--------------+-----------+--------------+-------+
+
+

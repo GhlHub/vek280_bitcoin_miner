@@ -2,6 +2,7 @@ Block design: miner_system
 Part: xcve2802-vsvh1760-2MP-e-S
 Board: xilinx.com:vek280:part0:1.2
 Miner: 4 AXI4-Lite slave(s), NUM_ENGINES=32 per slave, CLUSTER_SIZE=32 CLUSTER_FIFO_DEPTH=2, OOC_MINER32=1
+Miner AXI pipeline: one axi_register_slice per SmartConnect-to-miner AXI4-Lite link, REG_AW/W/B/AR/R=Light
 PL0 clock request: 250 MHz; Vivado CIPS actual is expected to be about 249.997498 MHz
 PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_N/S_AXI starting at 0xA4000000, stride 0x00001000
 PS peripherals requested in CIPS config: GEM0 RGMII/MDIO on PS_MIO0..11/24..25, UART0 on PMC_MIO42..43, TTC0, DDR via NoC mode, SysMon I2C on PMC_MIO39/40 at address 0x18

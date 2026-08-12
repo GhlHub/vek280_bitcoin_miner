@@ -8,7 +8,9 @@ import vitis
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_XSA = REPO_ROOT / "reports" / "vitis_hw" / "miner_system_wrapper.xsa"
+DEFAULT_XSA = (
+    REPO_ROOT / "reports" / "impl_vek280_4x32_ooc" / "miner_system_wrapper.xsa"
+)
 DEFAULT_WORKSPACE = REPO_ROOT / "vitis_ws"
 DEFAULT_PLATFORM = "vek280_miner_platform"
 DEFAULT_DOMAIN = "r5_freertos"

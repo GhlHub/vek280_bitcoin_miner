@@ -27,6 +27,7 @@ module bitcoin_result_cluster_fifo #(
     reg [PTR_WIDTH-1:0] wr_ptr_q;
     reg [PTR_WIDTH-1:0] rd_ptr_q;
     reg [PTR_WIDTH:0] count_q;
+    (* max_fanout = 32 *) reg clear_q;
 
     integer i;
     integer hit_idx;
@@ -71,6 +72,7 @@ module bitcoin_result_cluster_fifo #(
 
     always @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
+            clear_q <= 1'b0;
             wr_ptr_q <= {PTR_WIDTH{1'b0}};
             rd_ptr_q <= {PTR_WIDTH{1'b0}};
             count_q <= {(PTR_WIDTH+1){1'b0}};
@@ -90,19 +92,15 @@ module bitcoin_result_cluster_fifo #(
                 hash_mem[i] <= 256'h0;
             end
         end else begin
-            if (clear_i) begin
+            clear_q <= clear_i;
+            if (clear_q) begin
                 wr_ptr_q <= {PTR_WIDTH{1'b0}};
                 rd_ptr_q <= {PTR_WIDTH{1'b0}};
                 count_q <= {(PTR_WIDTH+1){1'b0}};
                 overflow_o <= 1'b0;
                 stage1_valid_q <= {CLUSTER_SIZE{1'b0}};
-                stage1_nonce_q <= {CLUSTER_SIZE*32{1'b0}};
-                stage1_hash_q <= {CLUSTER_SIZE*256{1'b0}};
                 stage1_overflow_q <= 1'b0;
                 stage2_valid_q <= 1'b0;
-                stage2_engine_id_q <= 32'h0;
-                stage2_nonce_q <= 32'h0;
-                stage2_hash_q <= 256'h0;
                 stage2_overflow_q <= 1'b0;
             end else begin
                 stage1_valid_q <= engine_valid_i;

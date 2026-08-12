@@ -12,7 +12,7 @@
 #endif
 
 #ifndef MINER_AXI_INSTANCES
-#define MINER_AXI_INSTANCES          1U
+#define MINER_AXI_INSTANCES          4U
 #endif
 
 #ifndef MINER_ENGINES_PER_INSTANCE

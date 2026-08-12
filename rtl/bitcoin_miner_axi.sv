@@ -100,6 +100,20 @@ module bitcoin_miner_axi #(
     reg [11:0] rd_stage1_addr_q;
     reg rd_stage2_valid_q;
     reg [31:0] rd_stage2_data_q;
+    reg wr_stage1_valid_q;
+    reg [11:0] wr_stage1_addr_q;
+    reg [31:0] wr_stage1_data_q;
+    reg [3:0] wr_stage1_strb_q;
+    reg wr_stage2_valid_q;
+    reg [31:0] wr_stage2_data_q;
+    reg [3:0] wr_stage2_strb_q;
+    reg [7:0] wr_stage2_midstate_we_q;
+    reg [3:0] wr_stage2_tail_we_q;
+    reg [7:0] wr_stage2_target_we_q;
+    reg wr_stage2_control_we_q;
+    reg wr_stage2_nonce_start_we_q;
+    reg wr_stage2_nonce_count_we_q;
+    reg wr_stage2_result_status_we_q;
 
     wire [NUM_ENGINES-1:0] engine_busy;
     wire [NUM_ENGINES-1:0] engine_done;
@@ -116,6 +130,7 @@ module bitcoin_miner_axi #(
     integer i;
     integer cluster_hit_idx_next;
     reg write_fire;
+    reg write_apply;
     reg read_fire;
     reg [11:0] wr_addr;
     reg [NUM_CLUSTERS-1:0] cluster_pop_q;
@@ -263,9 +278,10 @@ module bitcoin_miner_axi #(
     endgenerate
 
     always @(*) begin
-        write_fire = s_axi_awvalid && s_axi_wvalid && !s_axi_bvalid;
+        write_fire = s_axi_awvalid && s_axi_wvalid && !wr_stage1_valid_q && !wr_stage2_valid_q && !s_axi_bvalid;
+        write_apply = wr_stage2_valid_q && !s_axi_bvalid;
         read_fire = s_axi_arvalid && !rd_stage1_valid_q && !rd_stage2_valid_q && !s_axi_rvalid;
-        wr_addr = {s_axi_awaddr[11:2], s_axi_awaddr[1:0] & 2'b00};
+        wr_addr = wr_stage1_addr_q;
         cluster_hit_idx_next = -1;
         for (i = 0; i < NUM_CLUSTERS; i = i + 1) begin
             if ((cluster_hit_idx_next < 0) && cluster_valid[i]) begin
@@ -313,6 +329,20 @@ module bitcoin_miner_axi #(
             rd_stage1_addr_q <= 12'h000;
             rd_stage2_valid_q <= 1'b0;
             rd_stage2_data_q <= 32'h0;
+            wr_stage1_valid_q <= 1'b0;
+            wr_stage1_addr_q <= 12'h000;
+            wr_stage1_data_q <= 32'h0;
+            wr_stage1_strb_q <= 4'h0;
+            wr_stage2_valid_q <= 1'b0;
+            wr_stage2_data_q <= 32'h0;
+            wr_stage2_strb_q <= 4'h0;
+            wr_stage2_midstate_we_q <= 8'h00;
+            wr_stage2_tail_we_q <= 4'h0;
+            wr_stage2_target_we_q <= 8'h00;
+            wr_stage2_control_we_q <= 1'b0;
+            wr_stage2_nonce_start_we_q <= 1'b0;
+            wr_stage2_nonce_count_we_q <= 1'b0;
+            wr_stage2_result_status_we_q <= 1'b0;
             cluster_pop_q <= {NUM_CLUSTERS{1'b0}};
         end else begin
             s_axi_awready <= write_fire;
@@ -330,6 +360,55 @@ module bitcoin_miner_axi #(
             end
             if (s_axi_rvalid && s_axi_rready) begin
                 s_axi_rvalid <= 1'b0;
+            end
+
+            if (write_fire) begin
+                wr_stage1_valid_q <= 1'b1;
+                wr_stage1_addr_q <= {s_axi_awaddr[11:2], s_axi_awaddr[1:0] & 2'b00};
+                wr_stage1_data_q <= s_axi_wdata;
+                wr_stage1_strb_q <= s_axi_wstrb;
+            end
+
+            if (wr_stage1_valid_q && !wr_stage2_valid_q && !s_axi_bvalid) begin
+                wr_stage2_valid_q <= 1'b1;
+                wr_stage2_data_q <= wr_stage1_data_q;
+                wr_stage2_strb_q <= wr_stage1_strb_q;
+                wr_stage2_midstate_we_q <= 8'h00;
+                wr_stage2_tail_we_q <= 4'h0;
+                wr_stage2_target_we_q <= 8'h00;
+                wr_stage2_control_we_q <= 1'b0;
+                wr_stage2_nonce_start_we_q <= 1'b0;
+                wr_stage2_nonce_count_we_q <= 1'b0;
+                wr_stage2_result_status_we_q <= 1'b0;
+                wr_stage1_valid_q <= 1'b0;
+
+                if ((wr_addr >= ADDR_MIDSTATE_BASE) && (wr_addr < ADDR_MIDSTATE_BASE + 12'h020)) begin
+                    i = ({20'h0, wr_addr} - {20'h0, ADDR_MIDSTATE_BASE}) >> 2;
+                    wr_stage2_midstate_we_q[i] <= 1'b1;
+                end else if ((wr_addr >= ADDR_TAIL_BASE) && (wr_addr < ADDR_TAIL_BASE + 12'h010)) begin
+                    i = ({20'h0, wr_addr} - {20'h0, ADDR_TAIL_BASE}) >> 2;
+                    wr_stage2_tail_we_q[i] <= 1'b1;
+                end else if ((wr_addr >= ADDR_TARGET_BASE) && (wr_addr < ADDR_TARGET_BASE + 12'h020)) begin
+                    i = ({20'h0, wr_addr} - {20'h0, ADDR_TARGET_BASE}) >> 2;
+                    wr_stage2_target_we_q[i] <= 1'b1;
+                end else begin
+                    case (wr_addr)
+                        ADDR_CONTROL: begin
+                            wr_stage2_control_we_q <= 1'b1;
+                        end
+                        ADDR_NONCE_START: begin
+                            wr_stage2_nonce_start_we_q <= 1'b1;
+                        end
+                        ADDR_NONCE_COUNT: begin
+                            wr_stage2_nonce_count_we_q <= 1'b1;
+                        end
+                        ADDR_RESULT_STATUS: begin
+                            wr_stage2_result_status_we_q <= 1'b1;
+                        end
+                        default: begin
+                        end
+                    endcase
+                end
             end
 
             if (read_fire) begin
@@ -350,62 +429,64 @@ module bitcoin_miner_axi #(
                 rd_stage2_valid_q <= 1'b0;
             end
 
-            if (write_fire) begin
+            if (write_apply) begin
                 s_axi_bresp <= 2'b00;
                 s_axi_bvalid <= 1'b1;
+                wr_stage2_valid_q <= 1'b0;
 
-                if ((wr_addr >= ADDR_MIDSTATE_BASE) && (wr_addr < ADDR_MIDSTATE_BASE + 12'h020)) begin
-                    i = ({20'h0, wr_addr} - {20'h0, ADDR_MIDSTATE_BASE}) >> 2;
-                    midstate_q[255 - (i * 32) -: 32] <= apply_wstrb(midstate_q[255 - (i * 32) -: 32], s_axi_wdata, s_axi_wstrb);
-                end else if ((wr_addr >= ADDR_TAIL_BASE) && (wr_addr < ADDR_TAIL_BASE + 12'h010)) begin
-                    i = ({20'h0, wr_addr} - {20'h0, ADDR_TAIL_BASE}) >> 2;
-                    header_tail_q[127 - (i * 32) -: 32] <= apply_wstrb(header_tail_q[127 - (i * 32) -: 32], s_axi_wdata, s_axi_wstrb);
-                end else if ((wr_addr >= ADDR_TARGET_BASE) && (wr_addr < ADDR_TARGET_BASE + 12'h020)) begin
-                    i = ({20'h0, wr_addr} - {20'h0, ADDR_TARGET_BASE}) >> 2;
-                    target_q[255 - (i * 32) -: 32] <= apply_wstrb(target_q[255 - (i * 32) -: 32], s_axi_wdata, s_axi_wstrb);
-                end else begin
-                    case (wr_addr)
-                        ADDR_CONTROL: begin
-                            if (s_axi_wdata[0] && (load_state_q == LOAD_IDLE)) begin
-                                start_pulse_q <= 1'b1;
-                                running_q <= 1'b1;
-                                nonce_done_q <= 1'b0;
-                                overflow_q <= 1'b0;
-                                result_valid_q <= 1'b0;
-                                load_state_q <= LOAD_PREP;
-                                load_engine_idx_q <= {ENGINE_INDEX_WIDTH{1'b0}};
-                            end
-                            if (s_axi_wdata[1]) begin
-                                stop_pulse_q <= 1'b1;
-                                engine_stop_q <= {NUM_ENGINES{1'b1}};
-                                load_state_q <= LOAD_IDLE;
-                                running_q <= 1'b0;
-                                nonce_done_q <= 1'b1;
-                            end
-                            if (s_axi_wdata[2]) begin
-                                clear_results_q <= 1'b1;
-                                result_valid_q <= 1'b0;
-                                overflow_q <= 1'b0;
-                                nonce_done_q <= 1'b0;
-                            end
-                        end
-                        ADDR_NONCE_START: begin
-                            nonce_start_q <= apply_wstrb(nonce_start_q, s_axi_wdata, s_axi_wstrb);
-                        end
-                        ADDR_NONCE_COUNT: begin
-                            nonce_count_q <= apply_wstrb(nonce_count_q, s_axi_wdata, s_axi_wstrb);
-                        end
-                        ADDR_RESULT_STATUS: begin
-                            if (s_axi_wdata[0]) begin
-                                result_valid_q <= 1'b0;
-                            end
-                            if (s_axi_wdata[1]) begin
-                                overflow_q <= 1'b0;
-                            end
-                        end
-                        default: begin
-                        end
-                    endcase
+                for (i = 0; i < 8; i = i + 1) begin
+                    if (wr_stage2_midstate_we_q[i]) begin
+                        midstate_q[255 - (i * 32) -: 32] <= apply_wstrb(midstate_q[255 - (i * 32) -: 32], wr_stage2_data_q, wr_stage2_strb_q);
+                    end
+                    if (wr_stage2_target_we_q[i]) begin
+                        target_q[255 - (i * 32) -: 32] <= apply_wstrb(target_q[255 - (i * 32) -: 32], wr_stage2_data_q, wr_stage2_strb_q);
+                    end
+                end
+
+                for (i = 0; i < 4; i = i + 1) begin
+                    if (wr_stage2_tail_we_q[i]) begin
+                        header_tail_q[127 - (i * 32) -: 32] <= apply_wstrb(header_tail_q[127 - (i * 32) -: 32], wr_stage2_data_q, wr_stage2_strb_q);
+                    end
+                end
+
+                if (wr_stage2_control_we_q) begin
+                    if (wr_stage2_data_q[0] && (load_state_q == LOAD_IDLE)) begin
+                        start_pulse_q <= 1'b1;
+                        running_q <= 1'b1;
+                        nonce_done_q <= 1'b0;
+                        overflow_q <= 1'b0;
+                        result_valid_q <= 1'b0;
+                        load_state_q <= LOAD_PREP;
+                        load_engine_idx_q <= {ENGINE_INDEX_WIDTH{1'b0}};
+                    end
+                    if (wr_stage2_data_q[1]) begin
+                        stop_pulse_q <= 1'b1;
+                        engine_stop_q <= {NUM_ENGINES{1'b1}};
+                        load_state_q <= LOAD_IDLE;
+                        running_q <= 1'b0;
+                        nonce_done_q <= 1'b1;
+                    end
+                    if (wr_stage2_data_q[2]) begin
+                        clear_results_q <= 1'b1;
+                        result_valid_q <= 1'b0;
+                        overflow_q <= 1'b0;
+                        nonce_done_q <= 1'b0;
+                    end
+                end
+
+                if (wr_stage2_nonce_start_we_q) begin
+                    nonce_start_q <= apply_wstrb(nonce_start_q, wr_stage2_data_q, wr_stage2_strb_q);
+                end
+                if (wr_stage2_nonce_count_we_q) begin
+                    nonce_count_q <= apply_wstrb(nonce_count_q, wr_stage2_data_q, wr_stage2_strb_q);
+                end
+                if (wr_stage2_result_status_we_q) begin
+                    if (wr_stage2_data_q[0]) begin
+                        result_valid_q <= 1'b0;
+                    end
+                    if (wr_stage2_data_q[1]) begin
+                        overflow_q <= 1'b0;
+                    end
                 end
             end
 
