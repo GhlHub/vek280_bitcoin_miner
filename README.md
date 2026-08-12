@@ -1,8 +1,9 @@
 # VEK280 Bitcoin Miner
 
 An AMD Versal Premium VEK280 Bitcoin-mining demonstrator. The project combines a
-250 MHz programmable-logic nonce scanner with an R5 FreeRTOS control plane that
-uses Stratum v1 to receive work and submit candidate shares.
+250 MHz programmable-logic nonce scanner with a 125 MHz AXI control plane and
+an R5 FreeRTOS control plane that uses Stratum v1 to receive work and submit
+candidate shares.
 
 The current implemented design has four AXI4-Lite miner instances with 32 hash
 engines each: **128 engines total**. Its estimated raw double-SHA-256 rate is
@@ -11,16 +12,17 @@ approximately **49 MH/s**.
 ## Current implementation status
 
 The active target is `xcve2802-vsvh1760-2MP-e-S` on the VEK280. The 4×32 design
-meets its 250 MHz timing constraints after route and physical optimization:
+meets its 250 MHz miner-clock and 125 MHz AXI-control-clock constraints after
+route and physical optimization:
 
 | Metric | Result |
 | --- | ---: |
-| Setup slack (WNS) | +0.121 ns |
+| Setup slack (WNS) | +0.117 ns |
 | Setup violations (TNS) | 0.000 ns |
-| Hold slack (WHS) | +0.011 ns |
+| Hold slack (WHS) | +0.005 ns |
 | Hold violations (THS) | 0.000 ns |
-| LUTs | 351,435 (67.5%) |
-| Registers | 495,863 (47.6%) |
+| LUTs | 351,459 (67.5%) |
+| Registers | 496,748 (47.7%) |
 | Routing errors | 0 |
 
 Detailed operation, register semantics, architecture, and runtime control are
