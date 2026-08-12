@@ -277,3 +277,25 @@ FreeRTOS software port:
   fallback IP address` and fallback IP `192.168.1.80`. The final 512 KiB heap run
   confirmed GEM initialization and 1000 Mbps link, but was stopped before DHCP
   completed or fell back.
+
+Current operational configuration (2026-08-11):
+- The active build is the DDR-enabled 4x32 variant: four `bitcoin_miner_axi`
+  instances with 32 engines each, for 128 engines total. AXI base addresses are
+  `0xA4000000`, `0xA4001000`, `0xA4002000`, and `0xA4003000`.
+- The current PDI is
+  `bd/out_vek280_miner_4x32_ooc/miner_system_wrapper.pdi`; the matching XSA is
+  `reports/impl_vek280_4x32_ooc/miner_system_wrapper.xsa`.
+- Four-thread implementation with post-route physical optimization meets timing:
+  WNS `+0.121 ns`, TNS `0.000 ns`, WHS `+0.011 ns`, and THS `0.000 ns` at
+  250 MHz. The design uses 351,435 LUTs and 495,863 FFs; routing has zero errors.
+- `make vitis-r5` rebuilds the matching 4-instance R5 BSP and ELF. The default
+  `MINER_AXI_INSTANCES` is 4. Use `software/vitis/load_target.py` for a full PDI
+  plus R5 load, or `software/vitis/reload_r5_app.py` to reset and reload only the
+  R5 ELF. Vitis 2026.1 requires these XSDB Python scripts; XSCT is disabled.
+- Hardware server is at `10.0.1.109:3121`; UART bridge is
+  `10.0.1.109:2323`. The R5 obtains its DHCP lease on `10.0.1.89` and exposes an
+  unauthenticated control console on TCP port 23. Use this only on the trusted lab
+  network.
+- The verified runtime flow is Stratum v1 over `solo.ckpool.org:3333`. Configure
+  a wallet at runtime with `pool <host> <port> <user> [pass]`, then `connect`.
+  Do not commit wallet credentials or UART/pool logs.

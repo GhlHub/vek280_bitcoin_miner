@@ -44,7 +44,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 # source miner_system_script.tcl
 
 
-# The design that will be created by this Tcl script contains the following
+# The design that will be created by this Tcl script contains the following 
 # module references:
 # bitcoin_miner_axi_32, bitcoin_miner_axi_32, bitcoin_miner_axi_32, bitcoin_miner_axi_32, irq_or4
 
@@ -102,7 +102,7 @@ if { ${design_name} eq "" } {
    set errMsg "Design <$design_name> already exists in your project, please set the variable <design_name> to another value."
    set nRet 1
 } elseif { [get_files -quiet ${design_name}.bd] ne "" } {
-   # USE CASES:
+   # USE CASES: 
    #    6) Current opened design, has components, but diff names, design_name exists in project.
    #    7) No opened design, design_name exists in project.
 
@@ -136,9 +136,10 @@ set bCheckIPsPassed 1
 ##################################################################
 set bCheckIPs 1
 if { $bCheckIPs == 1 } {
-   set list_check_ips "\
+   set list_check_ips "\ 
 xilinx.com:ip:versal_cips:3.4\
 xilinx.com:ip:axi_noc:1.1\
+xilinx.com:ip:axi_register_slice:2.1\
 xilinx.com:ip:smartconnect:1.0\
 xilinx.com:ip:proc_sys_reset:5.0\
 "
@@ -165,7 +166,7 @@ xilinx.com:ip:proc_sys_reset:5.0\
 ##################################################################
 set bCheckModules 1
 if { $bCheckModules == 1 } {
-   set list_check_mods "\
+   set list_check_mods "\ 
 bitcoin_miner_axi_32\
 bitcoin_miner_axi_32\
 bitcoin_miner_axi_32\
@@ -403,6 +404,21 @@ proc create_root_design { parentCell } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
+  
+  # Create instance: axi_regslice_miner_0, and set properties
+  set axi_regslice_miner_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.1 axi_regslice_miner_0 ]
+  set_property -dict [list \
+    CONFIG.ADDR_WIDTH {12} \
+    CONFIG.DATA_WIDTH {32} \
+    CONFIG.MAX_BURST_LENGTH {1} \
+    CONFIG.PROTOCOL {AXI4LITE} \
+    CONFIG.REG_AR {7} \
+    CONFIG.REG_AW {7} \
+    CONFIG.REG_B {7} \
+    CONFIG.REG_R {7} \
+    CONFIG.REG_W {7} \
+  ] $axi_regslice_miner_0
+
 
   # Create instance: miner_1, and set properties
   set block_name bitcoin_miner_axi_32
@@ -414,6 +430,21 @@ proc create_root_design { parentCell } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
+  
+  # Create instance: axi_regslice_miner_1, and set properties
+  set axi_regslice_miner_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.1 axi_regslice_miner_1 ]
+  set_property -dict [list \
+    CONFIG.ADDR_WIDTH {12} \
+    CONFIG.DATA_WIDTH {32} \
+    CONFIG.MAX_BURST_LENGTH {1} \
+    CONFIG.PROTOCOL {AXI4LITE} \
+    CONFIG.REG_AR {7} \
+    CONFIG.REG_AW {7} \
+    CONFIG.REG_B {7} \
+    CONFIG.REG_R {7} \
+    CONFIG.REG_W {7} \
+  ] $axi_regslice_miner_1
+
 
   # Create instance: miner_2, and set properties
   set block_name bitcoin_miner_axi_32
@@ -425,6 +456,21 @@ proc create_root_design { parentCell } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
+  
+  # Create instance: axi_regslice_miner_2, and set properties
+  set axi_regslice_miner_2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.1 axi_regslice_miner_2 ]
+  set_property -dict [list \
+    CONFIG.ADDR_WIDTH {12} \
+    CONFIG.DATA_WIDTH {32} \
+    CONFIG.MAX_BURST_LENGTH {1} \
+    CONFIG.PROTOCOL {AXI4LITE} \
+    CONFIG.REG_AR {7} \
+    CONFIG.REG_AW {7} \
+    CONFIG.REG_B {7} \
+    CONFIG.REG_R {7} \
+    CONFIG.REG_W {7} \
+  ] $axi_regslice_miner_2
+
 
   # Create instance: miner_3, and set properties
   set block_name bitcoin_miner_axi_32
@@ -436,6 +482,21 @@ proc create_root_design { parentCell } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
+  
+  # Create instance: axi_regslice_miner_3, and set properties
+  set axi_regslice_miner_3 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice:2.1 axi_regslice_miner_3 ]
+  set_property -dict [list \
+    CONFIG.ADDR_WIDTH {12} \
+    CONFIG.DATA_WIDTH {32} \
+    CONFIG.MAX_BURST_LENGTH {1} \
+    CONFIG.PROTOCOL {AXI4LITE} \
+    CONFIG.REG_AR {7} \
+    CONFIG.REG_AW {7} \
+    CONFIG.REG_B {7} \
+    CONFIG.REG_R {7} \
+    CONFIG.REG_W {7} \
+  ] $axi_regslice_miner_3
+
 
   # Create instance: axi_smc, and set properties
   set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
@@ -455,15 +516,19 @@ proc create_root_design { parentCell } {
      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
      return 1
    }
-
+  
   # Create instance: rst_pl0, and set properties
   set rst_pl0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_pl0 ]
 
   # Create interface connections
-  connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_pins miner_0/S_AXI]
-  connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_pins miner_1/S_AXI]
-  connect_bd_intf_net -intf_net axi_smc_M02_AXI [get_bd_intf_pins axi_smc/M02_AXI] [get_bd_intf_pins miner_2/S_AXI]
-  connect_bd_intf_net -intf_net axi_smc_M03_AXI [get_bd_intf_pins axi_smc/M03_AXI] [get_bd_intf_pins miner_3/S_AXI]
+  connect_bd_intf_net -intf_net axi_regslice_miner_0_M_AXI [get_bd_intf_pins axi_regslice_miner_0/M_AXI] [get_bd_intf_pins miner_0/S_AXI]
+  connect_bd_intf_net -intf_net axi_regslice_miner_1_M_AXI [get_bd_intf_pins axi_regslice_miner_1/M_AXI] [get_bd_intf_pins miner_1/S_AXI]
+  connect_bd_intf_net -intf_net axi_regslice_miner_2_M_AXI [get_bd_intf_pins axi_regslice_miner_2/M_AXI] [get_bd_intf_pins miner_2/S_AXI]
+  connect_bd_intf_net -intf_net axi_regslice_miner_3_M_AXI [get_bd_intf_pins axi_regslice_miner_3/M_AXI] [get_bd_intf_pins miner_3/S_AXI]
+  connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_pins axi_regslice_miner_0/S_AXI]
+  connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_pins axi_regslice_miner_1/S_AXI]
+  connect_bd_intf_net -intf_net axi_smc_M02_AXI [get_bd_intf_pins axi_smc/M02_AXI] [get_bd_intf_pins axi_regslice_miner_2/S_AXI]
+  connect_bd_intf_net -intf_net axi_smc_M03_AXI [get_bd_intf_pins axi_smc/M03_AXI] [get_bd_intf_pins axi_regslice_miner_3/S_AXI]
   connect_bd_intf_net -intf_net cips_0_FPD_CCI_NOC_0 [get_bd_intf_pins cips_0/FPD_CCI_NOC_0] [get_bd_intf_pins ps_ddr_noc/S00_AXI]
   connect_bd_intf_net -intf_net cips_0_FPD_CCI_NOC_1 [get_bd_intf_pins cips_0/FPD_CCI_NOC_1] [get_bd_intf_pins ps_ddr_noc/S01_AXI]
   connect_bd_intf_net -intf_net cips_0_FPD_CCI_NOC_2 [get_bd_intf_pins cips_0/FPD_CCI_NOC_2] [get_bd_intf_pins ps_ddr_noc/S02_AXI]
@@ -494,9 +559,13 @@ proc create_root_design { parentCell } {
   [get_bd_pins rst_pl0/slowest_sync_clk] \
   [get_bd_pins axi_smc/aclk] \
   [get_bd_pins cips_0/m_axi_fpd_aclk] \
+  [get_bd_pins axi_regslice_miner_0/aclk] \
   [get_bd_pins miner_0/s_axi_aclk] \
+  [get_bd_pins axi_regslice_miner_1/aclk] \
   [get_bd_pins miner_1/s_axi_aclk] \
+  [get_bd_pins axi_regslice_miner_2/aclk] \
   [get_bd_pins miner_2/s_axi_aclk] \
+  [get_bd_pins axi_regslice_miner_3/aclk] \
   [get_bd_pins miner_3/s_axi_aclk]
   connect_bd_net -net cips_0_pl0_resetn  [get_bd_pins cips_0/pl0_resetn] \
   [get_bd_pins rst_pl0/ext_reset_in]
@@ -514,9 +583,13 @@ proc create_root_design { parentCell } {
   [get_bd_pins irq_or/irq3_i]
   connect_bd_net -net rst_pl0_peripheral_aresetn  [get_bd_pins rst_pl0/peripheral_aresetn] \
   [get_bd_pins axi_smc/aresetn] \
+  [get_bd_pins axi_regslice_miner_0/aresetn] \
   [get_bd_pins miner_0/s_axi_aresetn] \
+  [get_bd_pins axi_regslice_miner_1/aresetn] \
   [get_bd_pins miner_1/s_axi_aresetn] \
+  [get_bd_pins axi_regslice_miner_2/aresetn] \
   [get_bd_pins miner_2/s_axi_aresetn] \
+  [get_bd_pins axi_regslice_miner_3/aresetn] \
   [get_bd_pins miner_3/s_axi_aresetn]
 
   # Create address segments
@@ -550,3 +623,5 @@ proc create_root_design { parentCell } {
 ##################################################################
 
 create_root_design ""
+
+

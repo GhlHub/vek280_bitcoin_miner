@@ -12,7 +12,7 @@ FREERTOS_APP_INC := \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/include \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/portable/Compiler/GCC
 
-.PHONY: sim lint sw-syntax bd bd-noddr bd4x32 synth128 synth-miner32-ooc impl impl-noddr impl4x32-ooc xsa vitis-hw vitis-bsp clean
+.PHONY: sim lint sw-syntax bd bd-noddr bd4x32 synth128 synth-miner32-ooc impl impl-noddr impl4x32-ooc xsa vitis-hw vitis-bsp vitis-r5 clean
 
 sim: sim-sha sim-miner
 
@@ -68,6 +68,11 @@ vitis-hw:
 
 vitis-bsp: vitis-hw
 	VITIS_BSP_CLEAN=1 /tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/create_bsp.py
+
+vitis-r5:
+	MINER_AXI_INSTANCES=4 MINER_NUM_SLAVES=4 /tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/create_bsp.py --xsa reports/impl_vek280_4x32_ooc/miner_system_wrapper.xsa --clean
+	MINER_AXI_INSTANCES=4 MINER_NUM_SLAVES=4 /tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/create_app.py --clean
+	/tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/build_app.py
 
 clean:
 	rm -f $(SHA_OUT) $(MINER_OUT)

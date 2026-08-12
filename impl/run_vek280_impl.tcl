@@ -65,11 +65,14 @@ if {$use_ooc_miner32} {
     read_xdc -quiet [file join $repo_dir impl miner4x32_pblocks.xdc]
     write_checkpoint -force [file join $impl_reports_dir miner_system_wrapper_ooc_linked.dcp]
 
-    opt_design -directive RuntimeOptimized
+    opt_design -directive Explore
     write_checkpoint -force [file join $impl_reports_dir miner_system_wrapper_opt.dcp]
-    place_design -directive Quick
+    place_design -directive AggressiveExplore
     write_checkpoint -force [file join $impl_reports_dir miner_system_wrapper_placed.dcp]
-    route_design -directive Quick
+    phys_opt_design -directive AggressiveExplore
+    write_checkpoint -force [file join $impl_reports_dir miner_system_wrapper_physopt.dcp]
+    route_design -directive AggressiveExplore
+    phys_opt_design -directive Explore
     write_checkpoint -force [file join $impl_reports_dir miner_system_wrapper_routed.dcp]
     write_device_image -force -file [file join $repo_dir bd out_vek280_miner${variant_suffix} miner_system_wrapper.pdi]
 

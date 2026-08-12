@@ -47,7 +47,6 @@ ipconfigNIC_N_RX_DESC=8
             miner_axi_instances = miner_slaves
     if miner_axi_instances:
         definitions += f"\nMINER_AXI_INSTANCES={miner_axi_instances}U"
-        definitions += f"\nMINER_NUM_ENGINES_EXPECTED=({miner_axi_instances}U * 32U)"
     includes = """
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/include
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/netif_versal

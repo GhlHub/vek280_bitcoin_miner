@@ -224,6 +224,18 @@ set miner_module bitcoin_miner_axi_32
 
 for {set idx 0} {$idx < $num_miner_slaves} {incr idx} {
     set miner [create_bd_cell -type module -reference $miner_module miner_$idx]
+    set regslice [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_register_slice axi_regslice_miner_$idx]
+    set_property -dict [list \
+        CONFIG.PROTOCOL {AXI4LITE} \
+        CONFIG.ADDR_WIDTH {12} \
+        CONFIG.DATA_WIDTH {32} \
+        CONFIG.MAX_BURST_LENGTH {1} \
+        CONFIG.REG_AW {7} \
+        CONFIG.REG_W {7} \
+        CONFIG.REG_B {7} \
+        CONFIG.REG_AR {7} \
+        CONFIG.REG_R {7} \
+    ] $regslice
 }
 
 set axi_ic [create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect axi_smc]
@@ -245,8 +257,11 @@ connect_bd_net [get_bd_pins rst_pl0/peripheral_aresetn] [get_bd_pins axi_smc/are
 
 for {set idx 0} {$idx < $num_miner_slaves} {incr idx} {
     set mi_pin [format "M%02d_AXI" $idx]
-    connect_bd_intf_net [get_bd_intf_pins axi_smc/$mi_pin] [get_bd_intf_pins miner_$idx/S_AXI]
+    connect_bd_intf_net [get_bd_intf_pins axi_smc/$mi_pin] [get_bd_intf_pins axi_regslice_miner_$idx/S_AXI]
+    connect_bd_intf_net [get_bd_intf_pins axi_regslice_miner_$idx/M_AXI] [get_bd_intf_pins miner_$idx/S_AXI]
+    connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins axi_regslice_miner_$idx/aclk]
     connect_bd_net [get_bd_pins cips_0/pl0_ref_clk] [get_bd_pins miner_$idx/s_axi_aclk]
+    connect_bd_net [get_bd_pins rst_pl0/peripheral_aresetn] [get_bd_pins axi_regslice_miner_$idx/aresetn]
     connect_bd_net [get_bd_pins rst_pl0/peripheral_aresetn] [get_bd_pins miner_$idx/s_axi_aresetn]
     if {$num_miner_slaves > 1} {
         connect_bd_net [get_bd_pins miner_$idx/irq_o] [get_bd_pins irq_or/irq${idx}_i]
@@ -293,6 +308,7 @@ puts $summary_file "Block design: $design_name"
 puts $summary_file "Part: $part_name"
 puts $summary_file "Board: $board_name"
 puts $summary_file "Miner: $num_miner_slaves AXI4-Lite slave(s), NUM_ENGINES=32 per slave, CLUSTER_SIZE=32 CLUSTER_FIFO_DEPTH=2, OOC_MINER32=$use_ooc_miner32"
+puts $summary_file "Miner AXI pipeline: one axi_register_slice per SmartConnect-to-miner AXI4-Lite link, REG_AW/W/B/AR/R=Light"
 puts $summary_file "PL0 clock request: 250 MHz; Vivado CIPS actual is expected to be about 249.997498 MHz"
 puts $summary_file "PS-PL control: cips_0/M_AXI_FPD -> axi_smc -> miner_N/S_AXI starting at 0xA4000000, stride 0x00001000"
 if {$enable_ddr} {

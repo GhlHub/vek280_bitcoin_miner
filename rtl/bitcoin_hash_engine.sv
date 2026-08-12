@@ -18,14 +18,16 @@ module bitcoin_hash_engine #(
     output reg  [31:0]  result_nonce_o,
     output reg  [255:0] result_hash_o
 );
-    localparam [2:0] ST_IDLE    = 3'd0;
-    localparam [2:0] ST_PASS1   = 3'd1;
-    localparam [2:0] ST_PASS2   = 3'd2;
-    localparam [2:0] ST_COMPARE = 3'd3;
-    localparam [2:0] ST_CHECK   = 3'd4;
+    localparam [3:0] ST_IDLE    = 4'd0;
+    localparam [3:0] ST_LAUNCH  = 4'd1;
+    localparam [3:0] ST_PASS1   = 4'd2;
+    localparam [3:0] ST_PASS2   = 4'd3;
+    localparam [3:0] ST_COMPARE = 4'd4;
+    localparam [3:0] ST_CHECK   = 4'd5;
 
-    reg [2:0]   state_q;
-    reg         core_start_q;
+    (* max_fanout = 64 *) reg [3:0] state_q;
+    (* max_fanout = 64 *) reg       core_start_q;
+    reg [3:0]   launch_state_q;
     reg [511:0] core_block_q;
     reg [255:0] core_h_q;
     wire        core_busy;
@@ -101,6 +103,7 @@ module bitcoin_hash_engine #(
     always @(posedge clk_i or negedge rst_ni) begin
         if (!rst_ni) begin
             state_q <= ST_IDLE;
+            launch_state_q <= ST_IDLE;
             core_start_q <= 1'b0;
             core_block_q <= 512'h0;
             core_h_q <= 256'h0;
@@ -140,9 +143,14 @@ module bitcoin_hash_engine #(
                             cmp_gt_q <= 1'b0;
                             core_block_q <= make_first_pass_block(header_tail_i, nonce_start_i);
                             core_h_q <= midstate_i;
-                            core_start_q <= 1'b1;
-                            state_q <= ST_PASS1;
+                            launch_state_q <= ST_PASS1;
+                            state_q <= ST_LAUNCH;
                         end
+                    end
+
+                    ST_LAUNCH: begin
+                        core_start_q <= 1'b1;
+                        state_q <= launch_state_q;
                     end
 
                     ST_PASS1: begin
@@ -152,8 +160,8 @@ module bitcoin_hash_engine #(
                                 32'h6a09e667, 32'hbb67ae85, 32'h3c6ef372, 32'ha54ff53a,
                                 32'h510e527f, 32'h9b05688c, 32'h1f83d9ab, 32'h5be0cd19
                             };
-                            core_start_q <= 1'b1;
-                            state_q <= ST_PASS2;
+                            launch_state_q <= ST_PASS2;
+                            state_q <= ST_LAUNCH;
                         end
                     end
 
@@ -202,8 +210,8 @@ module bitcoin_hash_engine #(
                             nonce_q <= nonce_q + NONCE_STRIDE_W;
                             core_block_q <= make_first_pass_block(header_tail_q, nonce_q + NONCE_STRIDE_W);
                             core_h_q <= midstate_q;
-                            core_start_q <= 1'b1;
-                            state_q <= ST_PASS1;
+                            launch_state_q <= ST_PASS1;
+                            state_q <= ST_LAUNCH;
                         end
                     end
 
