@@ -31,10 +31,17 @@ typedef struct {
     uint32_t last_result_tick;
     uint32_t active_nonce_start;
     uint32_t active_nonce_count;
+    uint32_t ranges_completed;
+    uint32_t ranges_preempted;
+    uint32_t ranges_preempted_clean_job;
+    uint32_t ranges_stopped;
+    uint64_t nonce_candidates_completed_estimate;
+    uint32_t last_range_elapsed_ticks;
+    uint32_t last_range_reason;
 } miner_service_stats_t;
 
 void miner_service_start(void);
-void miner_service_submit_job(const miner_job_t *job);
+void miner_service_submit_job(const miner_job_t *job, bool clean_job);
 void miner_service_stop_scan(void);
 void miner_service_clear(void);
 uint32_t miner_service_status(void);

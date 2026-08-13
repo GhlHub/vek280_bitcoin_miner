@@ -17,6 +17,40 @@
 #include "stratum_client.h"
 #include "telemetry.h"
 
+enum {
+    TELNET_IAC = 255,
+    TELNET_DONT = 254,
+    TELNET_DO = 253,
+    TELNET_WONT = 252,
+    TELNET_WILL = 251,
+    TELNET_SB = 250,
+    TELNET_SE = 240,
+    TELNET_OPT_ECHO = 1,
+    TELNET_OPT_SUPPRESS_GO_AHEAD = 3,
+};
+
+typedef enum {
+    TELNET_PARSE_DATA,
+    TELNET_PARSE_IAC,
+    TELNET_PARSE_OPTION,
+    TELNET_PARSE_SUBNEGOTIATION,
+    TELNET_PARSE_SUBNEGOTIATION_IAC,
+} telnet_parse_state_t;
+
+static void sock_send_all(Socket_t sock, const void *data, size_t len)
+{
+    const uint8_t *cursor = data;
+
+    while (len > 0U) {
+        BaseType_t sent = FreeRTOS_send(sock, cursor, len, 0);
+
+        if (sent <= 0) {
+            break;
+        }
+        cursor += (size_t)sent;
+        len -= (size_t)sent;
+    }
+}
 static void sock_printf(Socket_t sock, const char *fmt, ...)
 {
     char buf[TELNET_TX_BUFFER_BYTES];
@@ -28,8 +62,36 @@ static void sock_printf(Socket_t sock, const char *fmt, ...)
     va_end(ap);
 
     if (len > 0) {
-        size_t send_len = (len < (int)sizeof(buf)) ? (size_t)len : sizeof(buf);
-        (void)FreeRTOS_send(sock, buf, send_len, 0);
+        size_t send_len = (len < (int)sizeof(buf)) ? (size_t)len : (sizeof(buf) - 1U);
+        sock_send_all(sock, buf, send_len);
+    }
+}
+
+static void telnet_send_command(Socket_t sock, uint8_t command, uint8_t option)
+{
+    const uint8_t bytes[] = { TELNET_IAC, command, option };
+
+    sock_send_all(sock, bytes, sizeof(bytes));
+}
+
+static void telnet_negotiate(Socket_t sock)
+{
+    /* Keep input echo local to the client terminal. */
+    telnet_send_command(sock, TELNET_WONT, TELNET_OPT_ECHO);
+    telnet_send_command(sock, TELNET_WILL, TELNET_OPT_SUPPRESS_GO_AHEAD);
+    telnet_send_command(sock, TELNET_DO, TELNET_OPT_SUPPRESS_GO_AHEAD);
+}
+
+static void telnet_handle_option(Socket_t sock, uint8_t command, uint8_t option)
+{
+    if (command == TELNET_DO) {
+        telnet_send_command(sock,
+                            (option == TELNET_OPT_SUPPRESS_GO_AHEAD) ? TELNET_WILL : TELNET_WONT,
+                            option);
+    } else if (command == TELNET_WILL) {
+        telnet_send_command(sock,
+                            (option == TELNET_OPT_SUPPRESS_GO_AHEAD) ? TELNET_DO : TELNET_DONT,
+                            option);
     }
 }
 
@@ -84,12 +146,13 @@ static void print_stats(Socket_t sock)
     stratum_client_get_debug(&stratum);
 
     sock_printf(sock,
-                "performance nominal_hashrate=%lu H/s engines=%lu uptime_ticks=%lu active_job_age_ticks=%lu issued=%llu jobs=%lu/%lu\r\n",
+                "performance nominal_hashrate=%lu H/s engines=%lu uptime_ticks=%lu active_job_age_ticks=%lu issued=%llu estimated_completed=%llu jobs=%lu/%lu\r\n",
                 (unsigned long)MINER_HASHRATE_HS,
                 (unsigned long)miner_num_engines(),
                 (unsigned long)uptime,
                 (unsigned long)(uptime - miner.active_job_tick),
                 (unsigned long long)miner.nonce_candidates_issued,
+                (unsigned long long)miner.nonce_candidates_completed_estimate,
                 (unsigned long)miner.jobs_started,
                 (unsigned long)miner.jobs_queued);
     sock_printf(sock,
@@ -110,6 +173,18 @@ static void print_stats(Socket_t sock)
                 (unsigned long)stratum.job_dispatch_fail,
                 (unsigned long)stratum.target_word0,
                 (unsigned long)(uptime - stratum.last_job_tick));
+    sock_printf(sock,
+                "ranges active_start=%08lx active_count=%08lx completed=%lu preempted=%lu clean_preempted=%lu stopped=%lu last_elapsed_ticks=%lu last_reason=%s\r\n",
+                (unsigned long)miner.active_nonce_start,
+                (unsigned long)miner.active_nonce_count,
+                (unsigned long)miner.ranges_completed,
+                (unsigned long)miner.ranges_preempted,
+                (unsigned long)miner.ranges_preempted_clean_job,
+                (unsigned long)miner.ranges_stopped,
+                (unsigned long)miner.last_range_elapsed_ticks,
+                (miner.last_range_reason == 1U) ? "completed" :
+                (miner.last_range_reason == 2U) ? "new-job" :
+                (miner.last_range_reason == 3U) ? "manual-stop" : "none");
 }
 
 static void print_health(Socket_t sock)
@@ -132,13 +207,14 @@ static void print_health(Socket_t sock)
                 (unsigned long)health.alarm_status);
 }
 
-static void handle_command(Socket_t sock, char *line)
+/* Returns false when the client requested that its console session close. */
+static bool handle_command(Socket_t sock, char *line)
 {
     char *cursor = line;
     char *cmd = next_token(&cursor);
 
     if (cmd == NULL) {
-        return;
+        return true;
     }
 
     if (strcmp(cmd, "help") == 0) {
@@ -155,7 +231,8 @@ static void handle_command(Socket_t sock, char *line)
                     "  clear\r\n"
                     "  pool <host> <port> <user> [pass]\r\n"
                     "  connect\r\n"
-                    "  disconnect\r\n");
+                    "  disconnect\r\n"
+                    "  quit (or exit)\r\n");
     } else if (strcmp(cmd, "status") == 0) {
         miner_result_t result;
         uint32_t status = miner_service_status();
@@ -198,7 +275,7 @@ static void handle_command(Socket_t sock, char *line)
                     (long)dbg.last_recv_status,
                     (long)dbg.last_send_status);
         sock_printf(sock, "event: %s\r\n", dbg.last_event);
-        sock_printf(sock, "last_tx: %s\r\n", dbg.last_tx);
+        sock_printf(sock, "last_tx: <redacted; outbound Stratum messages may contain credentials>\r\n");
         sock_printf(sock, "last_rx: %s\r\n", dbg.last_rx);
     } else if (strcmp(cmd, "stats") == 0) {
         print_stats(sock);
@@ -257,38 +334,113 @@ static void handle_command(Socket_t sock, char *line)
     } else if (strcmp(cmd, "disconnect") == 0) {
         stratum_client_request_disconnect();
         sock_printf(sock, "disconnect requested\r\n");
+    } else if ((strcmp(cmd, "quit") == 0) || (strcmp(cmd, "exit") == 0)) {
+        sock_printf(sock, "closing console session\r\n");
+        return false;
     } else {
         sock_printf(sock, "unknown command: %s\r\n", cmd);
     }
+
+    return true;
 }
 
 static void telnet_client(Socket_t sock)
 {
     char line[TELNET_RX_BUFFER_BYTES];
     size_t used = 0;
+    bool ignore_lf_after_cr = false;
+    bool line_overflowed = false;
+    telnet_parse_state_t parse_state = TELNET_PARSE_DATA;
+    uint8_t option_command = 0U;
 
+    telnet_negotiate(sock);
     sock_printf(sock, "\r\nVEK280 miner telnet console\r\nNo authentication is enabled.\r\n> ");
 
     for (;;) {
-        char ch;
+        uint8_t ch;
         BaseType_t got = FreeRTOS_recv(sock, &ch, 1, 0);
 
         if (got <= 0) {
             break;
         }
 
+        if (parse_state == TELNET_PARSE_IAC) {
+            if (ch == TELNET_IAC) {
+                parse_state = TELNET_PARSE_DATA;
+            } else if ((ch == TELNET_DO) || (ch == TELNET_DONT) ||
+                       (ch == TELNET_WILL) || (ch == TELNET_WONT)) {
+                option_command = ch;
+                parse_state = TELNET_PARSE_OPTION;
+            } else if (ch == TELNET_SB) {
+                parse_state = TELNET_PARSE_SUBNEGOTIATION;
+            } else {
+                parse_state = TELNET_PARSE_DATA;
+            }
+            continue;
+        }
+
+        if (parse_state == TELNET_PARSE_OPTION) {
+            telnet_handle_option(sock, option_command, ch);
+            parse_state = TELNET_PARSE_DATA;
+            continue;
+        }
+
+        if (parse_state == TELNET_PARSE_SUBNEGOTIATION) {
+            if (ch == TELNET_IAC) {
+                parse_state = TELNET_PARSE_SUBNEGOTIATION_IAC;
+            }
+            continue;
+        }
+
+        if (parse_state == TELNET_PARSE_SUBNEGOTIATION_IAC) {
+            parse_state = (ch == TELNET_SE) ? TELNET_PARSE_DATA : TELNET_PARSE_SUBNEGOTIATION;
+            continue;
+        }
+
+        if (ch == TELNET_IAC) {
+            parse_state = TELNET_PARSE_IAC;
+            continue;
+        }
+
+        if (((ch == '\n') || (ch == '\0')) && ignore_lf_after_cr) {
+            /* Treat both CRLF and Telnet's CR NUL as one line ending. */
+            ignore_lf_after_cr = false;
+            continue;
+        }
+
         if ((ch == '\r') || (ch == '\n')) {
             line[used] = '\0';
             sock_printf(sock, "\r\n");
-            handle_command(sock, line);
+            if (line_overflowed) {
+                sock_printf(sock, "input line too long; discarded\r\n");
+            } else if (!handle_command(sock, line)) {
+                break;
+            }
             used = 0;
+            line_overflowed = false;
+            ignore_lf_after_cr = (ch == '\r');
             sock_printf(sock, "> ");
         } else if ((ch == 0x08) || (ch == 0x7f)) {
+            ignore_lf_after_cr = false;
             if (used > 0U) {
                 --used;
             }
+        } else if (ch == 0x15) { /* Ctrl-U */
+            used = 0;
+            line_overflowed = false;
+            ignore_lf_after_cr = false;
+        } else if (ch == 0x03) { /* Ctrl-C */
+            used = 0;
+            line_overflowed = false;
+            ignore_lf_after_cr = false;
         } else if (used < (sizeof(line) - 1U)) {
-            line[used++] = ch;
+            ignore_lf_after_cr = false;
+            if ((ch >= 0x20U) && (ch <= 0x7eU)) {
+                line[used++] = (char)ch;
+            }
+        } else if (!line_overflowed) {
+            line_overflowed = true;
+            sock_printf(sock, "\a");
         }
     }
 }

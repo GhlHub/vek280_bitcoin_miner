@@ -76,7 +76,6 @@ static void stratum_debug_set_event(const char *fmt, ...)
 
     xil_printf("stratum: %s\r\n", g_debug.last_event);
 }
-
 static void stratum_debug_set_rx_line(const char *line)
 {
     if ((g_debug_lock == NULL) ||
@@ -675,7 +674,8 @@ static bool build_job(const stratum_notify_t *notify, stratum_state_t *state, mi
     return true;
 }
 
-static bool dispatch_notify_work(const stratum_notify_t *notify, stratum_state_t *state)
+static bool dispatch_notify_work(const stratum_notify_t *notify, stratum_state_t *state,
+                                 bool clean_job)
 {
     miner_job_t job;
 
@@ -685,7 +685,7 @@ static bool dispatch_notify_work(const stratum_notify_t *notify, stratum_state_t
         return false;
     }
 
-    miner_service_submit_job(&job);
+    miner_service_submit_job(&job, clean_job);
     stratum_debug_inc(&g_debug.job_dispatch_ok);
     if (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) == pdTRUE) {
         g_debug.last_job_tick = (uint32_t)xTaskGetTickCount();
@@ -705,7 +705,8 @@ static void try_dispatch_pending_notify(stratum_state_t *state)
         miner_service_clear();
     }
 
-    if (dispatch_notify_work(&state->pending_notify, state)) {
+    if (dispatch_notify_work(&state->pending_notify, state,
+                             state->pending_notify.clean_jobs)) {
         state->current_notify = state->pending_notify;
         state->have_current_notify = true;
         state->have_pending_notify = false;
@@ -719,7 +720,7 @@ static void refill_if_idle(stratum_state_t *state)
     }
 
     if ((miner_service_status() & MINER_STATUS_RUNNING) == 0U) {
-        (void)dispatch_notify_work(&state->current_notify, state);
+        (void)dispatch_notify_work(&state->current_notify, state, false);
     }
 }
 
