@@ -28,7 +28,8 @@
 #endif
 
 #ifndef MINER_HASHRATE_HS
-#define MINER_HASHRATE_HS          (MINER_NUM_ENGINES_EXPECTED * 382812UL)
+/* Four-phase SHA: two 256-cycle compressions per Bitcoin nonce. */
+#define MINER_HASHRATE_HS          ((MINER_NUM_ENGINES_EXPECTED * 250000000ULL) / 512ULL)
 #endif
 
 #ifndef APP_USE_DDR_HEAP
