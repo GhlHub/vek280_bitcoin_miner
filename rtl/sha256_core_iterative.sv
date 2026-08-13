@@ -1,7 +1,8 @@
 `timescale 1ns/1ps
 
 module sha256_core_iterative #(
-    parameter bit EXPLICIT_DSP_SCHEDULE = 1'b0
+    parameter bit EXPLICIT_DSP_SCHEDULE = 1'b0,
+    parameter bit FOUR_PHASE = 1'b0
 ) (
     input  wire         clk_i,
     input  wire         rst_ni,
@@ -65,6 +66,9 @@ module sha256_core_iterative #(
     wire [31:0] w_ab_add;
     wire [31:0] w_cd_add;
     wire [31:0] w_new_add;
+    wire [31:0] t1_ab_add;
+    wire [31:0] t1_total_add;
+    wire [31:0] t1_w_add = (round_q < 16) ? t1_c_q : w_new_add;
 
     assign busy_o = busy_q;
 
@@ -150,10 +154,19 @@ module sha256_core_iterative #(
             dsp58_add32 u_w_ab (.a_i(w_s1_q), .b_i(w_m7_q), .sum_o(w_ab_add));
             dsp58_add32 u_w_cd (.a_i(w_s0_q), .b_i(w_m16_q), .sum_o(w_cd_add));
             dsp58_add32 u_w_new (.a_i(w_ab_q), .b_i(w_cd_q), .sum_o(w_new_add));
+            if (FOUR_PHASE) begin : g_four_phase_t1_dsp
+                dsp58_add32 u_t1_ab (.a_i(t1_a_q), .b_i(t1_b_q), .sum_o(t1_ab_add));
+                dsp58_add32 u_t1_total (.a_i(t1_ab_add), .b_i(t1_w_add), .sum_o(t1_total_add));
+            end else begin : g_five_phase_t1_fabric
+                assign t1_ab_add = t1_a_q + t1_b_q;
+                assign t1_total_add = t1_ab_add + t1_w_add;
+            end
         end else begin : g_fabric_schedule
             assign w_ab_add = w_s1_q + w_m7_q;
             assign w_cd_add = w_s0_q + w_m16_q;
             assign w_new_add = w_ab_q + w_cd_q;
+            assign t1_ab_add = t1_a_q + t1_b_q;
+            assign t1_total_add = t1_ab_add + t1_w_add;
         end
     endgenerate
 
@@ -210,9 +223,34 @@ module sha256_core_iterative #(
                 end else if (phase_q == 3'd2) begin
                     w_new_q <= w_new_add;
                     phase_q <= 3'd3;
+                    if (FOUR_PHASE)
+                        t1_q <= t1_total_add;
                 end else if (phase_q == 3'd3) begin
-                    t1_q <= t1_a_q + t1_b_q + ((round_q < 16) ? t1_c_q : w_new_q);
-                    phase_q <= 3'd4;
+                    if (FOUR_PHASE) begin
+                        if (round_q >= 16)
+                            w_mem[w_idx] <= w_new_q;
+                        a_q <= a_next;
+                        b_q <= a_q;
+                        c_q <= b_q;
+                        d_q <= c_q;
+                        e_q <= e_next;
+                        f_q <= e_q;
+                        g_q <= f_q;
+                        h_q <= g_q;
+                        if (round_q == ROUNDS - 1) begin
+                            digest_o <= {digest_h0, digest_h1, digest_h2, digest_h3,
+                                         digest_h4, digest_h5, digest_h6, digest_h7};
+                            busy_q <= 1'b0;
+                            done_o <= 1'b1;
+                            phase_q <= 3'd0;
+                        end else begin
+                            round_q <= round_q + 7'd1;
+                            phase_q <= 3'd0;
+                        end
+                    end else begin
+                        t1_q <= t1_a_q + t1_b_q + ((round_q < 16) ? t1_c_q : w_new_q);
+                        phase_q <= 3'd4;
+                    end
                 end else begin
                     if (round_q >= 16) begin
                         w_mem[w_idx] <= w_new_q;

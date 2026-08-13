@@ -1,4 +1,5 @@
 SHA_RTL := rtl/dsp58_add32.sv rtl/sha256_core_iterative.sv rtl/sha256_core_fabric.sv rtl/sha256_core_dsp.sv rtl/sha256_core_dsp_explicit.sv
+FOUR_PHASE_RTL := $(SHA_RTL) rtl/sha256_core_4phase.sv
 MINER_RTL := $(SHA_RTL) rtl/bitcoin_sha256_core.sv rtl/bitcoin_sha256_core_dsp_explicit.sv rtl/bitcoin_hash_engine.sv rtl/bitcoin_result_cluster_fifo.sv rtl/bitcoin_miner_axi.sv rtl/irq_or4.v
 SHA_TB  := tb/tb_sha256_cores.sv
 SCHEDULE_RTL := rtl/dsp58_add32_registered.sv rtl/dsp58_schedule_pipeline.sv
@@ -6,6 +7,7 @@ SCHEDULE_TB := tb/tb_dsp58_schedule_pipeline.sv
 SCHEDULE_OUT := sim/tb_dsp58_schedule_pipeline.out
 MINER_TB := tb/tb_bitcoin_miner_axi.sv
 SHA_OUT := sim/tb_sha256_cores.out
+FOUR_PHASE_OUT := sim/tb_sha256_4phase.out
 MINER_OUT := sim/tb_bitcoin_miner_axi.out
 FREERTOS_APP_SRC := $(wildcard software/vek280_freertos/src/*.c)
 FREERTOS_APP_INC := \
@@ -15,12 +17,21 @@ FREERTOS_APP_INC := \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/include \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/portable/Compiler/GCC
 
-.PHONY: sim sim-schedule sim-xsim-cdc lint sw-syntax bd bd-noddr bd4x32 bd4x32-dsp synth128 synth-miner32-ooc synth-miner32-dsp-ooc impl impl-noddr impl4x32-ooc impl4x32-dsp-ooc xsa vitis-hw vitis-bsp vitis-r5 clean
+.PHONY: sim sim-schedule sim-4phase sim-xsim-cdc synth-4phase-ooc synth-5phase-ooc lint sw-syntax bd bd-noddr bd4x32 bd4x32-dsp synth128 synth-miner32-ooc synth-miner32-dsp-ooc impl impl-noddr impl4x32-ooc impl4x32-dsp-ooc xsa vitis-hw vitis-bsp vitis-r5 clean
 
 sim: sim-sha sim-miner sim-schedule
 
+sim-4phase: $(FOUR_PHASE_OUT)
+	vvp $(FOUR_PHASE_OUT)
+
 sim-xsim-cdc:
 	bash sim/run_xsim_cdc.sh
+
+synth-4phase-ooc:
+	vivado -mode batch -source synth/run_sha256_4phase_ooc.tcl
+
+synth-5phase-ooc:
+	vivado -mode batch -source synth/run_sha256_5phase_ooc.tcl
 
 sim-sha: $(SHA_OUT)
 	vvp $(SHA_OUT)
@@ -43,10 +54,15 @@ $(MINER_OUT): $(MINER_RTL) $(MINER_TB)
 	mkdir -p sim
 	iverilog -g2012 -Wall -o $(MINER_OUT) $(MINER_TB) $(MINER_RTL)
 
+$(FOUR_PHASE_OUT): $(FOUR_PHASE_RTL) tb/tb_sha256_4phase.sv
+	mkdir -p sim
+	iverilog -g2012 -Wall -o $(FOUR_PHASE_OUT) tb/tb_sha256_4phase.sv $(FOUR_PHASE_RTL)
+
 lint:
 	verilator --lint-only --timing -Wall --top-module tb_sha256_cores $(SHA_RTL) $(SHA_TB)
 	verilator --lint-only --timing -Wall --top-module tb_bitcoin_miner_axi $(MINER_RTL) $(MINER_TB)
 	verilator --lint-only --timing -Wall $(SCHEDULE_RTL)
+	verilator --lint-only --timing -Wall --top-module sha256_core_4phase $(FOUR_PHASE_RTL)
 
 sw-syntax:
 	gcc -fsyntax-only -Wall -Wextra $(FREERTOS_APP_INC) $(FREERTOS_APP_SRC)

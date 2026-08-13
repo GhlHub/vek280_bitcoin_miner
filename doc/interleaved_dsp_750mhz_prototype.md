@@ -67,3 +67,37 @@ complete SHA-256 digest for `abc` against the standard result. The current
 prototype passes this test at 816 slow-clock cycles; this latency includes the
 per-round request/response CDC overhead and is not yet the optimized
 three-phase miner schedule.
+
+## Four-phase DSP resource experiment
+
+The isolated four-phase variant is `rtl/sha256_core_4phase.sv`. It retains the
+three DSP58 schedule adders and adds two DSP58 adders for the round's T1 path:
+
+```text
+T1 = (Σ1(e) + ch(e,f,g) + K[t]) + W[t]
+```
+
+The two T1 additions are evaluated during the same phase as the final schedule
+addition. The following phase performs the state update, removing the separate
+fifth phase. This is a throughput experiment only; the active miner remains on
+the existing architecture.
+
+Simulation results for the `abc` digest are:
+
+| Variant | DSP58/core | Cycles/core invocation | Relative throughput |
+| --- | ---: | ---: | ---: |
+| Explicit-DSP five-phase | 3 | 320 | 1.00x |
+| Explicit-DSP four-phase | 5 | 256 | 1.25x |
+
+The four-phase test passes the complete digest. Vivado 2026.1 out-of-context
+synthesis at a 4.000 ns clock reports 1,552 LUTs, 1,652 FFs, 5 DSP58s, and
+0.447 ns setup slack. The five-phase reference reports 1,589 LUTs, 1,656 FFs,
+3 DSP58s, and 1.982 ns setup slack. These are synthesis estimates, not
+post-route timing results. The four-phase critical path contains the schedule
+DSP followed by both T1 DSP additions, so implementation timing, placement,
+routing congestion, and power must be checked before considering integration.
+
+At 128 engines, the DSP count would increase from approximately 384 to 640
+DSP58s, or about 48.8% of the VEK280's 1,312 DSP blocks. The next meaningful
+step is a placed-and-routed 128-engine or representative multi-engine build
+with the 250 MHz miner clock and the intended 750 MHz service clock constraints.
