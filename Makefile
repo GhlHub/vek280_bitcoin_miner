@@ -109,7 +109,7 @@ vitis-bsp: vitis-hw
 	VITIS_BSP_CLEAN=1 /tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/create_bsp.py
 
 vitis-r5:
-	MINER_AXI_INSTANCES=4 MINER_NUM_SLAVES=4 /tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/create_bsp.py --xsa reports/impl_vek280_4x32_ooc/miner_system_wrapper.xsa --clean
+	MINER_AXI_INSTANCES=4 MINER_NUM_SLAVES=4 /tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/create_bsp.py --xsa reports/impl_vek280_4x32_ooc_dsp/miner_system_wrapper.xsa --clean
 	MINER_AXI_INSTANCES=4 MINER_NUM_SLAVES=4 /tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/create_app.py --clean
 	/tools/Xilinx/2026.1/Vitis/bin/vitis -s software/vitis/build_app.py
 

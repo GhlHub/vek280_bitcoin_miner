@@ -197,9 +197,7 @@ def patch_linker_script(app_src):
     elif "psv_ddr_MEM_0 : ORIGIN = 0x00100000" not in text:
         raise RuntimeError(f"Expected OCM memory block not found in {path}")
 
-    old_sections = "} > cips_0_pspmc_0_psv_ocm_ram_0_memory_0\n\n_SDA_BASE_ = __sdata_start"
-    new_sections = (
-        "} > cips_0_pspmc_0_psv_ocm_ram_0_memory_0\n\n"
+    ddr_sections = (
         ".ddr_bss (NOLOAD) : {\n"
         "   . = ALIGN(64);\n"
         "   __ddr_bss_start = .;\n"
@@ -216,18 +214,15 @@ def patch_linker_script(app_src):
         "   . = ALIGN(64);\n"
         "   __ddr_heap_end = .;\n"
         "} > psv_ddr_MEM_0\n\n"
-        "_SDA_BASE_ = __sdata_start"
     )
-    if old_sections in text:
-        text = text.replace(old_sections, new_sections, 1)
-    elif ".ddr_bss (NOLOAD)" not in text:
-        raise RuntimeError(f"Expected SDA insertion point not found in {path}")
-
-    text = text.replace(
-        "} > psv_ddr_MEM_0\n\n.ddr_bss (NOLOAD) : {",
-        "} > cips_0_pspmc_0_psv_ocm_ram_0_memory_0\n\n.ddr_bss (NOLOAD) : {",
-        1,
-    )
+    if ".ddr_bss (NOLOAD)" not in text:
+        # Vitis has changed both the DDR memory name and the SDA expression
+        # across releases. Insert the application-specific sections before
+        # the generated SDA definitions instead of depending on either form.
+        sda_match = re.search(r"^_SDA_BASE_\s*=", text, flags=re.MULTILINE)
+        if sda_match is None:
+            raise RuntimeError(f"Expected SDA insertion point not found in {path}")
+        text = text[:sda_match.start()] + ddr_sections + text[sda_match.start():]
 
     path.write_text(text)
 
