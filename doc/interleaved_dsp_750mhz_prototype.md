@@ -25,7 +25,8 @@ integration must provide:
 - a 750 MHz clock derived from the miner clock source;
 - reset synchronization for the fast domain;
 - a CDC-safe request/response boundary (an asynchronous FIFO is the default
-  safe choice even though the clocks can be frequency-related);
+  safe choice even though the clocks can be frequency-related). The current
+  prototype uses AMD `xpm_fifo_async` in `rtl/dsp58_schedule_xpm_cdc.sv`;
 - a service-lane count sufficient for the request burst from each engine
   cluster;
 - generated-clock and fast-domain timing constraints.
@@ -48,3 +49,14 @@ The dedicated testbench checks modular-add results, tag preservation, and
 response backpressure. It does not claim implementation timing closure; that
 requires Vivado synthesis and post-route analysis with the new clocking
 constraints.
+
+The XPM CDC wrapper is exercised with Vivado XSim using:
+
+```text
+make sim-xsim-cdc
+```
+
+That test uses independent 250 MHz and 750 MHz clocks, reset sequencing, a
+16-request burst, and an eight-cycle response stall. It currently passes all
+16 tagged responses. Generated XSim data is kept under `sim/xsim_cdc/` and is
+not part of the source-controlled design.

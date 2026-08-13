@@ -15,9 +15,12 @@ FREERTOS_APP_INC := \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/include \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/portable/Compiler/GCC
 
-.PHONY: sim sim-schedule lint sw-syntax bd bd-noddr bd4x32 bd4x32-dsp synth128 synth-miner32-ooc synth-miner32-dsp-ooc impl impl-noddr impl4x32-ooc impl4x32-dsp-ooc xsa vitis-hw vitis-bsp vitis-r5 clean
+.PHONY: sim sim-schedule sim-xsim-cdc lint sw-syntax bd bd-noddr bd4x32 bd4x32-dsp synth128 synth-miner32-ooc synth-miner32-dsp-ooc impl impl-noddr impl4x32-ooc impl4x32-dsp-ooc xsa vitis-hw vitis-bsp vitis-r5 clean
 
 sim: sim-sha sim-miner sim-schedule
+
+sim-xsim-cdc:
+	bash sim/run_xsim_cdc.sh
 
 sim-sha: $(SHA_OUT)
 	vvp $(SHA_OUT)
