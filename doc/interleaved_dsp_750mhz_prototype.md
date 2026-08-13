@@ -60,3 +60,10 @@ That test uses independent 250 MHz and 750 MHz clocks, reset sequencing, a
 16-request burst, and an eight-cycle response stall. It currently passes all
 16 tagged responses. Generated XSim data is kept under `sim/xsim_cdc/` and is
 not part of the source-controlled design.
+
+The single-context SHA proof core is exercised by the same XSim target. It
+routes expanded schedule requests through the XPM CDC wrapper and compares the
+complete SHA-256 digest for `abc` against the standard result. The current
+prototype passes this test at 816 slow-clock cycles; this latency includes the
+per-round request/response CDC overhead and is not yet the optimized
+three-phase miner schedule.
