@@ -205,6 +205,9 @@ module tb_sha256_cores;
         input [255:0]  expected_i
     );
         integer timeout;
+        reg fabric_seen;
+        reg dsp_seen;
+        reg explicit_dsp_seen;
         begin
             @(negedge clk);
             block = block_i;
@@ -218,8 +221,17 @@ module tb_sha256_cores;
             end
 
             timeout = 0;
-            while (!(fabric_done && dsp_done && explicit_dsp_done) && timeout < 450) begin
+            fabric_seen = 1'b0;
+            dsp_seen = 1'b0;
+            explicit_dsp_seen = 1'b0;
+            while (!(fabric_seen && dsp_seen && explicit_dsp_seen) && timeout < 450) begin
                 @(posedge clk);
+                if (fabric_done)
+                    fabric_seen = 1'b1;
+                if (dsp_done)
+                    dsp_seen = 1'b1;
+                if (explicit_dsp_done)
+                    explicit_dsp_seen = 1'b1;
                 timeout = timeout + 1;
             end
 

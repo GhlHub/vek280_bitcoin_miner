@@ -79,8 +79,8 @@ T1 = (Σ1(e) + ch(e,f,g) + K[t]) + W[t]
 
 The two T1 additions are evaluated during the same phase as the final schedule
 addition. The following phase performs the state update, removing the separate
-fifth phase. This is a throughput experiment only; the active miner remains on
-the existing architecture.
+fifth phase. The explicit-DSP miner path now selects this four-phase core by
+default; the 750 MHz schedule-service prototype remains separate.
 
 Simulation results for the `abc` digest are:
 
@@ -97,7 +97,8 @@ post-route timing results. The four-phase critical path contains the schedule
 DSP followed by both T1 DSP additions, so implementation timing, placement,
 routing congestion, and power must be checked before considering integration.
 
-At 128 engines, the DSP count would increase from approximately 384 to 640
-DSP58s, or about 48.8% of the VEK280's 1,312 DSP blocks. The next meaningful
-step is a placed-and-routed 128-engine or representative multi-engine build
-with the 250 MHz miner clock and the intended 750 MHz service clock constraints.
+The 32-engine explicit-DSP miner OOC synthesis confirms 160 DSP58s, or 5 per
+engine, with 0.417 ns setup slack and 0.058 ns hold slack at 250 MHz. At 128
+engines, the DSP count is approximately 640 DSP58s, or about 48.8% of the
+VEK280's 1,312 DSP blocks. The next meaningful step is a placed-and-routed
+128-engine build using only the 250 MHz miner clock constraint.
