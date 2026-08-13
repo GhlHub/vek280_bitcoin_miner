@@ -20,11 +20,24 @@ static miner_job_t g_active_job;
 static volatile bool g_have_result;
 static volatile bool g_have_active_job;
 static miner_service_stats_t g_stats;
+static bool g_range_active;
+static volatile bool g_stop_requested;
 
 typedef struct {
     miner_result_t result;
     miner_job_t job;
 } miner_result_event_t;
+
+typedef struct {
+    miner_job_t job;
+    bool clean_job;
+} miner_job_request_t;
+
+enum {
+    MINER_RANGE_COMPLETE = 1U,
+    MINER_RANGE_PREEMPTED = 2U,
+    MINER_RANGE_STOPPED = 3U,
+};
 
 typedef void (*miner_irq_handler_t)(void *);
 extern BaseType_t xPortInstallInterruptHandler(uint16_t ucInterruptID,
@@ -51,6 +64,37 @@ static void miner_install_irq(void)
     vPortEnableInterrupt((uint8_t)MINER_IRQ_ID);
 }
 
+static void miner_finish_range(uint32_t reason)
+{
+    uint32_t elapsed_ticks;
+    uint64_t estimated;
+
+    if (!g_range_active) {
+        return;
+    }
+
+    elapsed_ticks = (uint32_t)xTaskGetTickCount() - g_stats.active_job_tick;
+    estimated = ((uint64_t)elapsed_ticks * (uint64_t)MINER_HASHRATE_HS) /
+                (uint64_t)configTICK_RATE_HZ;
+    if (estimated > g_stats.active_nonce_count) {
+        estimated = g_stats.active_nonce_count;
+    }
+    if (reason == MINER_RANGE_COMPLETE) {
+        estimated = g_stats.active_nonce_count;
+        ++g_stats.ranges_completed;
+    } else if (reason == MINER_RANGE_PREEMPTED) {
+        ++g_stats.ranges_preempted;
+    } else {
+        ++g_stats.ranges_stopped;
+    }
+
+    g_stats.nonce_candidates_completed_estimate += estimated;
+    g_stats.last_range_elapsed_ticks = elapsed_ticks;
+    g_stats.last_range_reason = reason;
+    g_range_active = false;
+    g_stop_requested = false;
+}
+
 static void miner_task(void *arg)
 {
     (void)arg;
@@ -59,18 +103,36 @@ static void miner_task(void *arg)
     miner_install_irq();
 
     for (;;) {
-        miner_job_t job;
+        miner_job_request_t request;
 
-        if (xQueueReceive(g_job_queue, &job, pdMS_TO_TICKS(25)) == pdTRUE) {
-            g_active_job = job;
+        if (xQueueReceive(g_job_queue, &request, pdMS_TO_TICKS(25)) == pdTRUE) {
+            if (g_range_active) {
+                if (request.clean_job ||
+                    ((miner_status() & MINER_STATUS_RUNNING) != 0U)) {
+                    miner_finish_range(MINER_RANGE_PREEMPTED);
+                    if (request.clean_job) {
+                        ++g_stats.ranges_preempted_clean_job;
+                    }
+                } else {
+                    miner_finish_range(MINER_RANGE_COMPLETE);
+                }
+            }
+            g_active_job = request.job;
             g_have_active_job = true;
-            miner_program_job(job.midstate, job.header_tail, job.target);
-            miner_start_range(job.nonce_start, job.nonce_count);
+            miner_program_job(request.job.midstate, request.job.header_tail,
+                              request.job.target);
+            miner_start_range(request.job.nonce_start, request.job.nonce_count);
             ++g_stats.jobs_started;
-            g_stats.nonce_candidates_issued += job.nonce_count;
-            g_stats.active_nonce_start = job.nonce_start;
-            g_stats.active_nonce_count = job.nonce_count;
+            g_stats.nonce_candidates_issued += request.job.nonce_count;
+            g_stats.active_nonce_start = request.job.nonce_start;
+            g_stats.active_nonce_count = request.job.nonce_count;
             g_stats.active_job_tick = (uint32_t)xTaskGetTickCount();
+            g_range_active = true;
+            g_stop_requested = false;
+        } else if (g_range_active &&
+                   ((miner_status() & MINER_STATUS_RUNNING) == 0U)) {
+            miner_finish_range(g_stop_requested ? MINER_RANGE_STOPPED :
+                                                  MINER_RANGE_COMPLETE);
         }
 
         (void)xSemaphoreTake(g_irq_sem, pdMS_TO_TICKS(100));
@@ -103,7 +165,7 @@ static void miner_task(void *arg)
 
 void miner_service_start(void)
 {
-    g_job_queue = xQueueCreate(1, sizeof(miner_job_t));
+    g_job_queue = xQueueCreate(1, sizeof(miner_job_request_t));
     g_result_queue = xQueueCreate(8, sizeof(miner_result_event_t));
     g_irq_sem = xSemaphoreCreateBinary();
     g_result_lock = xSemaphoreCreateMutex();
@@ -114,14 +176,22 @@ void miner_service_start(void)
     xTaskCreate(miner_task, "miner", 1024, NULL, 4, NULL);
 }
 
-void miner_service_submit_job(const miner_job_t *job)
+void miner_service_submit_job(const miner_job_t *job, bool clean_job)
 {
+    miner_job_request_t request;
+
+    if (job == NULL) {
+        return;
+    }
+    request.job = *job;
+    request.clean_job = clean_job;
     ++g_stats.jobs_queued;
-    (void)xQueueOverwrite(g_job_queue, job);
+    (void)xQueueOverwrite(g_job_queue, &request);
 }
 
 void miner_service_stop_scan(void)
 {
+    g_stop_requested = true;
     miner_stop();
 }
 

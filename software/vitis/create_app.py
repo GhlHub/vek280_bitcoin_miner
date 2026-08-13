@@ -187,19 +187,24 @@ def patch_linker_script(app_src):
         elif new not in text:
             raise RuntimeError(f"Expected text not found in {path}: {old!r}")
 
-    old_memory = "\tcips_0_pspmc_0_psv_ocm_ram_0_memory_0 : ORIGIN = 0xfffc0000, LENGTH = 0x40000\n}"
-    new_memory = (
+    memory_marker = "\tcips_0_pspmc_0_psv_ocm_ram_0_memory_0 : ORIGIN = 0xfffc0000, LENGTH = 0x40000\n}"
+    memory_replacement = (
         "\tcips_0_pspmc_0_psv_ocm_ram_0_memory_0 : ORIGIN = 0xfffc0000, LENGTH = 0x40000\n"
         "\tpsv_ddr_MEM_0 : ORIGIN = 0x00100000, LENGTH = 0x3FF00000\n}"
     )
-    if old_memory in text:
-        text = text.replace(old_memory, new_memory, 1)
+    if memory_marker in text:
+        text = text.replace(memory_marker, memory_replacement, 1)
     elif "psv_ddr_MEM_0 : ORIGIN = 0x00100000" not in text:
         raise RuntimeError(f"Expected OCM memory block not found in {path}")
 
-    old_sections = "} > cips_0_pspmc_0_psv_ocm_ram_0_memory_0\n\n_SDA_BASE_ = __sdata_start"
+    section_memory = (
+        "ddr_noc_ddr_memory_DDR_LOW_0"
+        if "} > ddr_noc_ddr_memory_DDR_LOW_0\n\n_SDA_BASE_" in text
+        else "cips_0_pspmc_0_psv_ocm_ram_0_memory_0"
+    )
+    old_sections = f"}} > {section_memory}\n\n_SDA_BASE_ = __sdata_start"
     new_sections = (
-        "} > cips_0_pspmc_0_psv_ocm_ram_0_memory_0\n\n"
+        f"}} > {section_memory}\n\n"
         ".ddr_bss (NOLOAD) : {\n"
         "   . = ALIGN(64);\n"
         "   __ddr_bss_start = .;\n"
@@ -222,12 +227,6 @@ def patch_linker_script(app_src):
         text = text.replace(old_sections, new_sections, 1)
     elif ".ddr_bss (NOLOAD)" not in text:
         raise RuntimeError(f"Expected SDA insertion point not found in {path}")
-
-    text = text.replace(
-        "} > psv_ddr_MEM_0\n\n.ddr_bss (NOLOAD) : {",
-        "} > cips_0_pspmc_0_psv_ocm_ram_0_memory_0\n\n.ddr_bss (NOLOAD) : {",
-        1,
-    )
 
     path.write_text(text)
 
