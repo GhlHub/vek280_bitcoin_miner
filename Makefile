@@ -1,6 +1,9 @@
 SHA_RTL := rtl/dsp58_add32.sv rtl/sha256_core_iterative.sv rtl/sha256_core_fabric.sv rtl/sha256_core_dsp.sv rtl/sha256_core_dsp_explicit.sv
 MINER_RTL := $(SHA_RTL) rtl/bitcoin_sha256_core.sv rtl/bitcoin_sha256_core_dsp_explicit.sv rtl/bitcoin_hash_engine.sv rtl/bitcoin_result_cluster_fifo.sv rtl/bitcoin_miner_axi.sv rtl/irq_or4.v
 SHA_TB  := tb/tb_sha256_cores.sv
+SCHEDULE_RTL := rtl/dsp58_add32_registered.sv rtl/dsp58_schedule_pipeline.sv
+SCHEDULE_TB := tb/tb_dsp58_schedule_pipeline.sv
+SCHEDULE_OUT := sim/tb_dsp58_schedule_pipeline.out
 MINER_TB := tb/tb_bitcoin_miner_axi.sv
 SHA_OUT := sim/tb_sha256_cores.out
 MINER_OUT := sim/tb_bitcoin_miner_axi.out
@@ -12,15 +15,22 @@ FREERTOS_APP_INC := \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/include \
 	-IFreeRTOS-LTS/FreeRTOS/FreeRTOS-Plus-TCP/source/portable/Compiler/GCC
 
-.PHONY: sim lint sw-syntax bd bd-noddr bd4x32 bd4x32-dsp synth128 synth-miner32-ooc synth-miner32-dsp-ooc impl impl-noddr impl4x32-ooc impl4x32-dsp-ooc xsa vitis-hw vitis-bsp vitis-r5 clean
+.PHONY: sim sim-schedule lint sw-syntax bd bd-noddr bd4x32 bd4x32-dsp synth128 synth-miner32-ooc synth-miner32-dsp-ooc impl impl-noddr impl4x32-ooc impl4x32-dsp-ooc xsa vitis-hw vitis-bsp vitis-r5 clean
 
-sim: sim-sha sim-miner
+sim: sim-sha sim-miner sim-schedule
 
 sim-sha: $(SHA_OUT)
 	vvp $(SHA_OUT)
 
 sim-miner: $(MINER_OUT)
 	vvp $(MINER_OUT)
+
+sim-schedule: $(SCHEDULE_OUT)
+	vvp $(SCHEDULE_OUT)
+
+$(SCHEDULE_OUT): $(SCHEDULE_RTL) $(SCHEDULE_TB)
+	mkdir -p sim
+	iverilog -g2012 -Wall -o $(SCHEDULE_OUT) $(SCHEDULE_TB) $(SCHEDULE_RTL)
 
 $(SHA_OUT): $(SHA_RTL) $(SHA_TB)
 	mkdir -p sim
@@ -33,6 +43,7 @@ $(MINER_OUT): $(MINER_RTL) $(MINER_TB)
 lint:
 	verilator --lint-only --timing -Wall --top-module tb_sha256_cores $(SHA_RTL) $(SHA_TB)
 	verilator --lint-only --timing -Wall --top-module tb_bitcoin_miner_axi $(MINER_RTL) $(MINER_TB)
+	verilator --lint-only --timing -Wall $(SCHEDULE_RTL)
 
 sw-syntax:
 	gcc -fsyntax-only -Wall -Wextra $(FREERTOS_APP_INC) $(FREERTOS_APP_SRC)
