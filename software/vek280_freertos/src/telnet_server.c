@@ -77,8 +77,8 @@ static void telnet_send_command(Socket_t sock, uint8_t command, uint8_t option)
 
 static void telnet_negotiate(Socket_t sock)
 {
-    /* Server-side echo makes editing consistent across Telnet clients and nc. */
-    telnet_send_command(sock, TELNET_WILL, TELNET_OPT_ECHO);
+    /* Keep input echo local to the client terminal. */
+    telnet_send_command(sock, TELNET_WONT, TELNET_OPT_ECHO);
     telnet_send_command(sock, TELNET_WILL, TELNET_OPT_SUPPRESS_GO_AHEAD);
     telnet_send_command(sock, TELNET_DO, TELNET_OPT_SUPPRESS_GO_AHEAD);
 }
@@ -425,23 +425,19 @@ static void telnet_client(Socket_t sock)
             ignore_lf_after_cr = false;
             if (used > 0U) {
                 --used;
-                sock_printf(sock, "\b \b");
             }
         } else if (ch == 0x15) { /* Ctrl-U */
             used = 0;
             line_overflowed = false;
             ignore_lf_after_cr = false;
-            sock_printf(sock, "\r> ");
         } else if (ch == 0x03) { /* Ctrl-C */
             used = 0;
             line_overflowed = false;
             ignore_lf_after_cr = false;
-            sock_printf(sock, "^C\r\n> ");
         } else if (used < (sizeof(line) - 1U)) {
             ignore_lf_after_cr = false;
             if ((ch >= 0x20U) && (ch <= 0x7eU)) {
                 line[used++] = (char)ch;
-                sock_send_all(sock, &ch, 1U);
             }
         } else if (!line_overflowed) {
             line_overflowed = true;
