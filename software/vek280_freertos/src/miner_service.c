@@ -54,7 +54,6 @@ static void miner_irq_handler(void *arg)
     xSemaphoreGiveFromISR(g_irq_sem, &higher_priority_task_woken);
     portYIELD_FROM_ISR(higher_priority_task_woken);
 }
-
 static void miner_install_irq(void)
 {
     BaseType_t ok;

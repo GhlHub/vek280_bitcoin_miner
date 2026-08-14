@@ -29,6 +29,7 @@ vitis_ws/
 # Simulator outputs
 sim/*.out
 sim/*.vcd
+sim/xsim_cdc/
 
 # Editor/OS noise
 .DS_Store

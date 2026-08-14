@@ -93,11 +93,12 @@ R5 result queue -> mining.submit -> Stratum pool
 
 ## Nonce processing in the PL
 
-Each engine owns an independent SHA-256 core. The SHA core uses five clock
-phases per SHA-256 round, so one 64-round compression takes 320 clocks. A nonce
-requires two compressions and an eight-word target comparison. Control handoffs
-add a small additional latency, giving a steady-state cost of about 655 PL
-clocks per nonce.
+Each engine owns an independent SHA-256 core. The active explicit-DSP SHA core
+uses four clock phases per SHA-256 round, so one 64-round compression takes 256
+clocks. A nonce requires two compressions and an eight-word target comparison.
+Control handoffs add a small additional latency; the software nominal rate uses
+the 512-clock double-compression cost and does not attempt to model those brief
+control and job-transition intervals.
 
 Within an AXI instance, the 32 engines divide the assigned range by stride:
 engine `i` starts at `nonce_start + i` and advances by 32. The R5 divides the
@@ -105,16 +106,16 @@ full job range into four non-overlapping contiguous ranges, one per AXI
 instance. Thus all 128 engines together cover the programmed range without
 intentional overlap.
 
-At 250 MHz, the estimated raw rate is:
+At 250 MHz, the ideal four-phase raw rate is:
 
 ```text
-128 engines * 250,000,000 clocks/second / 655 clocks/nonce
-    = approximately 48.9 MH/s
+128 engines * 250,000,000 clocks/second / 512 clocks/nonce
+    = 62.5 MH/s
 ```
 
-This is an implementation-derived estimate. Job transitions, queue handling,
-and pool activity create brief interruptions; the current hardware does not yet
-provide a cycle-accurate hardware hash counter.
+This is an ideal implementation-derived estimate. Job transitions, queue
+handling, control handoffs, and pool activity create brief interruptions; the
+current hardware does not yet provide a cycle-accurate hardware hash counter.
 
 ## Register access and interrupts
 

@@ -76,7 +76,6 @@ static void stratum_debug_set_event(const char *fmt, ...)
 
     xil_printf("stratum: %s\r\n", g_debug.last_event);
 }
-
 static void stratum_debug_set_rx_line(const char *line)
 {
     if ((g_debug_lock == NULL) ||
