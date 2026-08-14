@@ -51,6 +51,7 @@ static void sock_send_all(Socket_t sock, const void *data, size_t len)
         len -= (size_t)sent;
     }
 }
+
 static void sock_printf(Socket_t sock, const char *fmt, ...)
 {
     char buf[TELNET_TX_BUFFER_BYTES];

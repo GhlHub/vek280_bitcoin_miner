@@ -187,13 +187,13 @@ def patch_linker_script(app_src):
         elif new not in text:
             raise RuntimeError(f"Expected text not found in {path}: {old!r}")
 
-    old_memory = "\tcips_0_pspmc_0_psv_ocm_ram_0_memory_0 : ORIGIN = 0xfffc0000, LENGTH = 0x40000\n}"
-    new_memory = (
+    memory_marker = "\tcips_0_pspmc_0_psv_ocm_ram_0_memory_0 : ORIGIN = 0xfffc0000, LENGTH = 0x40000\n}"
+    memory_replacement = (
         "\tcips_0_pspmc_0_psv_ocm_ram_0_memory_0 : ORIGIN = 0xfffc0000, LENGTH = 0x40000\n"
         "\tpsv_ddr_MEM_0 : ORIGIN = 0x00100000, LENGTH = 0x3FF00000\n}"
     )
-    if old_memory in text:
-        text = text.replace(old_memory, new_memory, 1)
+    if memory_marker in text:
+        text = text.replace(memory_marker, memory_replacement, 1)
     elif "psv_ddr_MEM_0 : ORIGIN = 0x00100000" not in text:
         raise RuntimeError(f"Expected OCM memory block not found in {path}")
 
