@@ -9,8 +9,8 @@ miner datapath runs at 250 MHz and the R5 AXI4-Lite control plane runs at
 125 MHz. A dedicated AXI clock-domain bridge isolates each miner clock domain
 from the control plane.
 
-The current programming image is
-`bd/out_vek280_miner_4x32_ooc/miner_system_wrapper.pdi`. The R5 FreeRTOS ELF is
+The current explicit-DSP programming image is
+`bd/out_vek280_miner_4x32_ooc_dsp/miner_system_wrapper.pdi`. The R5 FreeRTOS ELF is
 `vitis_ws/vek280_miner_app/build/vek280_miner_app.elf`.
 
 ## System partitioning
@@ -133,6 +133,14 @@ to every instance, then sets `CONTROL.start`. Each instance aggregates its
 engine results through a clustered FIFO and exposes one result at a time to
 software. A PL-to-PS interrupt wakes the R5 miner task, which drains all
 available result registers and clears them so the next result can appear.
+`pl_ps_irq0` is routed by CIPS as legacy interrupt 84 (`0x54`); the FreeRTOS
+SDT wrapper delivers it to the R5 GIC as SPI 116.
+
+The interrupt source is level-sensitive. The ISR masks all miner sources before
+giving the result-worker semaphore. The worker drains results, clears sticky
+done/overflow state, and unmasks the sources after the FreeRTOS interrupt path
+has issued GIC EOI. This intentionally avoids result-register polling, which
+could otherwise consume the condition before interrupt delivery is observed.
 
 Important register semantics are:
 
@@ -145,7 +153,8 @@ Important register semantics are:
 | `0x040..0x04c` | `HEADER_TAIL[0..3]` | Header bytes 64 through 79; word 3 is nonce-overridden. |
 | `0x060..0x07c` | `TARGET[0..7]` | Big-endian share target. |
 | `0x080`, `0x084` | nonce range | First nonce and candidate count. |
-| `0x090..0x0bc` | result registers | Candidate nonce, engine, status, and digest. |
+| `0x090`, `0x094`, `0x098` | result registers | Candidate nonce, engine, and result/overflow status. |
+| `0x0a0` | `IRQ_CONTROL` | Bit 0 masks `irq_o`; bit 1 forces it high for controlled IRQ debug. |
 
 ## Network and operating control
 

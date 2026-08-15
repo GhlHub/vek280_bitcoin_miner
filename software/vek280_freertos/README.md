@@ -58,8 +58,10 @@ configuration, prints whether DHCP succeeded or fallback addressing was used, th
 prints the IP address, netmask, gateway, and DNS server on the UART console before
 starting:
 - `miner_task`: handles PL miner control, installs the `pl_ps_irq0` handler using
-  the Xilinx FreeRTOS interrupt hook, and drains result FIFO entries into a share
-  result queue.
+  the Xilinx FreeRTOS interrupt hook, source-masks the level-sensitive miner IRQ
+  in the ISR, and drains result FIFO entries into a share result queue before
+  clearing and unmasking the source. Result handling is interrupt-driven; do not
+  add routine result-register polling.
 - `stratum_task`: connects to the configured mining pool, parses Stratum v1
   subscription, authorization, difficulty, and notify messages, materializes
   coinbase/merkle/header work for the PL miner, rolls `extranonce2` when a nonce
@@ -76,6 +78,10 @@ Useful telnet commands:
 - `pool <host> <port> <user> [pass]`
 - `connect`
 - `disconnect`
+
+`regs` reports each cluster's `IRQ_CONTROL` register. Its bit 0 masks that
+cluster's `irq_o`; bit 1 forces `irq_o` high for controlled interrupt-path
+debug. Both bits reset to zero.
 
 The Stratum parser is intentionally constrained to the Stratum v1 message shapes
 needed for mining. It is not a general JSON parser. The first Vitis board bring-up

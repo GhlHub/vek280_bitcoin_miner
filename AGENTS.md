@@ -10,7 +10,7 @@ Stratum v1 work, programs the miner, and submits candidate shares.
 - Active fabric architecture: four AXI4-Lite miner instances, 32 engines each,
   for 128 nonce-scanning engines.
 - Miner clock: 250 MHz. AXI control clock: 125 MHz.
-- Each engine double-hashes an 80-byte Bitcoin header using a five-phase,
+- Each engine double-hashes an 80-byte Bitcoin header using a four-phase,
   64-round SHA-256 compression pipeline.
 - Candidate results capture only the nonce and engine ID; the R5 reconstructs
   Stratum submission metadata from the active job.
@@ -43,6 +43,8 @@ doc/interleaved_dsp_throughput_investigation.md.
 - 0x060..0x07c TARGET[0..7]
 - 0x080 NONCE_START; 0x084 NONCE_COUNT
 - 0x090 RESULT_NONCE; 0x094 RESULT_ENGINE; 0x098 RESULT_STATUS
+- 0x0a0 IRQ_CONTROL: bit 0 masks `irq_o`; bit 1 forces `irq_o` active for
+  controlled interrupt-path debug.
 
 ## Build and verify
 
@@ -68,6 +70,12 @@ software/vek280_freertos/ contains the FreeRTOS application. It configures GEM
 networking, Stratum v1, miner MMIO, result interrupts, and PS SysMon telemetry.
 The telnet console supports help, status, stats, health, stratum, regs, start,
 stop, clear, pool, connect, and disconnect.
+
+`irq_o` is level-sensitive.  The R5 ISR masks the miner sources before giving
+the result-worker semaphore; the FreeRTOS IRQ handler performs GIC EOI on ISR
+exit. The worker drains AXI-visible results, clears sticky done/overflow state,
+and then unmasks the miner sources. Do not add result-register polling to this path:
+it can hide an interrupt-delivery failure.
 
 stats reports nominal hash rate and job/result/share-path counters. health
 reports PS SysMon device temperature and alarms.
