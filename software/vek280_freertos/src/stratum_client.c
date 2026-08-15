@@ -13,8 +13,6 @@
 #include "FreeRTOS_Sockets.h"
 #include "semphr.h"
 #include "task.h"
-#include "xil_printf.h"
-
 #include "app_config.h"
 #include "miner_service.h"
 #include "sha256_sw.h"
@@ -74,7 +72,6 @@ static void stratum_debug_set_event(const char *fmt, ...)
     va_end(ap);
     xSemaphoreGive(g_debug_lock);
 
-    xil_printf("stratum: %s\r\n", g_debug.last_event);
 }
 static void stratum_debug_set_rx_line(const char *line)
 {
@@ -752,13 +749,8 @@ static void send_subscribe_authorize(Socket_t sock, const stratum_config_t *conf
 
     (void)snprintf(line, sizeof(line),
                    "{\"id\":1,\"method\":\"mining.subscribe\",\"params\":[\"vek280_bitcoin_miner/0.1\"]}\n");
-    stratum_debug_inc(&g_debug.share_submits);
     if (send_line(sock, line) <= 0) {
-        stratum_debug_inc(&g_debug.share_send_failures);
-    }
-    if (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) == pdTRUE) {
-        g_debug.last_share_tick = (uint32_t)xTaskGetTickCount();
-        xSemaphoreGive(g_debug_lock);
+        stratum_debug_set_event("subscribe send failed");
     }
     stratum_debug_set_event("tx subscribe");
 
@@ -785,7 +777,16 @@ static void submit_share(Socket_t sock, const stratum_config_t *config,
                    job->extranonce2,
                    job->ntime,
                    (unsigned long)result->nonce);
-    (void)send_line(sock, line);
+    BaseType_t send_status = send_line(sock, line);
+    if (send_status > 0) {
+        stratum_debug_inc(&g_debug.share_submits);
+        if (xSemaphoreTake(g_debug_lock, pdMS_TO_TICKS(20)) == pdTRUE) {
+            g_debug.last_share_tick = (uint32_t)xTaskGetTickCount();
+            xSemaphoreGive(g_debug_lock);
+        }
+    } else {
+        stratum_debug_inc(&g_debug.share_send_failures);
+    }
     stratum_debug_set_event("tx submit nonce=%08lx", (unsigned long)result->nonce);
 }
 

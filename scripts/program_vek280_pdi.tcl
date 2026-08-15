@@ -16,6 +16,12 @@ if {![file exists $pdi_file]} {
 
 open_hw_manager
 connect_hw_server -url $hw_url
+# Keep the JTAG TAP in Test-Logic-Reset before PLM powers the PS domains.
+# This is the AMD-documented workaround for Versal APU/RPU power-up hangs
+# while a JTAG debugger is attached (Answer 73169).
+open_hw_target -jtag_mode true
+runtest_hw_jtag -wait_state RESET -end_state IDLE -tck 5
+close_hw_target
 open_hw_target
 
 set device ""
@@ -43,6 +49,11 @@ set program_status [catch {program_hw_devices $device} program_result]
 if {$program_status != 0} {
     puts "PROGRAM_ERROR=$program_result"
 }
+# program_hw_devices reports transfer completion before the Versal PLM has
+# loaded the LPD/FPD/PL partitions.  The VEK280 miner PDI needs about 13 s for
+# that handoff; keep the hardware-server session open until PS debug targets
+# are available to the subsequent R5 load step.
+after 16000
 refresh_hw_device $device
 
 foreach prop {

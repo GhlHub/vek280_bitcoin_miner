@@ -43,13 +43,23 @@ typedef void (*miner_irq_handler_t)(void *);
 extern BaseType_t xPortInstallInterruptHandler(uint16_t ucInterruptID,
                                                miner_irq_handler_t pxHandler,
                                                void *pvCallBackRef);
-extern void vPortEnableInterrupt(uint8_t ucInterruptID);
+
+/*
+ * irq_o is level-sensitive and remains high for a result, overflow, or
+ * completed nonce range.  Mask it at the miner in the ISR so the worker gets
+ * CPU time to drain results and clear sticky state before it is unmasked.
+ */
+static volatile bool g_irq_masked;
 
 static void miner_irq_handler(void *arg)
 {
     BaseType_t higher_priority_task_woken = pdFALSE;
 
     (void)arg;
+    if (!g_irq_masked) {
+        g_irq_masked = true;
+        miner_irq_mask_all();
+    }
     ++g_stats.irq_count;
     xSemaphoreGiveFromISR(g_irq_sem, &higher_priority_task_woken);
     portYIELD_FROM_ISR(higher_priority_task_woken);
@@ -99,6 +109,8 @@ static void miner_task(void *arg)
     (void)arg;
 
     miner_init(MINER_AXI_BASEADDR);
+    g_irq_masked = false;
+    miner_irq_unmask_all();
     miner_install_irq();
 
     for (;;) {
@@ -134,7 +146,14 @@ static void miner_task(void *arg)
                                                   MINER_RANGE_COMPLETE);
         }
 
-        (void)xSemaphoreTake(g_irq_sem, pdMS_TO_TICKS(100));
+        /*
+         * Result handling is deliberately interrupt-driven.  Do not poll the
+         * AXI result register here: polling can hide a failed IRQ path by
+         * draining the source before the ISR is observed.
+         */
+        if (xSemaphoreTake(g_irq_sem, pdMS_TO_TICKS(100)) != pdTRUE) {
+            continue;
+        }
 
         miner_result_t result;
         while (miner_read_result(&result)) {
@@ -158,6 +177,18 @@ static void miner_task(void *arg)
             if (xQueueSend(g_result_queue, &event, 0) != pdTRUE) {
                 ++g_stats.result_queue_drops;
             }
+        }
+
+        if (g_irq_masked) {
+            /*
+             * All AXI-visible results have been popped.  Clear the sticky
+             * done/overflow state to release irq_o before re-enabling its
+             * level-sensitive GIC input.  A new result in this window stays
+             * asserted and is delivered as soon as the source is unmasked.
+             */
+            miner_clear();
+            g_irq_masked = false;
+            miner_irq_unmask_all();
         }
     }
 }

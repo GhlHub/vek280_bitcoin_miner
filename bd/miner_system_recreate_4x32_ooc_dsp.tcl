@@ -272,6 +272,8 @@ proc create_root_design { parentCell } {
       PS_ENET0_MDIO {{ENABLE 1} {IO {PS_MIO 24 .. 25}}} \
       PS_ENET0_PERIPHERAL {{ENABLE 1} {IO {PS_MIO 0 .. 11}}} \
       PS_GEM0_ROUTE_THROUGH_FPD {0} \
+      PS_GEN_IPI5_ENABLE {1} \
+      PS_GEN_IPI5_MASTER {A72} \
       PS_I2CSYSMON_PERIPHERAL {{ENABLE 1} {IO {PMC_MIO 39 .. 40}}} \
       PS_IRQ_USAGE {{CH0 1} {CH1 1} {CH10 1} {CH11 1} {CH12 1} {CH13 1} {CH14 1} {CH15 1} {CH2 1} {CH3 1} {CH4 1} {CH5 1} {CH6 1} {CH7 1} {CH8 1} {CH9 1}} \
       PS_NUM_FABRIC_RESETS {1} \
@@ -285,7 +287,9 @@ proc create_root_design { parentCell } {
       PS_USE_M_AXI_FPD {1} \
       PS_USE_PMCPL_CLK0 {1} \
       PS_USE_PMCPL_CLK1 {1} \
-      PS_USE_PSPL_IRQ_FPD {1} \
+      PS_USE_PSPL_IRQ_FPD {0} \
+      PS_USE_PSPL_IRQ_LPD {1} \
+      PS_USE_RPU_INTERRUPT {1} \
       SMON_ALARMS {Set_Alarms_On} \
       SMON_ENABLE_TEMP_AVERAGING {0} \
       SMON_INTERFACE_TO_USE {I2C} \

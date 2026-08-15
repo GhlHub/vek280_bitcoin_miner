@@ -20,7 +20,12 @@
 #endif
 
 #ifndef MINER_IRQ_ID
-#define MINER_IRQ_ID 84U
+/*
+ * CIPS routes pl_ps_irq0 to R5 GIC SPI 116.  The SDT interrupt wrapper adds
+ * 32 to this legacy ID, so use 84 (0x54) here.  Do not use the unrelated
+ * XPAR_FPGA0_INTERRUPT_ID default from the generic PS header.
+ */
+#define MINER_IRQ_ID 0x54U
 #endif
 
 #ifndef MINER_NUM_ENGINES_EXPECTED

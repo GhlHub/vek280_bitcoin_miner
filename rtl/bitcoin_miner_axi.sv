@@ -63,6 +63,7 @@ module bitcoin_miner_axi #(
     localparam [11:0] ADDR_RESULT_NONCE  = 12'h090;
     localparam [11:0] ADDR_RESULT_ENGINE = 12'h094;
     localparam [11:0] ADDR_RESULT_STATUS = 12'h098;
+    localparam [11:0] ADDR_IRQ_CONTROL   = 12'h0a0;
     localparam int unsigned NUM_CLUSTERS = (NUM_ENGINES + CLUSTER_SIZE - 1) / CLUSTER_SIZE;
     localparam int unsigned ENGINE_INDEX_WIDTH = (NUM_ENGINES <= 1) ? 1 : $clog2(NUM_ENGINES);
     localparam [1:0] LOAD_IDLE   = 2'd0;
@@ -79,6 +80,8 @@ module bitcoin_miner_axi #(
     reg         nonce_done_q;
     reg         overflow_q;
     reg         result_valid_q;
+    reg         irq_mask_q;
+    reg         irq_force_q;
     reg [31:0]  result_nonce_q;
     reg [31:0]  result_engine_q;
 
@@ -113,6 +116,7 @@ module bitcoin_miner_axi #(
     reg wr_stage2_nonce_start_we_q;
     reg wr_stage2_nonce_count_we_q;
     reg wr_stage2_result_status_we_q;
+    reg wr_stage2_irq_control_we_q;
 
     wire [NUM_ENGINES-1:0] engine_busy;
     wire [NUM_ENGINES-1:0] engine_done;
@@ -132,7 +136,8 @@ module bitcoin_miner_axi #(
     reg [11:0] wr_addr;
     reg [NUM_CLUSTERS-1:0] cluster_pop_q;
 
-    assign irq_o = result_valid_q | overflow_q | nonce_done_q;
+    assign irq_o = !irq_mask_q &&
+                   (irq_force_q || result_valid_q || overflow_q || nonce_done_q);
     assign cluster_pop = cluster_pop_q;
 
     function automatic [31:0] apply_wstrb(
@@ -174,6 +179,7 @@ module bitcoin_miner_axi #(
                     ADDR_RESULT_NONCE:  read_reg = result_nonce_q;
                     ADDR_RESULT_ENGINE: read_reg = result_engine_q;
                     ADDR_RESULT_STATUS: read_reg = {30'h0, overflow_q, result_valid_q};
+                    ADDR_IRQ_CONTROL:   read_reg = {30'h0, irq_force_q, irq_mask_q};
                     default:            read_reg = 32'h00000000;
                 endcase
             end
@@ -298,6 +304,8 @@ module bitcoin_miner_axi #(
             nonce_done_q <= 1'b0;
             overflow_q <= 1'b0;
             result_valid_q <= 1'b0;
+            irq_mask_q <= 1'b0;
+            irq_force_q <= 1'b0;
             result_nonce_q <= 32'h0;
             result_engine_q <= 32'h0;
             start_pulse_q <= 1'b0;
@@ -331,6 +339,7 @@ module bitcoin_miner_axi #(
             wr_stage2_nonce_start_we_q <= 1'b0;
             wr_stage2_nonce_count_we_q <= 1'b0;
             wr_stage2_result_status_we_q <= 1'b0;
+            wr_stage2_irq_control_we_q <= 1'b0;
             cluster_pop_q <= {NUM_CLUSTERS{1'b0}};
         end else begin
             s_axi_awready <= write_fire;
@@ -368,6 +377,7 @@ module bitcoin_miner_axi #(
                 wr_stage2_nonce_start_we_q <= 1'b0;
                 wr_stage2_nonce_count_we_q <= 1'b0;
                 wr_stage2_result_status_we_q <= 1'b0;
+                wr_stage2_irq_control_we_q <= 1'b0;
                 wr_stage1_valid_q <= 1'b0;
 
                 if ((wr_addr >= ADDR_MIDSTATE_BASE) && (wr_addr < ADDR_MIDSTATE_BASE + 12'h020)) begin
@@ -392,6 +402,9 @@ module bitcoin_miner_axi #(
                         end
                         ADDR_RESULT_STATUS: begin
                             wr_stage2_result_status_we_q <= 1'b1;
+                        end
+                        ADDR_IRQ_CONTROL: begin
+                            wr_stage2_irq_control_we_q <= 1'b1;
                         end
                         default: begin
                         end
@@ -475,6 +488,10 @@ module bitcoin_miner_axi #(
                     if (wr_stage2_data_q[1]) begin
                         overflow_q <= 1'b0;
                     end
+                end
+                if (wr_stage2_irq_control_we_q && wr_stage2_strb_q[0]) begin
+                    irq_mask_q <= wr_stage2_data_q[0];
+                    irq_force_q <= wr_stage2_data_q[1];
                 end
             end
 

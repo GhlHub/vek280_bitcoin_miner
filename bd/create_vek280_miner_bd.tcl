@@ -76,7 +76,11 @@ set cips_config [list \
     CONFIG.PS_PMC_CONFIG(PS_BOARD_INTERFACE) {Custom} \
     CONFIG.PS_PMC_CONFIG(PS_NUM_FABRIC_RESETS) {1} \
     CONFIG.PS_PMC_CONFIG(PS_PL_CONNECTIVITY_MODE) {Custom} \
-    CONFIG.PS_PMC_CONFIG(PS_USE_PSPL_IRQ_FPD) {1} \
+    CONFIG.PS_PMC_CONFIG(PS_USE_PSPL_IRQ_FPD) {0} \
+    CONFIG.PS_PMC_CONFIG(PS_USE_PSPL_IRQ_LPD) {1} \
+    CONFIG.PS_PMC_CONFIG(PS_USE_RPU_INTERRUPT) {1} \
+    CONFIG.PS_PMC_CONFIG(PS_GEN_IPI5_ENABLE) {1} \
+    CONFIG.PS_PMC_CONFIG(PS_GEN_IPI5_MASTER) {A72} \
     CONFIG.PS_PMC_CONFIG(PS_USE_M_AXI_FPD) {1} \
     CONFIG.PS_PMC_CONFIG(PS_USE_PMCPL_CLK0) {1} \
     CONFIG.PS_PMC_CONFIG(PS_USE_PMCPL_CLK1) {1} \
@@ -109,7 +113,11 @@ set ps_pmc_config [list \
         PS_NUM_FABRIC_RESETS {1} \
         PS_PL_CONNECTIVITY_MODE {Custom} \
         PS_IRQ_USAGE {{CH0 1} {CH1 1} {CH10 1} {CH11 1} {CH12 1} {CH13 1} {CH14 1} {CH15 1} {CH2 1} {CH3 1} {CH4 1} {CH5 1} {CH6 1} {CH7 1} {CH8 1} {CH9 1}} \
-        PS_USE_PSPL_IRQ_FPD {1} \
+        PS_USE_PSPL_IRQ_FPD {0} \
+        PS_USE_PSPL_IRQ_LPD {1} \
+        PS_USE_RPU_INTERRUPT {1} \
+        PS_GEN_IPI5_ENABLE {1} \
+        PS_GEN_IPI5_MASTER {A72} \
         PS_USE_M_AXI_FPD {1} \
         PS_USE_FPD_CCI_NOC {1} \
         PMC_USE_PMC_NOC_AXI0 {1} \
@@ -148,6 +156,14 @@ lappend cips_config \
     CONFIG.PS_PMC_CONFIG_APPLIED {1} \
 
 set_property -dict $cips_config $cips
+
+# Apply IPI channel 5 after the nested PS_PMC_CONFIG dictionary.  CIPS can
+# otherwise let the nested dictionary restore the default disabled state;
+# XSDB uses IPI channel 5 to activate the default Versal debug subsystem.
+set_property -dict [list \
+    CONFIG.PS_PMC_CONFIG(PS_GEN_IPI5_ENABLE) {1} \
+    CONFIG.PS_PMC_CONFIG(PS_GEN_IPI5_MASTER) {A72} \
+] $cips
 
 if {$enable_ddr} {
     set ps_ddr_noc [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_noc ps_ddr_noc]

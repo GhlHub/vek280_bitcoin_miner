@@ -8,8 +8,9 @@ Target architecture:
 - Network: PS GEM0 Ethernet through FreeRTOS-Plus-TCP, with DHCP enabled by
   default.
 - Miner control: AXI4-Lite MMIO at `0xA4000000` by default.
-- PL interrupt: `pl_ps_irq0`; current hardware metadata has mapped this as IRQ 84,
-  but generated Vitis headers should be treated as the source of truth.
+- PL interrupt: `pl_ps_irq0`; CIPS assigns legacy IRQ 84 (`0x54`), which the
+  FreeRTOS SDT wrapper maps to R5 GIC SPI 116. The generic
+  `XPAR_FPGA0_INTERRUPT_ID` header default is unrelated to this CIPS input.
 - Remote control: unauthenticated telnet server on TCP port 23.
 - Pool protocol: Stratum v1 client. Stratum v2 can be added later behind the same
   miner-control API.
