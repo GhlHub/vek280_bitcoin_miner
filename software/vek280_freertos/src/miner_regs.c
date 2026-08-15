@@ -39,8 +39,8 @@ static void miner_write_at(uintptr_t addr, uint32_t value)
 void miner_init(uintptr_t base_addr)
 {
     g_miner_base = base_addr;
-    miner_clear();
     miner_stop();
+    miner_clear();
 }
 
 uint32_t miner_read_reg(uint32_t offset)
@@ -125,6 +125,26 @@ void miner_stop(void)
 {
     for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
         miner_write_reg_instance(inst, MINER_REG_CONTROL, MINER_CONTROL_STOP);
+    }
+}
+
+void miner_irq_mask_all(void)
+{
+    for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+        uint32_t control = miner_read_reg_instance(inst, MINER_REG_IRQ_CONTROL);
+
+        miner_write_reg_instance(inst, MINER_REG_IRQ_CONTROL,
+                                 control | MINER_IRQ_CONTROL_MASK);
+    }
+}
+
+void miner_irq_unmask_all(void)
+{
+    for (uint32_t inst = 0; inst < MINER_AXI_INSTANCES; ++inst) {
+        uint32_t control = miner_read_reg_instance(inst, MINER_REG_IRQ_CONTROL);
+
+        miner_write_reg_instance(inst, MINER_REG_IRQ_CONTROL,
+                                 control & ~MINER_IRQ_CONTROL_MASK);
     }
 }
 

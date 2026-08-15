@@ -1,6 +1,7 @@
 """Program the current 4x32 PDI and launch the matching R5 application."""
 
 import os
+import time
 from pathlib import Path
 
 import xsdb
@@ -25,8 +26,12 @@ try:
     device = session.targets(id=1)
     device.device_program(file=str(pdi))
 
+    # device_program returns after transfer completion, before PLM finishes
+    # loading the PS and PL partitions.  The VEK280 image takes ~13 seconds.
+    time.sleep(16)
+
     print(f"Downloading {elf}")
-    r5 = session.targets(id=3)
+    r5 = session.targets(filter="name =~ \"*Cortex-R5*#0*\"")
     r5.rst("--clear_registers", type="processor")
     r5.dow("--clear", file=str(elf))
     r5.con()

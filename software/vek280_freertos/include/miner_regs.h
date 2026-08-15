@@ -15,6 +15,7 @@
 #define MINER_REG_RESULT_NONCE  0x090U
 #define MINER_REG_RESULT_ENGINE 0x094U
 #define MINER_REG_RESULT_STATUS 0x098U
+#define MINER_REG_IRQ_CONTROL   0x0a0U
 
 #define MINER_CONTROL_START     (1U << 0)
 #define MINER_CONTROL_STOP      (1U << 1)
@@ -27,6 +28,10 @@
 
 #define MINER_RESULT_STATUS_RESULT   (1U << 0)
 #define MINER_RESULT_STATUS_OVERFLOW (1U << 1)
+
+/* IRQ_CONTROL is readable and applies independently to each miner cluster. */
+#define MINER_IRQ_CONTROL_MASK  (1U << 0)
+#define MINER_IRQ_CONTROL_FORCE (1U << 1)
 
 typedef struct {
     uint32_t nonce;
@@ -43,6 +48,8 @@ uint32_t miner_num_engines(void);
 uint32_t miner_status(void);
 void miner_clear(void);
 void miner_stop(void);
+void miner_irq_mask_all(void);
+void miner_irq_unmask_all(void);
 void miner_program_job(const uint32_t midstate[8],
                        const uint32_t header_tail[4],
                        const uint32_t target[8]);

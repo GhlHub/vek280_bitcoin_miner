@@ -45,7 +45,9 @@
 #include "xinterrupt_wrap.h"
 #include "xil_exception.h"
 #include "xil_mmu.h"
+#if defined(MINER_NETIF_DEBUG)
 #include "xil_printf.h"
+#endif
 
 #include "uncached_memory.h"
 
@@ -105,10 +107,12 @@ extern struct xtopology_t xXTopologies[ XPAR_XEMACPS_NUM_INSTANCES ];
 
 static SemaphoreHandle_t xTXDescriptorSemaphore[ XPAR_XEMACPS_NUM_INSTANCES ];
 
+#if defined(MINER_NETIF_DEBUG)
 static uint32_t ulTxDebugCount;
 static uint32_t ulTxIsrDebugCount;
 static uint32_t ulRxIsrDebugCount;
 static uint32_t ulRxDebugCount;
+#endif
 
 /*
  *  The FreeRTOS+TCP port does not make use of "src/xemacps_bdring.c".
@@ -214,11 +218,13 @@ void emacps_send_handler( void * arg )
     xemacpsif->isr_events |= EMAC_IF_TX_EVENT;
     xemacpsif->txBusy = pdFALSE;
 
+#if defined(MINER_NETIF_DEBUG)
     if( ulTxIsrDebugCount < 8U )
     {
         xil_printf( "emac tx isr%lu\r\n", ( unsigned long ) ulTxIsrDebugCount );
         ulTxIsrDebugCount++;
     }
+#endif
 
     if( xEMACTaskHandles[ xEMACIndex ] != NULL )
     {
@@ -253,8 +259,10 @@ XStatus emacps_send_message( xemacpsif_s * xemacpsif,
     uint32_t ulBaseAddress = xemacpsif->emacps.Config.BaseAddress;
     BaseType_t xEMACIndex = xVek280EmacIndexFromIf( xemacpsif );
     TickType_t xBlockTimeTicks = pdMS_TO_TICKS( 5000U );
+#if defined(MINER_NETIF_DEBUG)
     size_t uxTxLength = 0U;
     int iSentHead = head;
+#endif
 
     /* This driver wants to own all network buffers which are to be transmitted. */
     configASSERT( iReleaseAfterSend != pdFALSE );
@@ -280,8 +288,10 @@ XStatus emacps_send_message( xemacpsif_s * xemacpsif,
             break;
         }
 
+#if defined(MINER_NETIF_DEBUG)
         uxTxLength = pxBuffer->xDataLength;
         iSentHead = head;
+#endif
 
         /* Pass the pointer (and its ownership) directly to DMA. */
         pxDMA_tx_buffers[ xEMACIndex ][ head ] = pxBuffer->pucEthernetBuffer;
@@ -339,6 +349,7 @@ XStatus emacps_send_message( xemacpsif_s * xemacpsif,
         /* Read back the register to make sure the data is flushed. */
         ( void ) XEmacPs_ReadReg( ulBaseAddress, XEMACPS_NWCTRL_OFFSET );
 
+#if defined(MINER_NETIF_DEBUG)
         if( ulTxDebugCount < 8U )
         {
             xil_printf( "emac tx%lu len=%lu head=%d buf=0x%08lx\r\n",
@@ -348,6 +359,7 @@ XStatus emacps_send_message( xemacpsif_s * xemacpsif,
                         ( unsigned long ) pxDMA_tx_buffers[ xEMACIndex ][ iSentHead ] );
             ulTxDebugCount++;
         }
+#endif
     }
 
     dsb();
@@ -364,11 +376,13 @@ void emacps_recv_handler( void * arg )
     xemacpsif->isr_events |= EMAC_IF_RX_EVENT;
     BaseType_t xEMACIndex = xVek280EmacIndexFromIf( xemacpsif );
 
+#if defined(MINER_NETIF_DEBUG)
     if( ulRxIsrDebugCount < 8U )
     {
         xil_printf( "emac rx isr%lu\r\n", ( unsigned long ) ulRxIsrDebugCount );
         ulRxIsrDebugCount++;
     }
+#endif
 
     /* The driver has already cleared the FRAMERX, BUFFNA and error bits
      * in the XEMACPS_RXSR register,
@@ -570,6 +584,7 @@ int emacps_check_rx( xemacpsif_s * xemacpsif,
 
             pxBuffer->xDataLength = rx_bytes;
 
+#if defined(MINER_NETIF_DEBUG)
             if( ulRxDebugCount < 8U )
             {
                 xil_printf( "emac rx%lu len=%d head=%d accept=%ld\r\n",
@@ -579,6 +594,7 @@ int emacps_check_rx( xemacpsif_s * xemacpsif,
                             ( long ) xAccepted );
                 ulRxDebugCount++;
             }
+#endif
 
             /* store it in the receive queue, where it'll be processed by a
              * different handler. */
