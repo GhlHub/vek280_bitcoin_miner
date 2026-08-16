@@ -59,6 +59,7 @@ ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/main.c
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/app_memory.c
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/miner_regs.c
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/miner_service.c
+${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/status_leds.c
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/sha256_sw.c
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/stratum_client.c
 ${CMAKE_SOURCE_DIR}/../../../software/vek280_freertos/src/telnet_server.c

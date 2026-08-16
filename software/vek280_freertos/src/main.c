@@ -7,6 +7,7 @@
 #include "app_memory.h"
 #include "app_config.h"
 #include "miner_service.h"
+#include "status_leds.h"
 #include "stratum_client.h"
 #include "telnet_server.h"
 #include "xiltimer.h"
@@ -198,6 +199,7 @@ int main(void)
     BaseType_t task_status;
 
     app_log("VEK280 miner FreeRTOS app starting");
+    status_leds_init();
     app_log(app_ddr_configure_mpu() ? "DDR MPU region configured" : "DDR MPU region failed");
 #if APP_USE_DDR_HEAP
     app_log(app_ddr_smoke_test() ? "DDR smoke test passed" : "DDR smoke test failed");

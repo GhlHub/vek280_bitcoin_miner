@@ -7,6 +7,16 @@
 #define MINER_AXI_BASEADDR 0xA4000000UL
 #endif
 
+/* Output-only AXI GPIO driving VEK280 user LEDs DS6 through DS3. */
+#ifndef STATUS_LED_AXI_BASEADDR
+#define STATUS_LED_AXI_BASEADDR 0xA4004000UL
+#endif
+
+#define STATUS_LED_POOL_R5_CONNECTED 0U /* gpio_led[0], DS6 */
+#define STATUS_LED_JOB_RECEIVED       1U /* gpio_led[1], DS5 */
+#define STATUS_LED_IRQ_PROCESSED      2U /* gpio_led[2], DS4 */
+#define STATUS_LED_POOL_ATTACHED      3U /* gpio_led[3], DS3 */
+
 #ifndef MINER_AXI_INSTANCE_STRIDE
 #define MINER_AXI_INSTANCE_STRIDE 0x00001000UL
 #endif

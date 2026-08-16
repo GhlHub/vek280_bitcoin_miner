@@ -140,6 +140,7 @@ if { $bCheckIPs == 1 } {
 xilinx.com:ip:versal_cips:3.4\
 xilinx.com:ip:axi_noc:1.1\
 xilinx.com:ip:axi_register_slice:2.1\
+xilinx.com:ip:axi_gpio:2.0\
 xilinx.com:ip:smartconnect:1.0\
 xilinx.com:ip:proc_sys_reset:5.0\
 "
@@ -249,6 +250,7 @@ proc create_root_design { parentCell } {
 
 
   # Create ports
+  set gpio_led [ create_bd_port -dir O -from 3 -to 0 gpio_led ]
 
   # Create instance: cips_0, and set properties
   set cips_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:versal_cips:3.4 cips_0 ]
@@ -553,10 +555,19 @@ proc create_root_design { parentCell } {
      return 1
    }
   
+  # Create instance: axi_gpio_led, and set properties
+  set axi_gpio_led [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_led ]
+  set_property -dict [list \
+    CONFIG.C_ALL_OUTPUTS {1} \
+    CONFIG.C_GPIO_WIDTH {4} \
+    CONFIG.C_IS_DUAL {0} \
+  ] $axi_gpio_led
+
+
   # Create instance: axi_smc, and set properties
   set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
   set_property -dict [list \
-    CONFIG.NUM_MI {4} \
+    CONFIG.NUM_MI {5} \
     CONFIG.NUM_SI {1} \
   ] $axi_smc
 
@@ -591,6 +602,7 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_pins axi_regslice_miner_1/S_AXI]
   connect_bd_intf_net -intf_net axi_smc_M02_AXI [get_bd_intf_pins axi_smc/M02_AXI] [get_bd_intf_pins axi_regslice_miner_2/S_AXI]
   connect_bd_intf_net -intf_net axi_smc_M03_AXI [get_bd_intf_pins axi_smc/M03_AXI] [get_bd_intf_pins axi_regslice_miner_3/S_AXI]
+  connect_bd_intf_net -intf_net axi_smc_M04_AXI [get_bd_intf_pins axi_smc/M04_AXI] [get_bd_intf_pins axi_gpio_led/S_AXI]
   connect_bd_intf_net -intf_net cips_0_FPD_CCI_NOC_0 [get_bd_intf_pins cips_0/FPD_CCI_NOC_0] [get_bd_intf_pins ps_ddr_noc/S00_AXI]
   connect_bd_intf_net -intf_net cips_0_FPD_CCI_NOC_1 [get_bd_intf_pins cips_0/FPD_CCI_NOC_1] [get_bd_intf_pins ps_ddr_noc/S01_AXI]
   connect_bd_intf_net -intf_net cips_0_FPD_CCI_NOC_2 [get_bd_intf_pins cips_0/FPD_CCI_NOC_2] [get_bd_intf_pins ps_ddr_noc/S02_AXI]
@@ -607,6 +619,8 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net ps_ddr_noc_M03_INI [get_bd_intf_pins ps_ddr_noc/M03_INI] [get_bd_intf_pins ddr_noc/S03_INI]
 
   # Create port connections
+  connect_bd_net -net axi_gpio_led_gpio_io_o  [get_bd_pins axi_gpio_led/gpio_io_o] \
+  [get_bd_ports gpio_led]
   connect_bd_net -net cips_0_fpd_cci_noc_axi0_clk  [get_bd_pins cips_0/fpd_cci_noc_axi0_clk] \
   [get_bd_pins ps_ddr_noc/aclk0]
   connect_bd_net -net cips_0_fpd_cci_noc_axi1_clk  [get_bd_pins cips_0/fpd_cci_noc_axi1_clk] \
@@ -641,7 +655,8 @@ proc create_root_design { parentCell } {
   [get_bd_pins axi_regslice_miner_2/aclk] \
   [get_bd_pins axi_cdc_miner_2/s_axi_aclk] \
   [get_bd_pins axi_regslice_miner_3/aclk] \
-  [get_bd_pins axi_cdc_miner_3/s_axi_aclk]
+  [get_bd_pins axi_cdc_miner_3/s_axi_aclk] \
+  [get_bd_pins axi_gpio_led/s_axi_aclk]
   connect_bd_net -net cips_0_pmc_axi_noc_axi0_clk  [get_bd_pins cips_0/pmc_axi_noc_axi0_clk] \
   [get_bd_pins ps_ddr_noc/aclk5]
   connect_bd_net -net irq_or_irq_o  [get_bd_pins irq_or/irq_o] \
@@ -672,7 +687,8 @@ proc create_root_design { parentCell } {
   [get_bd_pins axi_regslice_miner_2/aresetn] \
   [get_bd_pins axi_cdc_miner_2/s_axi_aresetn] \
   [get_bd_pins axi_regslice_miner_3/aresetn] \
-  [get_bd_pins axi_cdc_miner_3/s_axi_aresetn]
+  [get_bd_pins axi_cdc_miner_3/s_axi_aresetn] \
+  [get_bd_pins axi_gpio_led/s_axi_aresetn]
 
   # Create address segments
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces cips_0/FPD_CCI_NOC_0] [get_bd_addr_segs ddr_noc/S00_INI/C0_DDR_LOW0] -force
@@ -684,6 +700,7 @@ proc create_root_design { parentCell } {
   assign_bd_address -offset 0xA4001000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs axi_cdc_miner_1/s_axi/reg0] -force
   assign_bd_address -offset 0xA4002000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs axi_cdc_miner_2/s_axi/reg0] -force
   assign_bd_address -offset 0xA4003000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs axi_cdc_miner_3/s_axi/reg0] -force
+  assign_bd_address -offset 0xA4004000 -range 0x00001000 -target_address_space [get_bd_addr_spaces cips_0/M_AXI_FPD] [get_bd_addr_segs axi_gpio_led/S_AXI/Reg] -force
   assign_bd_address -offset 0x00000000 -range 0x80000000 -target_address_space [get_bd_addr_spaces cips_0/PMC_NOC_AXI_0] [get_bd_addr_segs ddr_noc/S00_INI/C0_DDR_LOW0] -force
   assign_bd_address -offset 0x00000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces axi_cdc_miner_0/m_axi] [get_bd_addr_segs miner_0/S_AXI/reg0] -force
   assign_bd_address -offset 0x00000000 -range 0x00001000 -target_address_space [get_bd_addr_spaces axi_cdc_miner_1/m_axi] [get_bd_addr_segs miner_1/S_AXI/reg0] -force

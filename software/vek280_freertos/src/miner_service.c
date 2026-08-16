@@ -9,6 +9,7 @@
 #include "task.h"
 
 #include "app_config.h"
+#include "status_leds.h"
 
 static QueueHandle_t g_job_queue;
 static QueueHandle_t g_result_queue;
@@ -154,6 +155,9 @@ static void miner_task(void *arg)
         if (xSemaphoreTake(g_irq_sem, pdMS_TO_TICKS(100)) != pdTRUE) {
             continue;
         }
+
+        /* The worker, rather than the ISR, defines a processed IRQ event. */
+        status_leds_toggle_irq_processed();
 
         miner_result_t result;
         while (miner_read_result(&result)) {

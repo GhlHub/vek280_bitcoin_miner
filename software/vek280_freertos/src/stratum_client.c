@@ -16,6 +16,7 @@
 #include "app_config.h"
 #include "miner_service.h"
 #include "sha256_sw.h"
+#include "status_leds.h"
 
 typedef struct {
     char job_id[STRATUM_JOB_ID_BYTES];
@@ -800,6 +801,7 @@ static void handle_stratum_line(const char *line, stratum_state_t *state)
 
         if (parse_notify(line, &notify)) {
             stratum_debug_inc(&g_debug.notify_count);
+            status_leds_toggle_job_received();
             stratum_debug_set_event("rx notify id=%s branches=%lu",
                                     notify.job_id,
                                     (unsigned long)notify.merkle_count);
@@ -851,11 +853,13 @@ static void handle_stratum_line(const char *line, stratum_state_t *state)
         }
         if (parse_subscribe_response(line, state)) {
             stratum_debug_inc(&g_debug.subscribe_ok);
+            status_leds_set_pool_attached(state->subscribed && state->authorized);
             stratum_debug_set_event("rx subscribe ok extranonce2=%lu",
                                     (unsigned long)state->extranonce2_size);
         }
         if (parse_authorize_response(line, state)) {
             stratum_debug_inc(&g_debug.authorize_ok);
+            status_leds_set_pool_attached(state->subscribed && state->authorized);
             stratum_debug_set_event("rx authorize ok");
         }
         try_dispatch_pending_notify(state);
@@ -954,6 +958,8 @@ static void stratum_task(void *arg)
         stratum_state_t state;
         memset(&state, 0, sizeof(state));
         g_connected = true;
+        status_leds_set_pool_r5_connected(true);
+        status_leds_set_pool_attached(false);
         stratum_debug_inc(&g_debug.connect_successes);
         g_disconnect_requested = false;
         send_subscribe_authorize(sock, &config);
@@ -999,6 +1005,8 @@ static void stratum_task(void *arg)
 
         FreeRTOS_closesocket(sock);
         g_connected = false;
+        status_leds_set_pool_r5_connected(false);
+        status_leds_set_pool_attached(false);
         stratum_debug_inc(&g_debug.disconnects);
 
         if (!g_disconnect_requested) {

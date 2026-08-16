@@ -8,6 +8,10 @@ Target architecture:
 - Network: PS GEM0 Ethernet through FreeRTOS-Plus-TCP, with DHCP enabled by
   default.
 - Miner control: AXI4-Lite MMIO at `0xA4000000` by default.
+- Status LEDs: output-only AXI GPIO at `0xA4004000`.  DS6 is on while the
+  R5 has a Stratum TCP connection; DS5 toggles for each `mining.notify`; DS4
+  toggles as the result worker processes a miner interrupt; DS3 is on only
+  after the session is both subscribed and authorized.
 - PL interrupt: `pl_ps_irq0`; CIPS assigns legacy IRQ 84 (`0x54`), which the
   FreeRTOS SDT wrapper maps to R5 GIC SPI 116. The generic
   `XPAR_FPGA0_INTERRUPT_ID` header default is unrelated to this CIPS input.
