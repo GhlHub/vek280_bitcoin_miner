@@ -88,6 +88,19 @@ disconnect
   counters.
 - `health` reports PS SysMon device temperature and alarm state.
 
+### Front-panel status LEDs
+
+The output-only AXI GPIO peripheral at `0xA4004000` drives the four VEK280
+user LEDs.  Its bit order follows the board net names, so `gpio_led[0]` is
+DS6 and `gpio_led[3]` is DS3.
+
+| LED | GPIO bit | R5 behavior |
+| --- | ---: | --- |
+| DS6 | 0 | On while the R5 holds a TCP connection to the Stratum pool. |
+| DS5 | 1 | Toggles for each valid `mining.notify` job received. |
+| DS4 | 2 | Toggles when the miner result worker processes a PL interrupt. |
+| DS3 | 3 | On after the Stratum session is subscribed and authorized; off after disconnect. |
+
 ## Load and operate
 
 Vitis 2026.1 uses XSDB Python APIs; legacy XSCT is disabled. With the hardware

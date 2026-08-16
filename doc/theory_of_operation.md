@@ -61,12 +61,14 @@ flowchart LR
             m1["miner_1, 250 MHz\n32 hash engines\n0xA4001000"]
             m2["miner_2, 250 MHz\n32 hash engines\n0xA4002000"]
             m3["miner_3, 250 MHz\n32 hash engines\n0xA4003000"]
+            leds["AXI GPIO, 125 MHz\nDS6..DS3\n0xA4004000"]
             irq["Interrupt OR\npl_ps_irq0"]
 
             smc --> rs0 --> cdc0 --> m0
             smc --> rs1 --> cdc1 --> m1
             smc --> rs2 --> cdc2 --> m2
             smc --> rs3 --> cdc3 --> m3
+            smc --> leds
             m0 --> irq
             m1 --> irq
             m2 --> irq
@@ -155,6 +157,16 @@ Important register semantics are:
 | `0x080`, `0x084` | nonce range | First nonce and candidate count. |
 | `0x090`, `0x094`, `0x098` | result registers | Candidate nonce, engine, and result/overflow status. |
 | `0x0a0` | `IRQ_CONTROL` | Bit 0 masks `irq_o`; bit 1 forces it high for controlled IRQ debug. |
+
+The separate output-only AXI GPIO peripheral is at `0xA4004000`.  It drives
+the VEK280 user LEDs in the following order:
+
+| LED | GPIO bit | Behavior |
+| --- | ---: | --- |
+| DS6 | `gpio_led[0]` | On while the R5 maintains a Stratum TCP connection. |
+| DS5 | `gpio_led[1]` | Toggles for each valid `mining.notify` received. |
+| DS4 | `gpio_led[2]` | Toggles when the result worker processes a miner interrupt. |
+| DS3 | `gpio_led[3]` | On only after the session is subscribed and authorized; off when disconnected. |
 
 ## Network and operating control
 
